@@ -25,6 +25,17 @@ Brainstorming -> 라우팅 -> 작업 트리 -> 위임 -> 리뷰 -> QA -> 커밋 
 
 팀장은 실행자가 아니라 라우터, 검증자, 통합자다. 실행은 가능한 역할 에이전트나 독립 실행 컨텍스트가 맡는다. 최종 저장소 통합, 병합, 최종 푸시, 깨끗한 작업 트리 정리는 팀장이 책임진다.
 
+## Worktree / Git Safety Hook
+
+저장소 변경이 있는 표준/보호 작업은 수정 전에 branch, remote, dirty file 상태를 확인한다.
+
+- 보호 작업, 충돌 위험이 있는 작업, PR 대상 작업은 task branch를 가진 독립 worktree에서 진행한다.
+- worktree는 가능한 한 새 task branch에 붙여 만든다: `git worktree add <path> -b <task-branch> <base-branch>`.
+- detached HEAD, base branch 직접 수정, 소유자가 불명확한 dirty worktree에서는 구현을 시작하지 않는다.
+- 사용자가 만든 dirty change는 되돌리지 않고, 의도한 파일만 commit에 포함한다.
+- 작업 완료 후 branch push, PR/merge 또는 final push, gate 증거 확인이 끝나고 worktree가 clean하면 worktree를 삭제하고 prune으로 정리한다.
+- dirty worktree, unmerged branch, 소유자가 불명확한 worktree는 삭제하지 않는다.
+
 ## 역할 위임 경계
 
 역할 위임은 보호 작업에서 우선 적용한다. 경량 작업에는 강제하지 않고, 표준 작업은 전문 검증이나 병렬 실행이 실제로 도움이 될 때만 위임한다.
@@ -63,6 +74,17 @@ Brainstorming -> 라우팅 -> 작업 트리 -> 위임 -> 리뷰 -> QA -> 커밋 
 - secrets, auth, infra, dependency 변경: `security` gate
 - `reviewer` BLOCK, `qa` FAIL, `security` Critical, 핵심 사용자 흐름 실패는 완료를 막는다.
 - gate를 생략하면 최종 보고에 생략 이유와 남은 위험을 남긴다.
+
+## Kanban Hook
+
+Obsidian Kanban을 갱신할 때 활성 보드는 제목만 보이는 compact wikilink card로 유지하고, 상세는 링크된 노트에서 관리한다.
+
+- 보드 라인은 `- [ ] [[path/to/card|@Owner 짧은 작업 제목]]` 형식으로 유지한다.
+- 보드 라인에는 owner token과 짧은 제목만 두고, 긴 설명, 산출물, 로그, 태그, 완료 증거는 넣지 않는다.
+- 상세 내용은 링크된 카드 노트에 기록한다. 완료/실패 시 검증 evidence, 날짜, 실패 이유, unblock path도 카드 노트에 남긴다.
+- 레인을 이동할 때는 보드 라인만 이동하고, 링크된 카드 노트의 status/lane/evidence를 함께 갱신한다.
+- 새 작업은 생성 또는 준비 레인에 두고, 생성에서 진행중으로 바로 이동하지 않는다.
+- 조직별 보드 경로와 카드 폴더는 운영 문서나 기존 보드 구조를 따른다. 기준 보드를 찾을 수 없으면 추측하지 말고 missing context로 보고한다.
 
 ## Discord Hook
 
