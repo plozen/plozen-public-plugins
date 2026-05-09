@@ -1,19 +1,19 @@
 ---
 name: orchestration-harness-skill
-description: Aegis 작업에서 작업 범위 분류, 스킬 라우팅, planning, worktree, background subagent 병렬 디스패치, debugging/TDD, 리뷰/QA/security gate, verification, PR/merge/cleanup 통합이 필요할 때 사용한다.
+description: 저장소 변경, 새 기능, 동작 변경, 버그 수정, 테스트 실패, 다단계 작업, 작업 범위 분류, 스킬 라우팅, planning, worktree, background subagent 병렬 디스패치, debugging/TDD, 리뷰/QA/security gate, verification, PR/merge/cleanup 통합이 필요할 때 사용한다. 사용자가 Aegis를 명시하지 않아도 경량 답변을 넘어서면 먼저 적용 범위를 분류한다.
 ---
 
 # Aegis 오케스트레이션 하네스
 
 ## 적용 범위
 
-Aegis 작업 흐름은 모든 작업에 강제하지 않는다. 먼저 작업 성격을 분류하고 필요한 만큼만 적용한다.
+사용자가 `Aegis`를 명시하지 않아도, 작업이 저장소 변경/동작 변경/다단계 실행/검증/위임을 포함하면 먼저 이 하네스로 경량/표준/보호 작업을 분류한다. Aegis 작업 흐름은 모든 작업에 강제하지 않고 필요한 만큼만 적용한다.
 
 - 경량 작업: 질문 답변, 읽기 전용 조사, 단일 명령 실행, 상태 확인, 작은 문구 수정은 현재 세션에서 바로 처리한다. Brainstorming, 작업 트리, 위임, PR을 강제하지 않는다.
 - 표준 작업: 일반 기능 수정, 버그 수정, 테스트 추가, 문서 수정처럼 저장소 변경이 있지만 위험이 낮은 작업은 필요한 검증까지만 수행한다. 작업 트리, 커밋, 푸시, PR은 사용자 요청이나 저장소 정책이 있을 때 사용한다.
 - 보호 작업: 새 기능, 동작 변경, 대규모 리팩터링, 릴리스, 보안/인증/데이터/마이그레이션, 여러 하위 시스템이 섞인 작업은 아래 작업 흐름을 적용한다.
 
-사용자가 명시적으로 `Aegis로 진행`, `PR까지`, `팀장 모드`, `서브에이전트로 병렬 진행`처럼 요청하면 한 단계 높은 흐름으로 올릴 수 있다.
+사용자가 명시적으로 `Aegis로 진행`, `PR까지`, `팀장 모드`, `서브에이전트로 병렬 진행`처럼 요청하면 한 단계 높은 흐름으로 올릴 수 있다. 단, Aegis 명시는 필수 트리거가 아니며 작업 성격이 조건에 맞으면 자동 적용한다.
 
 ## 작업 흐름
 
@@ -79,9 +79,10 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 
 ## Skill Routing Hook
 
-작업 시작 전에 관련 Aegis skill이 있는지 판단한다.
+작업 시작 전에 관련 Aegis skill이 있는지 판단한다. 사용자가 Aegis를 말하지 않아도 경량 답변을 넘어서면 먼저 이 하네스로 범위를 분류한다.
 
 - 새 기능, 디자인, 동작 변경, 불명확한 요구사항은 `brainstorming-skill`을 먼저 사용한다.
+- 저장소 변경, 버그 수정, 테스트 실패, 다단계 실행, 검증/위임/리뷰/QA/PR이 필요한 작업은 이 orchestration harness로 경량/표준/보호를 먼저 분류한다.
 - 구현, PR, 리뷰, QA, 병렬 위임이 필요하면 이 orchestration harness를 적용한다.
 - 버그, 테스트 실패, 예상 밖 동작은 수정 전에 Debugging Hook을 적용한다.
 - 완료, 성공, 통과, fixed를 말하기 전에는 Verification Hook을 적용한다.
