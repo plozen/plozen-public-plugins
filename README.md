@@ -26,13 +26,13 @@ plozen-public-plugins/
 ## Codex
 
 ```bash
-codex plugin marketplace add /home/mhhan/.codex/plugins/plozen-public-plugins
+codex plugin marketplace add plozen/plozen-public-plugins
 ```
 
 ## Claude Code
 
 ```text
-/plugin marketplace add /home/mhhan/.codex/plugins/plozen-public-plugins
+/plugin marketplace add plozen/plozen-public-plugins
 /plugin install aegis@plozen-public-plugins
 ```
 

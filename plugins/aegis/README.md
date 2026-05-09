@@ -30,7 +30,7 @@ Aegis는 self-contained 스킬팩을 지향합니다. local memory file, 외부 
 PLOZEN public marketplace를 등록한 뒤 설치합니다.
 
 ```bash
-codex plugin marketplace add /home/mhhan/.codex/plugins/plozen-public-plugins
+codex plugin marketplace add plozen/plozen-public-plugins
 ```
 
 그 다음 Codex에서 plugin directory를 열고 Aegis를 설치합니다.
@@ -42,8 +42,9 @@ codex plugin marketplace add /home/mhhan/.codex/plugins/plozen-public-plugins
 개발 중 local skill discovery가 필요하면 아래처럼 연결합니다.
 
 ```bash
+git clone https://github.com/plozen/plozen-public-plugins.git ~/.codex/plozen-public-plugins
 mkdir -p ~/.agents/skills
-ln -s /home/mhhan/.codex/plugins/plozen-public-plugins/plugins/aegis/skills ~/.agents/skills/aegis
+ln -s ~/.codex/plozen-public-plugins/plugins/aegis/skills ~/.agents/skills/aegis
 ```
 
 symlink를 추가한 뒤 Codex를 재시작합니다.
@@ -53,7 +54,7 @@ symlink를 추가한 뒤 Codex를 재시작합니다.
 PLOZEN public marketplace를 등록한 뒤 플러그인을 설치합니다.
 
 ```text
-/plugin marketplace add /home/mhhan/.codex/plugins/plozen-public-plugins
+/plugin marketplace add plozen/plozen-public-plugins
 /plugin install aegis@plozen-public-plugins
 ```
 
@@ -62,7 +63,7 @@ PLOZEN public marketplace를 등록한 뒤 플러그인을 설치합니다.
 local Codex skill discovery 기준:
 
 ```bash
-cd /home/mhhan/.codex/plugins/plozen-public-plugins && git pull
+cd ~/.codex/plozen-public-plugins && git pull
 ```
 
 marketplace install은 사용하는 client의 plugin update 흐름을 따릅니다.
