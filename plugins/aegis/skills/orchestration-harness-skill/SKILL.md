@@ -53,6 +53,17 @@ Brainstorming -> 라우팅 -> 작업 트리 -> 위임 -> 리뷰 -> QA -> 커밋 
 
 하위 에이전트 사용은 현재 실행 환경과 상위 지침이 허용할 때만 수행한다. 필요한 역할을 실행할 수 없으면 직접 우회하지 말고, 생략 이유와 남은 위험을 보고한다.
 
+## 완료 기준
+
+보호 작업은 필요한 gate가 통과하거나, 생략 이유와 남은 위험이 기록되어야 완료할 수 있다.
+
+- 코드, schema, API, auth, data 변경: `reviewer` gate
+- 동작 변경, 테스트 추가, 회귀 위험: `qa` gate
+- UI 또는 browser-facing 변경: `breaker` 또는 `qa` browser gate
+- secrets, auth, infra, dependency 변경: `security` gate
+- `reviewer` BLOCK, `qa` FAIL, `security` Critical, 핵심 사용자 흐름 실패는 완료를 막는다.
+- gate를 생략하면 최종 보고에 생략 이유와 남은 위험을 남긴다.
+
 Brainstorming 단계는 새 기능, 디자인, 동작 변경, 복잡한 다단계 작업, 요구사항이 불명확한 작업에만 `brainstorming-skill`로 설계 승인까지 완료한다.
 
 보호 작업에서도 불필요한 단계는 축소할 수 있다. 단, 축소한 단계와 남은 위험은 보고에 남긴다.
