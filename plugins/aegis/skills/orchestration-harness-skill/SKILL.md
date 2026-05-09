@@ -25,6 +25,17 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 
 팀장은 실행자가 아니라 라우터, 검증자, 통합자다. 실행은 가능한 역할 에이전트나 독립 실행 컨텍스트가 맡는다. 최종 저장소 통합, 병합, 최종 푸시, 깨끗한 작업 트리 정리는 팀장이 책임진다.
 
+단계별 hook 연결:
+
+- Brainstorming: 새 기능, 디자인, 동작 변경, 불명확한 요구사항이면 [Skill Routing Hook](#skill-routing-hook)을 거쳐 `brainstorming-skill`을 먼저 사용한다.
+- Planning: Brainstorming 승인이 끝난 보호 작업은 [Planning Hook](#planning-hook)을 적용한다.
+- 작업 트리: 저장소 수정 전에는 [Worktree / Git Safety Hook](#worktree--git-safety-hook)을 적용한다.
+- 위임: 독립 실행 단위가 2개 이상이면 [Background Dispatch Hook](#background-dispatch-hook)을 적용한다.
+- 구현/디버깅: 버그, 테스트 실패, 동작 변경은 [Debugging Hook](#debugging-hook)과 [TDD / Behavior Change Hook](#tdd--behavior-change-hook)을 적용한다.
+- 리뷰: 피드백 처리에는 [Review Reception Hook](#review-reception-hook)을 적용한다.
+- QA/Security: 변경 성격에 맞춰 reviewer, qa, breaker, security gate를 적용한다.
+- 검증/완료: 완료, fixed, ready, merge, cleanup 전에는 [Verification / Branch Finish Hook](#verification--branch-finish-hook)을 적용한다.
+
 ## 역할 위임 경계
 
 역할 위임은 보호 작업에서 우선 적용한다. 경량 작업에는 강제하지 않고, 표준 작업은 전문 검증이나 병렬 실행이 실제로 도움이 될 때만 위임한다.
@@ -55,7 +66,7 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 
 ## 완료 기준
 
-보호 작업은 필요한 gate가 통과하거나, 생략 이유와 남은 위험이 기록되어야 완료할 수 있다.
+보호 작업은 필요한 gate가 통과하거나, 생략 이유와 남은 위험이 기록되어야 완료할 수 있다. 완료 선언 전에는 [Verification / Branch Finish Hook](#verification--branch-finish-hook)을 적용한다.
 
 - 코드, schema, API, auth, data 변경: `reviewer` gate
 - 동작 변경, 테스트 추가, 회귀 위험: `qa` gate

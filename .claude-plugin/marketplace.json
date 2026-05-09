@@ -11,7 +11,7 @@
       "name": "aegis",
       "source": "./plugins/aegis",
       "description": "Aegis는 공개 디자인, 문서 제작, 전달 오케스트레이션 스킬팩입니다.",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "category": "workflow",
       "author": {
         "name": "Aegis Contributors"
