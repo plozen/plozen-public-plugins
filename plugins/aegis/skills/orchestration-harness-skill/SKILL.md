@@ -1,6 +1,6 @@
 ---
 name: orchestration-harness-skill
-description: Aegis 작업에서 작업 범위 분류, 경량/표준/보호 전달 흐름 선택, 역할 위임, 백그라운드 subagent 병렬 디스패치, 리뷰/QA/security gate, PR/merge/cleanup 통합이 필요할 때 사용한다.
+description: Aegis 작업에서 작업 범위 분류, 스킬 라우팅, planning, worktree, background subagent 병렬 디스패치, debugging/TDD, 리뷰/QA/security gate, verification, PR/merge/cleanup 통합이 필요할 때 사용한다.
 ---
 
 # Aegis 오케스트레이션 하네스
@@ -20,34 +20,10 @@ Aegis 작업 흐름은 모든 작업에 강제하지 않는다. 먼저 작업 �
 보호 작업의 기본 흐름은 아래와 같다.
 
 ```text
-Brainstorming -> 라우팅 -> 작업 트리 -> 위임 -> 리뷰 -> QA -> 커밋 -> 브랜치 푸시 -> PR -> 팀장 확인 -> 병합/최종 푸시 -> 정리 -> 보고
+Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디버깅 -> 리뷰 -> QA/Security -> 검증 -> 커밋/푸시/PR -> 팀장 확인 -> 병합/정리 -> 보고
 ```
 
 팀장은 실행자가 아니라 라우터, 검증자, 통합자다. 실행은 가능한 역할 에이전트나 독립 실행 컨텍스트가 맡는다. 최종 저장소 통합, 병합, 최종 푸시, 깨끗한 작업 트리 정리는 팀장이 책임진다.
-
-## Background Dispatch Hook
-
-보호 작업이나 여러 실행 단위가 있는 표준 작업은 팀장이 직접 구현하기 전에 작업을 분해하고, 가능한 실행 작업을 background subagent 또는 동등한 실행 컨텍스트에 위임한다.
-
-- 팀장은 설계, 범위 분류, 작업 분해, 역할 선택, 위임, 통합, gate 판정을 맡는다.
-- 구현, 문서 작성, 조사, QA, 리뷰, 보안 점검, 브라우저 검증은 가능한 역할 에이전트에 디스패치한다.
-- 독립적인 sidecar 작업은 병렬로 디스패치하고, 팀장은 기다리는 동안 다른 설계/통합 작업을 계속한다.
-- 즉시 다음 판단이 막히는 critical path 작업만 직접 처리하거나 foreground로 기다린다.
-- 각 하위 에이전트에는 명확한 owner, 작업 범위, 파일 소유권, 산출물 형식을 준다.
-- 같은 파일을 여러 하위 에이전트가 동시에 수정하지 않도록 write scope를 분리한다.
-- 하위 에이전트 결과가 돌아오면 팀장은 재작업하지 않고 검토, 통합, 보완, gate 판정을 수행한다.
-- 하위 에이전트 실행이 불가능하면 직접 우회하지 말고 생략 이유와 남은 위험을 보고한다.
-
-## Worktree / Git Safety Hook
-
-저장소 변경이 있는 표준/보호 작업은 수정 전에 branch, remote, dirty file 상태를 확인한다.
-
-- 보호 작업, 충돌 위험이 있는 작업, PR 대상 작업은 task branch를 가진 독립 worktree에서 진행한다.
-- worktree는 가능한 한 새 task branch에 붙여 만든다: `git worktree add <path> -b <task-branch> <base-branch>`.
-- detached HEAD, base branch 직접 수정, 소유자가 불명확한 dirty worktree에서는 구현을 시작하지 않는다.
-- 사용자가 만든 dirty change는 되돌리지 않고, 의도한 파일만 commit에 포함한다.
-- 작업 완료 후 branch push, PR/merge 또는 final push, gate 증거 확인이 끝나고 worktree가 clean하면 worktree를 삭제하고 prune으로 정리한다.
-- dirty worktree, unmerged branch, 소유자가 불명확한 worktree는 삭제하지 않는다.
 
 ## 역할 위임 경계
 
@@ -87,3 +63,88 @@ Brainstorming -> 라우팅 -> 작업 트리 -> 위임 -> 리뷰 -> QA -> 커밋 
 - secrets, auth, infra, dependency 변경: `security` gate
 - `reviewer` BLOCK, `qa` FAIL, `security` Critical, 핵심 사용자 흐름 실패는 완료를 막는다.
 - gate를 생략하면 최종 보고에 생략 이유와 남은 위험을 남긴다.
+
+# Hooks
+
+## Skill Routing Hook
+
+작업 시작 전에 관련 Aegis skill이 있는지 판단한다.
+
+- 새 기능, 디자인, 동작 변경, 불명확한 요구사항은 `brainstorming-skill`을 먼저 사용한다.
+- 구현, PR, 리뷰, QA, 병렬 위임이 필요하면 이 orchestration harness를 적용한다.
+- 버그, 테스트 실패, 예상 밖 동작은 수정 전에 Debugging Hook을 적용한다.
+- 완료, 성공, 통과, fixed를 말하기 전에는 Verification Hook을 적용한다.
+- 경량 작업에는 skill 흐름을 강제하지 않는다. 관련 skill을 생략하면 이유와 남은 위험을 짧게 남긴다.
+
+## Planning Hook
+
+Brainstorming 승인이 끝난 보호 작업은 구현 전에 실행 계획을 만든다.
+
+- 작업을 작고 검증 가능한 task로 나눈다.
+- 각 task에는 수정 대상 파일, owner, 금지 범위, 검증 명령을 둔다.
+- 여러 하위 시스템이 섞이면 하위 프로젝트나 독립 task group으로 나눈다.
+- 파일 ownership을 나눠 subagent 간 write conflict를 막는다.
+- 계획이 불명확하면 구현으로 넘어가지 않고 사용자 확인을 받는다.
+
+## Background Dispatch Hook
+
+보호 작업이나 여러 실행 단위가 있는 표준 작업은 팀장이 직접 구현하기 전에 작업을 분해하고, 가능한 실행 작업을 background subagent 또는 동등한 실행 컨텍스트에 위임한다.
+
+- 팀장은 설계, 범위 분류, 작업 분해, 역할 선택, 위임, 통합, gate 판정을 맡는다.
+- 구현, 문서 작성, 조사, QA, 리뷰, 보안 점검, 브라우저 검증은 가능한 역할 에이전트에 디스패치한다.
+- 독립적인 sidecar 작업은 병렬로 디스패치하고, 팀장은 기다리는 동안 다른 설계/통합 작업을 계속한다.
+- 즉시 다음 판단이 막히는 critical path 작업만 직접 처리하거나 foreground로 기다린다.
+- 각 하위 에이전트에는 명확한 owner, 작업 범위, 파일 소유권, 산출물 형식을 준다.
+- 같은 파일을 여러 하위 에이전트가 동시에 수정하지 않도록 write scope를 분리한다.
+- 하위 에이전트 결과가 돌아오면 팀장은 재작업하지 않고 검토, 통합, 보완, gate 판정을 수행한다.
+- 하위 에이전트 실행이 불가능하면 직접 우회하지 말고 생략 이유와 남은 위험을 보고한다.
+
+## Debugging Hook
+
+버그, 테스트 실패, 빌드 실패, 예상 밖 동작은 수정 전에 원인을 좁힌다.
+
+- 먼저 재현 절차와 관찰된 증상을 기록한다.
+- root cause를 확인하기 전에는 임시 수정이나 추측성 패치를 하지 않는다.
+- 원인 후보를 나누고 증거로 하나씩 제거한다.
+- 수정 후 같은 재현 절차로 문제가 사라졌는지 확인한다.
+- 가능하면 회귀 테스트나 재발 방지 검증을 추가한다.
+
+## TDD / Behavior Change Hook
+
+동작 변경, 버그 수정, 리팩터링은 구현 전에 검증 기준을 먼저 만든다.
+
+- 가능한 경우 실패하는 테스트를 먼저 작성하고 실패를 확인한다.
+- 테스트가 부적절한 작업은 수동 검증 절차와 기대 결과를 먼저 적는다.
+- 문서, 설정, throwaway prototype은 예외가 될 수 있지만 예외 이유를 남긴다.
+- 구현은 검증 기준을 통과시키는 최소 변경부터 시작한다.
+
+## Worktree / Git Safety Hook
+
+저장소 변경이 있는 표준/보호 작업은 수정 전에 branch, remote, dirty file 상태를 확인한다.
+
+- 보호 작업, 충돌 위험이 있는 작업, PR 대상 작업은 task branch를 가진 독립 worktree에서 진행한다.
+- worktree는 가능한 한 새 task branch에 붙여 만든다: `git worktree add <path> -b <task-branch> <base-branch>`.
+- detached HEAD, base branch 직접 수정, 소유자가 불명확한 dirty worktree에서는 구현을 시작하지 않는다.
+- 사용자가 만든 dirty change는 되돌리지 않고, 의도한 파일만 commit에 포함한다.
+- 작업 완료 후 branch push, PR/merge 또는 final push, gate 증거 확인이 끝나고 worktree가 clean하면 worktree를 삭제하고 prune으로 정리한다.
+- dirty worktree, unmerged branch, 소유자가 불명확한 worktree는 삭제하지 않는다.
+
+## Review Reception Hook
+
+리뷰 피드백은 바로 수용하거나 반박하지 않고 기술적으로 검증한다.
+
+- 피드백을 전체 맥락에서 읽고 요구사항을 재진술한다.
+- 코드베이스 현실과 대조해 맞는 지적인지 확인한다.
+- 맞으면 수정하고 관련 검증을 실행한다.
+- 애매하거나 틀린 피드백은 근거를 들어 질문하거나 반박한다.
+- reviewer BLOCK은 해결 또는 명시적 override 전까지 완료를 막는다.
+
+## Verification / Branch Finish Hook
+
+완료 선언 전에는 fresh verification evidence를 확보한다.
+
+- 완료, fixed, 통과, ready를 말하기 전에 증명할 명령이나 절차를 실행한다.
+- 실행 결과, exit code, 실패 수, 확인한 artifact를 읽고 판단한다.
+- 검증을 실행할 수 없으면 완료가 아니라 미검증 상태로 보고한다.
+- branch 작업 완료 후에는 PR 생성, 병합, branch 유지, 폐기, worktree cleanup 중 하나를 선택한다.
+- 선택한 경로와 남은 위험을 최종 보고에 남긴다.
