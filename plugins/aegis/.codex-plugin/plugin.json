@@ -1,6 +1,6 @@
 {
   "name": "aegis",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "description": "Aegis는 Codex용 공개 디자인, 문서 제작, 전달 오케스트레이션 스킬팩입니다.",
   "author": {
     "name": "Aegis Contributors",
@@ -28,7 +28,7 @@
   "interface": {
     "displayName": "Aegis",
     "shortDescription": "프리미엄 UI, 랜딩페이지, PDF, PPTX, 보호된 전달 흐름.",
-    "longDescription": "Aegis는 프리미엄 앱 UI 생성, 랜딩페이지 생성/개선, 완전한 HTML 출력, HTML-to-PDF 변환, 프레젠테이션 생성, 브레인스토밍, 리뷰/QA/검증/브랜치/PR 관문을 포함한 작업 트리 우선 에이전트 전달 흐름을 위한 공개 재사용 스킬을 묶은 플러그인입니다. 커밋, 푸시, PR, 병합은 사용자 요청 또는 저장소 정책이 있을 때만 수행합니다.",
+    "longDescription": "Aegis는 프리미엄 앱 UI 생성, 랜딩페이지 생성/개선, 완전한 HTML 출력, HTML-to-PDF 변환, 프레젠테이션 생성, 브레인스토밍, 리뷰/QA/검증/브랜치/PR 관문을 포함한 공개 재사용 스킬을 묶은 플러그인입니다. 작업은 경량/표준/보호로 먼저 분류하고, 위임/작업 트리/커밋/푸시/PR/병합은 작업 위험도, 사용자 요청, 저장소 정책이 있을 때 적용합니다.",
     "developerName": "Aegis Contributors",
     "category": "Coding",
     "capabilities": [
