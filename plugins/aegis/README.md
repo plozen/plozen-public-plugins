@@ -1,6 +1,6 @@
 # Aegis
 
-Aegis는 Codex와 Claude Code에서 사용할 수 있는 공개 디자인, 문서 제작, delivery 오케스트레이션 스킬팩입니다.
+Aegis는 Codex와 Claude Code에서 사용할 수 있는 공개 디자인, 문서 제작, 전달 오케스트레이션 스킬팩입니다.
 
 포함 범위:
 
@@ -9,11 +9,12 @@ Aegis는 Codex와 Claude Code에서 사용할 수 있는 공개 디자인, 문�
 - 완전한 HTML 출력 강제
 - HTML-to-PDF 변환
 - PPTX 프레젠테이션 생성
-- worktree-first agentic delivery
-- review, QA, commit, branch push, PR, merge, final push, cleanup gate
+- 작업 트리 우선 에이전트 전달 흐름
+- 리뷰, QA, 커밋, 브랜치 푸시, PR, 병합, 최종 푸시, 정리 관문
 
 주요 스킬:
 
+- `brainstorming-skill`
 - `orchestration-harness-skill`
 - `app-design-skill`
 - `landing-gen-skill`
@@ -23,7 +24,7 @@ Aegis는 Codex와 Claude Code에서 사용할 수 있는 공개 디자인, 문�
 - `html-to-pdf-skill`
 - `pptx-generator-skill`
 
-Aegis는 self-contained 스킬팩을 지향합니다. local memory file, 외부 knowledge store, workspace-specific harness note에 의존하지 않습니다. 오케스트레이션 스킬은 worktree 우선, 독립 review/QA gate, 자동 commit/branch push/PR 생성, PR 확인, 팀장 소유 merge/final push/worktree cleanup 흐름을 사용합니다.
+Aegis는 자체 완결형 스킬팩을 지향합니다. 로컬 메모리 파일, 외부 지식 저장소, 작업 공간 전용 하네스 노트에 의존하지 않습니다. 오케스트레이션 스킬은 작업 트리 우선, 독립 리뷰/QA 관문, 자동 커밋/브랜치 푸시/PR 생성, PR 확인, 팀장 소유 병합/최종 푸시/작업 트리 정리 흐름을 사용합니다.
 
 ## Codex 설치
 
@@ -39,7 +40,7 @@ codex plugin marketplace add plozen/plozen-public-plugins
 /plugins
 ```
 
-개발 중 local skill discovery가 필요하면 아래처럼 연결합니다.
+개발 중 로컬 스킬 탐색이 필요하면 아래처럼 연결합니다.
 
 ```bash
 git clone https://github.com/plozen/plozen-public-plugins.git ~/.codex/plozen-public-plugins
@@ -47,7 +48,7 @@ mkdir -p ~/.agents/skills
 ln -s ~/.codex/plozen-public-plugins/plugins/aegis/skills ~/.agents/skills/aegis
 ```
 
-symlink를 추가한 뒤 Codex를 재시작합니다.
+심볼릭 링크를 추가한 뒤 Codex를 재시작합니다.
 
 ## Claude Code 설치
 
@@ -60,10 +61,10 @@ PLOZEN public marketplace를 등록한 뒤 플러그인을 설치합니다.
 
 ## 업데이트
 
-local Codex skill discovery 기준:
+로컬 Codex 스킬 탐색 기준:
 
 ```bash
 cd ~/.codex/plozen-public-plugins && git pull
 ```
 
-marketplace install은 사용하는 client의 plugin update 흐름을 따릅니다.
+마켓플레이스 설치는 사용하는 클라이언트의 플러그인 업데이트 흐름을 따릅니다.

@@ -42,4 +42,4 @@ codex plugin marketplace add plozen/plozen-public-plugins
 
 ## 포함 플러그인
 
-- `aegis`: 공개 디자인, 문서 제작, HTML/PDF/PPTX, delivery 오케스트레이션 스킬팩
+- `aegis`: 공개 디자인, 문서 제작, HTML/PDF/PPTX, 전달 오케스트레이션 스킬팩

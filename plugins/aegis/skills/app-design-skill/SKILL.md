@@ -170,7 +170,7 @@ accent는 버튼, 활성 메뉴, focus ring, chart primary에만 사용한다.
 ## 출력 기준
 
 - 생략 없는 완전한 `.tsx`
-- placeholder만 있는 화면 금지
+- 자리표시 문구만 있는 화면 금지
 - import 구문 전부 포함
 - 모든 인터랙티브 요소 상태 구현
 - 새 컴포넌트 세트의 첫 출력물은 `DesignSystem.tsx`

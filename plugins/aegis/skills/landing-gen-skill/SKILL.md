@@ -21,7 +21,7 @@ description: 새 마케팅 랜딩페이지, 전환 중심 HTML 페이지, Tailwi
 - 스타일: Tailwind CSS CDN
 - 폰트: Pretendard CDN 필수. 영문 display에는 Geist, Outfit, Cabinet Grotesk, Satoshi 중 하나를 조합할 수 있다.
 - 아이콘: Iconify Solar 세트 우선
-- placeholder 이미지: `https://picsum.photos/seed/{name}/{width}/{height}` 사용. Unsplash URL 금지.
+- 임시 자리표시 이미지: `https://picsum.photos/seed/{name}/{width}/{height}` 사용. Unsplash URL 금지.
 - avatar: `https://i.pravatar.cc/150?u={unique_name}` 사용 가능
 - 모션: 강한 모션에는 Motion One, 단순 모션에는 CSS keyframes와 Tailwind utility 사용
 - 이모지 금지. 보이는 장식은 아이콘이나 SVG로 대체한다.
