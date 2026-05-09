@@ -1,6 +1,6 @@
 ---
 name: orchestration-harness-skill
-description: 저장소 변경, 새 기능, 동작 변경, 버그 수정, 테스트 실패, 다단계 작업, 작업 범위 분류, 스킬 라우팅, planning, worktree, background subagent 병렬 디스패치, debugging/TDD, 리뷰/QA/security gate, verification, PR/merge/cleanup 통합이 필요할 때 사용한다. 사용자가 Aegis를 명시하지 않아도 경량 답변을 넘어서면 먼저 적용 범위를 분류한다.
+description: 저장소 변경, 새 기능, 동작 변경, 버그 수정, 테스트 실패, 다단계 작업, 작업 범위 분류, 스킬 라우팅, planning, worktree, 허용된 경우 background subagent 병렬 디스패치, debugging/TDD, 리뷰/QA/security gate, verification, PR/merge/cleanup 통합이 필요할 때 사용한다. 사용자가 Aegis를 명시하지 않아도 경량 답변을 넘어서면 먼저 적용 범위를 분류한다.
 ---
 
 # Aegis 오케스트레이션 하네스
@@ -30,7 +30,7 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 - Brainstorming: 새 기능, 디자인, 동작 변경, 불명확한 요구사항이면 [Skill Routing Hook](#skill-routing-hook)을 거쳐 `brainstorming-skill`을 먼저 사용한다.
 - Planning: Brainstorming 승인이 끝난 보호 작업은 [Planning Hook](#planning-hook)을 적용한다.
 - 작업 트리: 저장소 수정 전에는 [Worktree / Git Safety Hook](#worktree--git-safety-hook)을 적용한다.
-- 위임: 독립 실행 단위가 2개 이상이면 [Background Dispatch Hook](#background-dispatch-hook)을 적용한다.
+- 위임: 독립 실행 단위가 2개 이상이면 [Background Dispatch Hook](#background-dispatch-hook)을 적용해 작업을 분해하고, 상위 지침과 런타임이 허용할 때만 실제 하위 에이전트로 위임한다.
 - 구현/디버깅: 버그, 테스트 실패, 동작 변경은 [Debugging Hook](#debugging-hook)과 [TDD / Behavior Change Hook](#tdd--behavior-change-hook)을 적용한다.
 - 리뷰: 피드백 처리에는 [Review Reception Hook](#review-reception-hook)을 적용한다.
 - QA/Security: 변경 성격에 맞춰 reviewer, qa, breaker, security gate를 적용한다.
@@ -38,7 +38,7 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 
 ## 역할 위임 경계
 
-역할 위임은 보호 작업에서 우선 적용한다. 경량 작업에는 강제하지 않고, 표준 작업은 전문 검증이나 병렬 실행이 실제로 도움이 될 때만 위임한다.
+역할 위임은 보호 작업에서 우선 고려한다. 경량 작업에는 강제하지 않고, 표준 작업은 전문 검증이나 병렬 실행이 실제로 도움이 될 때만 위임한다. 사용자 요청, 상위 지침, 도구 정책, 실행 환경이 위임을 허용하지 않으면 작업을 분해한 뒤 로컬 실행 계획으로 전환하고 생략 이유를 남긴다.
 
 팀장이 직접 맡는 일:
 
@@ -62,7 +62,7 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 | `documenter` | 문서, spec, README, 릴리스 노트, Markdown 변환 |
 | `researcher` | 외부/기술 조사, 라이브러리/API 확인, 출처 기반 비교 |
 
-하위 에이전트 사용은 현재 실행 환경과 상위 지침이 허용할 때만 수행한다. 필요한 역할을 실행할 수 없으면 직접 우회하지 말고, 생략 이유와 남은 위험을 보고한다.
+하위 에이전트 사용은 현재 실행 환경과 상위 지침이 명시적으로 허용할 때만 수행한다. 필요한 역할을 실행할 수 없으면 로컬 검토/검증으로 대체하거나 멈춰야 할 위험을 보고한다.
 
 ## 완료 기준
 
@@ -100,16 +100,17 @@ Brainstorming 승인이 끝난 보호 작업은 구현 전에 실행 계획을 �
 
 ## Background Dispatch Hook
 
-보호 작업이나 여러 실행 단위가 있는 표준 작업은 팀장이 직접 구현하기 전에 작업을 분해하고, 가능한 실행 작업을 background subagent 또는 동등한 실행 컨텍스트에 위임한다.
+보호 작업이나 여러 실행 단위가 있는 표준 작업은 팀장이 직접 구현하기 전에 작업을 분해한다. background subagent 또는 동등한 실행 컨텍스트 위임은 사용자 요청, 상위 지침, 도구 정책, 현재 런타임이 허용할 때만 수행한다.
 
 - 팀장은 설계, 범위 분류, 작업 분해, 역할 선택, 위임, 통합, gate 판정을 맡는다.
-- 구현, 문서 작성, 조사, QA, 리뷰, 보안 점검, 브라우저 검증은 가능한 역할 에이전트에 디스패치한다.
-- 독립적인 sidecar 작업은 병렬로 디스패치하고, 팀장은 기다리는 동안 다른 설계/통합 작업을 계속한다.
+- 독립 실행 단위가 2개 이상이면 병렬 디스패치 계획을 먼저 제시한다. 실제 subagent 실행은 사용자가 `병렬`, `서브에이전트`, `디스패치`, `위임`을 명시하고, 상위 지침과 현재 런타임이 허용할 때만 수행한다.
+- 구현, 문서 작성, 조사, QA, 리뷰, 보안 점검, 브라우저 검증은 허용된 경우 적절한 역할 에이전트에 디스패치한다.
+- 독립적인 sidecar 작업은 위임이 허용되면 병렬로 디스패치하고, 팀장은 기다리는 동안 다른 설계/통합 작업을 계속한다.
 - 즉시 다음 판단이 막히는 critical path 작업만 직접 처리하거나 foreground로 기다린다.
 - 각 하위 에이전트에는 명확한 owner, 작업 범위, 파일 소유권, 산출물 형식을 준다.
 - 같은 파일을 여러 하위 에이전트가 동시에 수정하지 않도록 write scope를 분리한다.
 - 하위 에이전트 결과가 돌아오면 팀장은 재작업하지 않고 검토, 통합, 보완, gate 판정을 수행한다.
-- 하위 에이전트 실행이 불가능하면 직접 우회하지 말고 생략 이유와 남은 위험을 보고한다.
+- 하위 에이전트 실행이 불가능하면 로컬 실행/검증으로 대체할지 판단하고, 생략 이유와 남은 위험을 보고한다.
 
 ## Debugging Hook
 
