@@ -64,6 +64,15 @@ Brainstorming -> 라우팅 -> 작업 트리 -> 위임 -> 리뷰 -> QA -> 커밋 
 - `reviewer` BLOCK, `qa` FAIL, `security` Critical, 핵심 사용자 흐름 실패는 완료를 막는다.
 - gate를 생략하면 최종 보고에 생략 이유와 남은 위험을 남긴다.
 
+## Discord Hook
+
+Discord 보고, 에이전트 호출, bot-to-bot relay, Discord plugin patch가 필요한 작업은 `[[discord-config-guide]]`를 기준으로 한다.
+
+- 채널 ID, 봇 ID, access 파일 경로, patch 정책은 프롬프트에 하드코딩하지 않는다.
+- 완료 보고는 필요한 gate가 통과한 뒤에만 수행한다.
+- gate 실패나 phase 미완료 상태에서는 성공 보고나 다음 단계 보고를 하지 않는다.
+- `[[discord-config-guide]]`를 확인할 수 없으면 Discord 값을 추측하지 말고 missing context로 보고한다.
+
 Brainstorming 단계는 새 기능, 디자인, 동작 변경, 복잡한 다단계 작업, 요구사항이 불명확한 작업에만 `brainstorming-skill`로 설계 승인까지 완료한다.
 
 보호 작업에서도 불필요한 단계는 축소할 수 있다. 단, 축소한 단계와 남은 위험은 보고에 남긴다.
