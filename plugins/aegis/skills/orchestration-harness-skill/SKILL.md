@@ -75,25 +75,13 @@ Brainstorming -> 라우팅 -> 작업 트리 -> 위임 -> 리뷰 -> QA -> 커밋 
 - `reviewer` BLOCK, `qa` FAIL, `security` Critical, 핵심 사용자 흐름 실패는 완료를 막는다.
 - gate를 생략하면 최종 보고에 생략 이유와 남은 위험을 남긴다.
 
-## Kanban Hook
+## Organization Overlay
 
-Obsidian Kanban을 갱신할 때 활성 보드는 제목만 보이는 compact wikilink card로 유지하고, 상세는 링크된 노트에서 관리한다.
+Todo, Kanban, Discord, Vault, phase-gate처럼 조직별 운영 규칙은 public Aegis에 하드코딩하지 않는다.
 
-- 보드 라인은 `- [ ] [[path/to/card|@Owner 짧은 작업 제목]]` 형식으로 유지한다.
-- 보드 라인에는 owner token과 짧은 제목만 두고, 긴 설명, 산출물, 로그, 태그, 완료 증거는 넣지 않는다.
-- 상세 내용은 링크된 카드 노트에 기록한다. 완료/실패 시 검증 evidence, 날짜, 실패 이유, unblock path도 카드 노트에 남긴다.
-- 레인을 이동할 때는 보드 라인만 이동하고, 링크된 카드 노트의 status/lane/evidence를 함께 갱신한다.
-- 새 작업은 생성 또는 준비 레인에 두고, 생성에서 진행중으로 바로 이동하지 않는다.
-- 조직별 보드 경로와 카드 폴더는 운영 문서나 기존 보드 구조를 따른다. 기준 보드를 찾을 수 없으면 추측하지 말고 missing context로 보고한다.
-
-## Discord Hook
-
-Discord 보고, 에이전트 호출, bot-to-bot relay, Discord plugin patch가 필요한 작업은 `[[discord-config-guide]]`를 기준으로 한다.
-
-- 채널 ID, 봇 ID, access 파일 경로, patch 정책은 프롬프트에 하드코딩하지 않는다.
-- 완료 보고는 필요한 gate가 통과한 뒤에만 수행한다.
-- gate 실패나 phase 미완료 상태에서는 성공 보고나 다음 단계 보고를 하지 않는다.
-- `[[discord-config-guide]]`를 확인할 수 없으면 Discord 값을 추측하지 말고 missing context로 보고한다.
+- private orchestration skill이 설치되어 있으면 해당 규칙을 우선 적용한다.
+- 값, 경로, 채널, 봇 ID, 내부 문서명은 조직별 source of truth를 따른다.
+- 조직별 기준 문서를 확인할 수 없으면 추측하지 말고 missing context로 보고한다.
 
 Brainstorming 단계는 새 기능, 디자인, 동작 변경, 복잡한 다단계 작업, 요구사항이 불명확한 작업에만 `brainstorming-skill`로 설계 승인까지 완료한다.
 
