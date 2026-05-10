@@ -1,5 +1,5 @@
 ---
-name: brainstorming-skill
+name: brainstorming
 description: Aegis 작업에서 새 기능, 디자인, 구성 요소, 동작 변경, 다단계 전달 작업, 불명확한 요구사항, 접근안 비교, 전략 탐색, 의사결정 브리프가 필요할 때 구현 전에 설계로 정리한다.
 ---
 
@@ -135,6 +135,6 @@ docs/aegis/specs/YYYY-MM-DD-topic-design.md
 
 ## 승인 후
 
-사용자가 승인하면 `orchestration-harness-skill`로 돌아간다. 팀장이 작업 트리, 위임, 관문, 구현 계획을 정한다.
+사용자가 승인하면 `public-orchestration-harness`로 돌아간다. 팀장이 작업 트리, 위임, 관문, 구현 계획을 정한다.
 
 출처: Superpowers brainstorming 방법론과 avinashchby/claude-brainstorm-skill 계열 구조화 브레인스토밍 절차를 Aegis 공개 스킬에 맞게 재구성했다.

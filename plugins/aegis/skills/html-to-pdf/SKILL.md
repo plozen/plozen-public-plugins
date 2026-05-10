@@ -1,5 +1,5 @@
 ---
-name: html-to-pdf-skill
+name: html-to-pdf
 description: HTML 파일을 PDF로 변환해야 하며 텍스트, hyperlink, 이미지, 디자인을 보존해야 할 때 사용한다. "/html-to-pdf", "/html-pdf", "HTML PDF 변환", "PDF로 변환", "PDF 만들어", "page.pdf" 요청에 사용한다.
 ---
 
@@ -26,7 +26,7 @@ Playwright의 `page.pdf()`를 직접 호출해 HTML을 PDF로 변환한다. PNG 
 
 - 이미지 캡처 요청은 Playwright screenshot을 사용한다.
 - DOCX 변환은 별도 도구를 사용한다.
-- PPTX 생성은 `pptx-generator-skill`을 사용한다.
+- PPTX 생성은 `pptx-generator`을 사용한다.
 - 기존 PDF 편집은 PDF 편집 도구를 사용한다.
 
 ## 사전 요구 사항
@@ -72,7 +72,7 @@ HTML 경로가 명확하고 출력 경로를 추론할 수 있으면 바로 변�
 ## 1단계: 변환
 
 ```bash
-node /경로/html-to-pdf-skill/scripts/convert.js \
+node /경로/html-to-pdf/scripts/convert.js \
   --input="/path/to/file.html" \
   --output="/path/to/file.pdf" \
   --page-size=16:9 \

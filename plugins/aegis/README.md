@@ -14,15 +14,15 @@ Aegis는 Codex와 Claude Code에서 사용할 수 있는 공개 디자인, 문�
 
 주요 스킬:
 
-- `brainstorming-skill`
-- `orchestration-harness-skill`
-- `app-design-skill`
-- `landing-gen-skill`
-- `landing-upgrade-skill`
-- `design-quality-skill`
-- `full-output-skill`
-- `html-to-pdf-skill`
-- `pptx-generator-skill`
+- `brainstorming`
+- `public-orchestration-harness`
+- `app-design`
+- `landing-gen`
+- `landing-upgrade`
+- `design-quality`
+- `full-output`
+- `html-to-pdf`
+- `pptx-generator`
 
 Aegis는 자체 완결형 스킬팩을 지향합니다. 로컬 메모리 파일, 외부 지식 저장소, 작업 공간 전용 하네스 노트에 의존하지 않습니다. 오케스트레이션 스킬은 작업 트리 우선, 독립 리뷰/QA 관문, 검증, PR 확인, 팀장 소유 병합/정리 흐름을 사용합니다. 커밋, 푸시, PR, 병합은 사용자 요청 또는 저장소 정책이 있을 때만 수행합니다.
 

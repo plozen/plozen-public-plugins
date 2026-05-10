@@ -1,5 +1,5 @@
 ---
-name: orchestration-harness-skill
+name: public-orchestration-harness
 description: 저장소 변경, 새 기능, 동작 변경, 버그 수정, 테스트 실패, 다단계 작업, 작업 범위 분류, 스킬 라우팅, planning, worktree, debugging/TDD, 리뷰/QA/security gate, verification, PR/merge/cleanup 통합이 필요할 때 사용한다. 사용자가 Aegis를 명시하지 않아도 작업 성격상 필요하면 경량/표준/보호를 먼저 분류한다. background subagent 디스패치는 작업 규모, 위험도, 병렬성, 사용자 요청, `-bd` 플래그, 런타임 정책을 보고 선택하며 단순 단일 작업에는 강제하지 않는다.
 ---
 
@@ -51,7 +51,7 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 
 단계별 hook 연결:
 
-- Brainstorming: 새 기능, 디자인, 동작 변경, 불명확한 요구사항이면 [Skill Routing Hook](#skill-routing-hook)을 거쳐 `brainstorming-skill`을 먼저 사용한다.
+- Brainstorming: 새 기능, 디자인, 동작 변경, 불명확한 요구사항이면 [Skill Routing Hook](#skill-routing-hook)을 거쳐 `brainstorming`을 먼저 사용한다.
 - Planning: Brainstorming 승인이 끝난 보호 작업은 [Planning Hook](#planning-hook)을 적용한다.
 - 작업 트리: 저장소 수정 전에는 [Worktree / Git Safety Hook](#worktree--git-safety-hook)을 적용한다.
 - 위임: 독립 실행 단위가 여러 개이거나, 전문 역할 gate가 필요하거나, 사용자가 명시적으로 요청했거나, 장시간 작업을 분리하는 편이 안전하면 [Background Dispatch Hook](#background-dispatch-hook)을 적용한다.
@@ -105,7 +105,7 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 
 작업 시작 전에 관련 Aegis skill이 있는지 판단한다. 사용자가 Aegis를 말하지 않아도 저장소 변경, 동작 변경, 검증, 위임, 리뷰, QA, PR이 필요한 작업이면 먼저 이 하네스로 범위를 분류한다.
 
-- 새 기능, 디자인, 동작 변경, 불명확한 요구사항은 `brainstorming-skill`을 먼저 사용한다.
+- 새 기능, 디자인, 동작 변경, 불명확한 요구사항은 `brainstorming`을 먼저 사용한다.
 - 저장소 변경, 버그 수정, 테스트 실패, 다단계 실행, 검증/위임/리뷰/QA/PR이 필요한 작업은 이 orchestration harness로 경량/표준/보호를 먼저 분류한다.
 - 구현, PR, 리뷰, QA, 위임이 필요하면 이 orchestration harness를 적용한다.
 - 버그, 테스트 실패, 예상 밖 동작은 수정 전에 Debugging Hook을 적용한다.

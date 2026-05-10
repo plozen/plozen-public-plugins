@@ -1,5 +1,5 @@
 /**
- * html-to-pdf-skill / scripts/convert.js
+ * html-to-pdf / scripts/convert.js
  *
  * HTML 파일을 텍스트, hyperlink, 이미지, 디자인 모두 보존하는 PDF로 변환.
  * Playwright headless + page.pdf() 직접 호출.

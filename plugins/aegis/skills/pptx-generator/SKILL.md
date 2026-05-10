@@ -1,5 +1,5 @@
 ---
-name: pptx-generator-skill
+name: pptx-generator
 description: PPT, PPTX, PowerPoint, 발표 자료, 프레젠테이션, 슬라이드, 피치덱을 HTML/CSS/JavaScript와 PptxGenJS로 생성해야 할 때 사용한다.
 ---
 

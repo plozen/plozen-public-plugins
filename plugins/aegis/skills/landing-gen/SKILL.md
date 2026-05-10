@@ -1,5 +1,5 @@
 ---
-name: landing-gen-skill
+name: landing-gen
 description: 새 마케팅 랜딩페이지, 전환 중심 HTML 페이지, Tailwind CDN 기반 단일 HTML 랜딩 산출물을 만들어야 할 때 사용한다. 사용자가 랜딩페이지, 서비스 소개 페이지, 제품 페이지, 캠페인 페이지, 사전예약 페이지를 요청하면 사용한다.
 ---
 

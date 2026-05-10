@@ -1,5 +1,5 @@
 ---
-name: design-quality-skill
+name: design-quality
 description: 랜딩페이지나 앱 화면이 평범한 AI 템플릿처럼 보이거나, 폰트/간격/색상/그림자/카드/모션/한국어 타이포그래피 품질을 프리미엄 수준으로 끌어올려야 할 때 사용한다.
 ---
 

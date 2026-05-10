@@ -1,5 +1,5 @@
 ---
-name: full-output-skill
+name: full-output
 description: 랜딩페이지, HTML 산출물, 긴 코드 결과가 중간 생략/자리표시 문구/스켈레톤으로 끝날 위험이 있거나 완성된 단일 파일 출력을 강제해야 할 때 사용한다.
 ---
 

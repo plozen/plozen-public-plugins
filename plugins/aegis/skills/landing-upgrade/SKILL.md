@@ -1,5 +1,5 @@
 ---
-name: landing-upgrade-skill
+name: landing-upgrade
 description: 기존 HTML/CSS 랜딩페이지가 밋밋하거나 AI 템플릿처럼 보일 때, 구조를 크게 망가뜨리지 않고 프리미엄 한국어 랜딩페이지 품질로 개선해야 할 때 사용한다.
 ---
 
