@@ -8,6 +8,10 @@ PLOZEN 공개 플러그인 마켓플레이스입니다.
 - `runtime`: Codex, Claude Code, OpenClaw, Hermes 같은 실행 환경
 - `source of truth`: 실제 스킬과 플러그인 파일의 기준 원본
 
+## 전역 지침 템플릿
+
+- `templates/AGENTS.md`: 공통 AGENTS 지침 템플릿. 로컬 환경별 `## Customization` 블록은 포함하지 않는다.
+
 ## 구조
 
 ```text
