@@ -1,99 +1,100 @@
 ---
 name: design-quality
-description: 랜딩페이지나 앱 화면이 평범한 AI 템플릿처럼 보이거나, 폰트/간격/색상/그림자/카드/모션/한국어 타이포그래피 품질을 프리미엄 수준으로 끌어올려야 할 때 사용한다.
+description: 랜딩페이지, 웹앱, 모바일 앱 화면이 평범한 AI 템플릿처럼 보이거나 폰트, 간격, 색상, 카드, 모션, 한국어 타이포그래피 품질을 프리미엄 수준으로 끌어올려야 할 때 사용한다. 디자인 리뷰, 품질 게이트, DESIGN.md 정리에도 사용한다.
 ---
 
-# Aegis 프리미엄 디자인 품질 기준
+# Aegis 디자인 품질 기준
 
-## 핵심 지시
+## 역할
 
-- 역할: `Aegis_Design_Director`
-- 목표: 결과물이 고급 한국 디지털 에이전시가 만든 것처럼 보여야 한다. 깊이감, 시네마틱한 공간 리듬, 세밀한 마이크로 인터랙션, 자연스러운 한국어 타이포그래피를 모두 갖춘다.
-- 반복 금지: 같은 레이아웃이나 분위기를 반복하지 않는다. 요청 맥락에 맞춰 서로 다른 프리미엄 아키타입을 조합한다.
+`design-quality`는 산출물 유형별 스킬의 공통 품질 게이트다. 새 화면을 직접 만들기보다, 이미 만들었거나 만들 예정인 디자인이 전문적인 제품 품질을 갖추도록 기준을 제공한다.
+
+## 연결 스킬
+
+- `landing-page-design`: 새 랜딩페이지 생성 또는 기존 HTML/CSS 랜딩 개선.
+- `web-app-design`: React/Next/Tailwind 기반 웹앱, 관리자, 대시보드, 반복 업무 UI.
+- `mobile-app-design`: React Native/Expo/NativeWind 기반 모바일 앱 UI.
+- `full-output`: HTML 산출물이 중간 생략될 위험이 있을 때.
+
+작업 대상이 명확하면 해당 산출물 스킬을 먼저 적용하고, 이 스킬은 품질 기준과 점검에 사용한다.
+
+## DESIGN.md 원칙
+
+프로젝트 저장소 안에서 디자인 작업을 하면 `DESIGN.md`를 디자인 원본으로 둔다.
+
+- 기존 `DESIGN.md` 또는 `design.md`가 있으면 먼저 읽고 코드와 문구를 맞춘다.
+- 둘 다 없고 단발 산출물이 아닌 프로젝트 변경이면 `DESIGN.md`를 만든다.
+- 새 `DESIGN.md`에는 브랜드 톤, 폰트, 색상 토큰, spacing, 컴포넌트 상태, 레이아웃 원칙, 접근성, 금지 패턴, 검증 기준을 간결하게 기록한다.
+- 구현 중 디자인 결정이 바뀌면 `DESIGN.md`도 함께 갱신한다.
+- `DESIGN.md`와 실제 화면이 충돌하면 화면을 임의로 밀어붙이지 말고, 근거 있는 변경으로 둘을 맞춘다.
 
 ## 절대 금지 패턴
 
 아래 항목이 결과물에 있으면 디자인 실패로 본다.
 
-- 금지 폰트: Inter, Noto Sans KR, Roboto, Arial, Open Sans, Helvetica, Malgun Gothic
-- 금지 아이콘: 두꺼운 Lucide, FontAwesome, Material Icons. 웹 랜딩에서는 Iconify Solar 세트를 우선한다.
-- 금지 테두리/그림자: 의미 없는 `1px solid gray`, 거친 `shadow-md`, `rgba(0,0,0,0.3)` 기본 그림자
-- 금지 레이아웃: 화면 끝에 붙은 평범한 sticky nav, 대칭 3열 Bootstrap 카드, 모든 섹션이 같은 구조
-- 금지 모션: `linear`, `ease-in-out`, 즉시 상태 변경, 무분별한 `window.addEventListener('scroll')`
-- 금지 문구: "혁신적인", "원활한", "차세대", "한 차원 높은", "게임 체인저"
+- 금지 폰트: Inter, Noto Sans KR, Roboto, Arial, Open Sans, Helvetica, Malgun Gothic.
+- 금지 아이콘: 두꺼운 Lucide, FontAwesome, Material Icons 남용. 랜딩은 Iconify Solar, 앱은 프로젝트 아이콘 시스템을 우선한다.
+- 금지 테두리/그림자: 의미 없는 `1px solid gray`, 거친 `shadow-md`, `rgba(0,0,0,0.3)` 기본 그림자.
+- 금지 레이아웃: 평범한 sticky nav, 대칭 3열 카드 반복, 모든 섹션이 같은 구조, 카드 안의 카드.
+- 금지 모션: `linear`, 무분별한 `ease-in-out`, 즉시 상태 변경, 과도한 scroll listener.
+- 금지 문구: "혁신적인", "원활한", "차세대", "한 차원 높은", "게임 체인저".
 
-## 변주 엔진
+## 프리미엄 아키타입
 
-코드를 쓰기 전에 아래 조합을 하나씩 선택하고 결과물에 반영한다.
+코드를 쓰기 전에 요청 맥락에 맞는 조합을 하나 고른다.
 
-### 분위기와 질감
+분위기:
 
-1. Vantablack Luxe: SaaS, AI, 기술 제품. OLED에 가까운 어두운 배경, 은은한 radial mesh, glass 카드, 넓은 영문 grotesk 디스플레이 폰트와 Pretendard 조합.
-2. Warm Editorial: 라이프스타일, 브랜드, 에이전시. 따뜻한 크림 계열 배경, muted sage 또는 espresso accent, serif 영문 헤드라인과 Pretendard 본문.
-3. Clean Structural: 소비자 서비스, 헬스케어, 포트폴리오. 흰색/실버 배경, 강한 타이포그래피, 넓고 부드러운 ambient shadow.
+- Vantablack Luxe: SaaS, AI, 기술 제품. OLED에 가까운 어두운 배경, 절제된 glass, 선명한 데이터 계층.
+- Warm Editorial: 라이프스타일, 브랜드, 에이전시. 따뜻한 배경, muted accent, 자연스러운 한국어 리듬.
+- Clean Structural: 소비자 서비스, 헬스케어, 포트폴리오. 밝은 neutral, 강한 타이포그래피, 정돈된 shadow.
 
-### 레이아웃
+레이아웃:
 
-1. 비대칭 Bento Grid: 서로 다른 카드 크기와 행 높이로 단조로움을 끊는다.
-2. Z-Axis Cascade: 실제 카드가 겹친 듯 약한 회전, 겹침, 깊이감을 준다.
-3. Editorial Split: 왼쪽은 강한 타이포그래피, 오른쪽은 제품 비주얼이나 인터랙티브 콘텐츠.
+- 비대칭 Bento Grid: 서로 다른 카드 크기와 행 높이로 단조로움을 끊는다.
+- Z-Axis Cascade: 겹침, 약한 회전, 깊이감으로 화면에 층을 만든다.
+- Editorial Split: 강한 타이포그래피와 제품 비주얼/인터랙티브 영역을 나눈다.
 
-모바일에서는 모든 비대칭 레이아웃을 `768px` 아래에서 단일 열로 접고, `h-screen` 대신 `min-h-[100dvh]`를 사용한다.
+모바일에서는 비대칭 레이아웃을 `768px` 아래에서 단일 열로 접고, `h-screen` 대신 `min-h-[100dvh]`를 사용한다.
 
 ## 컴포넌트 기준
 
-### Double-Bezel 카드
-
-프리미엄 카드는 평면 사각형이 아니다. 외부 트레이와 내부 유리판처럼 2중 구조를 만든다.
-
-- 외부: `bg-white/5` 또는 `bg-black/5`, `ring-1`, `p-1.5`, 큰 radius
-- 내부: 별도 배경, inset highlight, 외부보다 조금 작은 radius
-
-### CTA 버튼
-
-- 완전한 pill 형태: `rounded-full`, `px-8 py-4`
-- 화살표 아이콘은 텍스트 옆에 그대로 두지 말고 원형 wrapper 안에 넣는다.
-- hover: `scale-[1.02]`, active: `scale-[0.98]`
-- 다크 모드에서는 accent 색의 아주 약한 glow만 허용한다.
-
-### 공간 리듬
-
-- 섹션 padding은 최소 `py-24 md:py-32 lg:py-40`
-- 주요 heading 앞에는 작은 eyebrow badge를 둔다.
-- 한국어 heading은 `leading-snug` 또는 `leading-tight`를 사용한다. `leading-none`은 쓰지 않는다.
-- 한국어 문단에는 `break-keep-all`을 적용한다.
+- 주요 카드는 외부 tray와 내부 content를 분리한 Double-Bezel 구조를 우선한다.
+- CTA는 pill 또는 명확한 버튼 형태, 48px 이상 touch target, hover/active/focus 상태를 갖춘다.
+- 아이콘 버튼에는 tooltip 또는 `aria-label`을 둔다.
+- 폼은 label, hint, error, focused, disabled 상태를 가진다.
+- 테이블/리스트는 loading, empty, pagination 또는 scroll 상태를 고려한다.
+- 상태 없는 버튼, 입력, 토글, 모달은 납품하지 않는다.
 
 ## 모션 기준
 
-모션은 물리적 질량감과 스프링 느낌을 가져야 한다.
+모션은 `transform`과 `opacity`를 중심으로 제한한다.
 
 ```css
 transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 ```
 
-- 모든 인터랙티브 요소에 위 easing을 적용한다.
+- 모든 인터랙티브 요소는 일관된 easing을 사용한다.
 - 스크롤 진입 애니메이션은 `IntersectionObserver`로 트리거한다.
 - 형제 요소는 `animation-delay: calc(var(--index) * 80ms)`로 stagger 처리한다.
-- 애니메이션 대상은 `transform`과 `opacity`로 제한한다.
-- `backdrop-blur`는 fixed/sticky 요소에만 사용하고 스크롤 컨테이너에는 쓰지 않는다.
+- `backdrop-blur`는 fixed/sticky 요소나 작은 표면에 제한적으로 사용한다.
 
 ## 한국어 콘텐츠 기준
 
-- 톤: 전문적이지만 따뜻한 `합니다/하세요` 체
-- 추상어보다 구체어: "3분 만에 랜딩페이지 완성"처럼 결과를 말한다.
-- CTA: "무료로 시작하기", "바로 만들어보기", "지금 체험하기"
-- 이름 예시: 하윤서, 박도현, 이서진, 김하늘, 정민준, 오예린, 최시우, 한지원
-- 회사명 예시: 스텔라랩스, 베리파이, 루미너스, 플로우캔버스, 넥스트비전, 브릿지웍스
-- 지표 예시: 47,200+, 4.87/5.0, 2.3초, 98.7%, 12,847개
+- 톤은 전문적이지만 자연스러운 `합니다/하세요` 체를 기본으로 한다.
+- 추상어보다 구체적인 결과를 말한다. 예: "3분 만에 랜딩페이지 완성".
+- 한국어 heading은 `leading-tight` 또는 `leading-snug`를 사용하고 `leading-none`은 피한다.
+- 한국어 문단에는 `break-keep-all` 또는 `word-break: keep-all`을 적용한다.
+- 이름 예시: 하윤서, 박도현, 이서진, 김하늘, 정민준, 오예린.
+- 회사명 예시: 스텔라랩스, 베리파이, 루미너스, 플로우캔버스, 브릿지웍스.
+- 지표 예시: 47,200+, 4.87/5.0, 2.3초, 98.7%, 12,847개.
 
 ## 출력 전 점검
 
-- 금지 폰트, 아이콘, 테두리, 그림자, 레이아웃, 모션 패턴이 없는가?
+- `DESIGN.md`가 필요하면 생성/갱신됐는가?
 - 선택한 분위기와 레이아웃 아키타입이 실제 코드에 반영됐는가?
-- 주요 카드는 Double-Bezel 구조인가?
-- CTA는 pill + 내부 아이콘 + hover physics를 갖췄는가?
-- 모든 전환은 `cubic-bezier(0.16, 1, 0.3, 1)`을 쓰는가?
-- 모바일에서 단일 열로 자연스럽게 접히는가?
-- 한국어 텍스트에 `break-keep-all`과 적절한 line-height가 있는가?
-- 보이는 문구가 번역투가 아니라 자연스러운 한국어인가?
-- 결과물이 AI 템플릿이 아니라 의도적으로 설계한 화면처럼 보이는가?
+- 금지 폰트, 아이콘, 테두리, 그림자, 레이아웃, 모션 패턴이 없는가?
+- 주요 CTA와 입력/버튼에 hover, active, focus, disabled/loading 상태가 있는가?
+- 모바일에서 텍스트, 카드, nav, 버튼이 겹치지 않는가?
+- 한국어 문구가 번역투가 아니라 자연스러운가?
+- 결과물이 AI 템플릿이 아니라 의도적으로 설계한 제품 화면처럼 보이는가?

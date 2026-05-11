@@ -1,6 +1,6 @@
 {
   "name": "aegis",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "description": "Aegis는 Codex용 공개 디자인, 문서 제작, 전달 오케스트레이션 스킬팩입니다.",
   "author": {
     "name": "Aegis Contributors",
@@ -12,7 +12,10 @@
   "keywords": [
     "skills",
     "design",
+    "design-system",
     "landing-pages",
+    "web-apps",
+    "mobile-apps",
     "pdf",
     "pptx",
     "brainstorming",
@@ -29,8 +32,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Aegis",
-    "shortDescription": "프리미엄 UI, 랜딩페이지, PDF, PPTX, 보호된 전달 흐름.",
-    "longDescription": "Aegis는 프리미엄 앱 UI 생성, 랜딩페이지 생성/개선, 완전한 HTML 출력, HTML-to-PDF 변환, 프레젠테이션 생성, 브레인스토밍, 백그라운드 디스패치, 리뷰/QA/검증/브랜치/PR 관문을 포함한 공개 재사용 스킬을 묶은 플러그인입니다. 작업은 경량/표준/보호로 먼저 분류하고, 위임/작업 트리/커밋/푸시/PR/병합은 작업 위험도, 사용자 요청, 저장소 정책이 있을 때 적용합니다.",
+    "shortDescription": "프리미엄 UI, 랜딩/웹앱/모바일 디자인, PDF, PPTX, 전달 흐름.",
+    "longDescription": "Aegis는 프리미엄 디자인 품질 기준, 랜딩페이지 생성/개선, 웹앱 UI, 모바일 앱 UI, 완전한 HTML 출력, HTML-to-PDF 변환, 프레젠테이션 생성, 브레인스토밍, 백그라운드 디스패치, 리뷰/QA/검증/브랜치/PR 관문을 포함한 공개 재사용 스킬을 묶은 플러그인입니다. 작업은 경량/표준/보호로 먼저 분류하고, 위임/작업 트리/커밋/푸시/PR/병합은 작업 위험도, 사용자 요청, 저장소 정책이 있을 때 적용합니다.",
     "developerName": "Aegis Contributors",
     "category": "Coding",
     "capabilities": [
@@ -40,12 +43,9 @@
     ],
     "websiteURL": "https://github.com/plozen/plozen-public-plugins/tree/main/plugins/aegis",
     "defaultPrompt": [
-      "Aegis로 프리미엄 랜딩페이지를 생성해줘.",
-      "Aegis로 이 HTML 페이지를 개선해줘.",
-      "Aegis로 프레젠테이션을 생성해줘.",
-      "Aegis로 새 기능 설계를 Brainstorming부터 정리해줘.",
-      "Aegis로 이 조사는 -bd로 맡기고 메인 대화는 계속 이어가줘.",
-      "Aegis로 리뷰, QA, 검증, PR 관문이 있는 작업 트리 우선 구현을 조율해줘."
+      "Aegis로 프리미엄 랜딩페이지를 생성하거나 개선해줘.",
+      "Aegis로 웹앱/모바일앱 UI를 DESIGN.md 기준으로 설계해줘.",
+      "Aegis로 리뷰, QA, 검증, PR 관문이 있는 작업을 조율해줘."
     ],
     "brandColor": "#2563EB",
     "screenshots": []
