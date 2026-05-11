@@ -1,6 +1,6 @@
 ---
 name: design-quality
-description: 랜딩페이지, 웹앱, 모바일 앱 화면이 평범한 AI 템플릿처럼 보이거나 폰트, 간격, 색상, 카드, 모션, 한국어 타이포그래피 품질을 프리미엄 수준으로 끌어올려야 할 때 사용한다. 디자인 리뷰, 품질 게이트, DESIGN.md 정리에도 사용한다.
+description: 랜딩페이지, 웹앱, 모바일 앱 화면이 평범한 AI 템플릿처럼 보이거나 폰트, 간격, 색상, 카드, 모션, 한국어 타이포그래피 품질을 프리미엄 수준으로 끌어올려야 할 때 사용한다. 디자인 리뷰, 품질 게이트, DESIGN.md 정리, 긴 디자인 산출물의 생략 없는 완성 기준에도 사용한다.
 ---
 
 # Aegis 디자인 품질 기준
@@ -14,7 +14,6 @@ description: 랜딩페이지, 웹앱, 모바일 앱 화면이 평범한 AI 템�
 - `landing-page-design`: 새 랜딩페이지 생성 또는 기존 HTML/CSS 랜딩 개선.
 - `web-app-design`: React/Next/Tailwind 기반 웹앱, 관리자, 대시보드, 반복 업무 UI.
 - `mobile-app-design`: React Native/Expo/NativeWind 기반 모바일 앱 UI.
-- `full-output`: HTML 산출물이 중간 생략될 위험이 있을 때.
 
 작업 대상이 명확하면 해당 산출물 스킬을 먼저 적용하고, 이 스킬은 품질 기준과 점검에 사용한다.
 
@@ -32,12 +31,23 @@ description: 랜딩페이지, 웹앱, 모바일 앱 화면이 평범한 AI 템�
 
 아래 항목이 결과물에 있으면 디자인 실패로 본다.
 
+- 금지 출력: `TODO`, `...`, "나머지도 같은 패턴", skeleton-only, wireframe-only, placeholder 설명으로 끝나는 결과물.
 - 금지 폰트: Inter, Noto Sans KR, Roboto, Arial, Open Sans, Helvetica, Malgun Gothic.
 - 금지 아이콘: 두꺼운 Lucide, FontAwesome, Material Icons 남용. 랜딩은 Iconify Solar, 앱은 프로젝트 아이콘 시스템을 우선한다.
 - 금지 테두리/그림자: 의미 없는 `1px solid gray`, 거친 `shadow-md`, `rgba(0,0,0,0.3)` 기본 그림자.
 - 금지 레이아웃: 평범한 sticky nav, 대칭 3열 카드 반복, 모든 섹션이 같은 구조, 카드 안의 카드.
 - 금지 모션: `linear`, 무분별한 `ease-in-out`, 즉시 상태 변경, 과도한 scroll listener.
 - 금지 문구: "혁신적인", "원활한", "차세대", "한 차원 높은", "게임 체인저".
+
+## 생략 없는 산출물 기준
+
+랜딩페이지, 웹앱, 모바일 앱 화면을 만들 때 결과물은 실행 가능한 파일/컴포넌트 단위로 완성한다. 예시 일부만 만들고 나머지를 설명으로 넘기지 않는다.
+
+- 코드 주석이나 본문에 `<!-- ... -->`, `// ...`, `TODO`, 단독 `...`, "add more as needed"를 남기지 않는다.
+- 요청된 섹션, 상태, 반복 항목은 실제 데이터와 UI로 채운다.
+- 랜딩페이지는 nav, hero, social proof, features, testimonials/case studies, CTA, footer를 생략 없이 채운다.
+- 앱 UI는 default, loading, empty, error, disabled 등 필요한 상태를 실제 화면 요소로 구현한다.
+- 출력이 길어져 한 번에 끝낼 수 없으면 안전한 섹션/컴포넌트 경계에서만 멈추고, 다음에 이어 쓸 정확한 위치를 남긴다.
 
 ## 프리미엄 아키타입
 

@@ -30,7 +30,7 @@ description: React, Next.js, Tailwind CSS 기반 웹앱 UI를 설계/구현할 �
 - Font: Pretendard. Inter, Roboto, Noto Sans KR 금지
 - Icons: 프로젝트에 아이콘 라이브러리가 있으면 그것을 사용한다. 없으면 `lucide-react` 또는 Iconify Solar를 사용하되 버튼에는 텍스트보다 아이콘을 우선한다.
 - Charts: 기존 라이브러리를 우선하고, 없으면 Recharts 또는 Tremor 계열을 검토한다.
-- Output: 기존 프로젝트에 바로 붙는 컴포넌트/페이지 파일. 단일 HTML 요청은 `landing-page-design` 또는 `full-output`을 우선한다.
+- Output: 기존 프로젝트에 바로 붙는 컴포넌트/페이지 파일. 단일 HTML 랜딩 요청은 `landing-page-design`을 우선한다.
 
 ## 레이아웃 기준
 

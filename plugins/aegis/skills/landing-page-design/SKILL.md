@@ -14,7 +14,6 @@ description: 새 마케팅 랜딩페이지를 만들거나 기존 HTML/CSS 랜�
 - `design-quality`: 프리미엄 품질 기준, 금지 패턴, 한국어 타이포그래피, 모션/표면감 점검이 필요할 때 함께 사용한다.
 - `web-app-design`: 사용자가 반복 조작하는 웹앱, 관리자, 대시보드, 설정, 테이블 UI는 이 스킬로 넘긴다.
 - `mobile-app-design`: React Native/Expo 기반 모바일 앱 UI는 이 스킬로 넘긴다.
-- `full-output`: 단일 HTML 전체 출력이 중간 생략될 위험이 있으면 함께 사용한다.
 
 ## 모드 선택
 
