@@ -1,6 +1,6 @@
 ---
 name: public-orchestration-harness
-description: 저장소 변경, 새 기능, 동작 변경, 버그 수정, 테스트 실패, 다단계 작업, 작업 범위 분류, 스킬 라우팅, planning, worktree, debugging/TDD, 리뷰/QA/security gate, verification, PR/merge/cleanup 통합이 필요할 때 사용한다. 사용자가 Aegis를 명시하지 않아도 작업 성격상 필요하면 경량/표준/보호를 먼저 분류한다. background subagent 디스패치는 작업 규모, 위험도, 병렬성, 사용자 요청, `-bd` 플래그, 런타임 정책을 보고 선택하며 단순 단일 작업에는 강제하지 않는다.
+description: 저장소 변경, 새 기능, 동작 변경, 버그 수정, 테스트 실패, 다단계 작업, 작업 범위 분류, 스킬 라우팅, planning, worktree, debugging/TDD, 리뷰/QA/security gate, verification, PR/merge/cleanup 통합이 필요할 때 사용한다. 사용자가 Aegis를 명시하지 않아도 작업 성격상 필요하면 경량/표준/보호를 먼저 분류한다. background subagent 디스패치는 `background-dispatch` 스킬로 처리한다.
 ---
 
 # Aegis 오케스트레이션 하네스
@@ -12,10 +12,10 @@ description: 저장소 변경, 새 기능, 동작 변경, 버그 수정, 테스�
 사용자는 짧은 작업 지시만 남겨도 된다. 팀장이 경량/표준/보호를 분류하고 [Workflow By Scope](#workflow-by-scope)를 선택한 뒤, 필요한 hook, subagent, gate, 검증 절차를 작업 성격에 맞게 조합한다.
 
 - 경량 작업: 질문 답변, 범위 분류, 설계 대화, 상태 확인처럼 실행 산출물이 없는 작업이다. [Workflow By Scope](#workflow-by-scope)의 Lightweight 흐름으로 처리하고, Brainstorming, 작업 트리, 위임, PR을 강제하지 않는다.
-- 표준 작업: 일반 기능 수정, 버그 수정, 테스트 추가, 문서 수정처럼 실행 산출물이 생기지만 위험이 낮은 작업이다. [Workflow By Scope](#workflow-by-scope)의 Standard 흐름으로 처리하고, Background Dispatch Hook, 작업 트리, 커밋, 푸시, PR은 필요한 경우에만 적용한다.
+- 표준 작업: 일반 기능 수정, 버그 수정, 테스트 추가, 문서 수정처럼 실행 산출물이 생기지만 위험이 낮은 작업이다. [Workflow By Scope](#workflow-by-scope)의 Standard 흐름으로 처리하고, `background-dispatch`, 작업 트리, 커밋, 푸시, PR은 필요한 경우에만 적용한다.
 - 보호 작업: 새 기능, 동작 변경, 대규모 리팩터링, 릴리스, 보안/인증/데이터/마이그레이션, 여러 하위 시스템이 섞인 작업이다. [Workflow By Scope](#workflow-by-scope)의 Protected 흐름을 기본 적용한다.
 
-사용자가 명시적으로 `Aegis로 진행`, `PR까지`, `팀장 모드`, `서브에이전트로 병렬 진행`처럼 요청하면 한 단계 높은 흐름으로 올릴 수 있다. 입력 끝의 `-bd`는 사용자가 subagent 위임 의사를 표현한 신호로 본다. 단, 역할 선택과 작업 분해는 팀장이 작업 성격, 위험도, 런타임 조건을 보고 결정한다. Aegis 명시는 필수 트리거가 아니며 작업 성격이 조건에 맞으면 자동 적용한다.
+사용자가 명시적으로 `Aegis로 진행`, `PR까지`, `팀장 모드`, `서브에이전트로 병렬 진행`처럼 요청하면 한 단계 높은 흐름으로 올릴 수 있다. 입력 끝의 `-bd`는 `background-dispatch` 스킬 호출 신호로 본다. Aegis 명시는 필수 트리거가 아니며 작업 성격이 조건에 맞으면 자동 적용한다.
 
 ## Workflow By Scope
 
@@ -35,7 +35,7 @@ description: 저장소 변경, 새 기능, 동작 변경, 버그 수정, 테스�
 
 선택 단계:
 
-- `-bd`가 있거나 독립 실행 단위가 2개 이상이면 Background Dispatch Hook을 적용한다.
+- `-bd`가 있거나 독립 실행 단위가 2개 이상이면 `background-dispatch` 스킬을 적용한다.
 - 회귀 위험이 있으면 reviewer 또는 QA gate를 적용한다.
 - 사용자 요청 또는 저장소 정책이 있으면 commit/PR을 적용한다.
 
@@ -54,7 +54,7 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 - Brainstorming: 새 기능, 디자인, 동작 변경, 불명확한 요구사항이면 [Skill Routing Hook](#skill-routing-hook)을 거쳐 `brainstorming`을 먼저 사용한다.
 - Planning: Brainstorming 승인이 끝난 보호 작업은 [Planning Hook](#planning-hook)을 적용한다.
 - 작업 트리: 저장소 수정 전에는 [Worktree / Git Safety Hook](#worktree--git-safety-hook)을 적용한다.
-- 위임: 독립 실행 단위가 여러 개이거나, 전문 역할 gate가 필요하거나, 사용자가 명시적으로 요청했거나, 장시간 작업을 분리하는 편이 안전하면 [Background Dispatch Hook](#background-dispatch-hook)을 적용한다.
+- 위임: 독립 실행 단위가 여러 개이거나, 전문 역할 gate가 필요하거나, 사용자가 명시적으로 요청했거나, 장시간 작업을 분리하는 편이 안전하면 `background-dispatch` 스킬을 적용한다.
 - 구현/디버깅: 버그, 테스트 실패, 동작 변경은 [Debugging Hook](#debugging-hook)과 [TDD / Behavior Change Hook](#tdd--behavior-change-hook)을 적용한다.
 - 리뷰: 피드백 처리에는 [Review Reception Hook](#review-reception-hook)을 적용한다.
 - QA/Security: 변경 성격에 맞춰 reviewer, qa, breaker, security gate를 적용한다.
@@ -124,18 +124,7 @@ Brainstorming 승인이 끝난 보호 작업은 구현 전에 실행 계획을 �
 
 ## Background Dispatch Hook
 
-표준/보호 작업은 실행 계획으로 들어가기 전에 작업을 분해하고, 위임이 실제로 이득인지 판단한다. 입력 끝의 `-bd`는 사용자가 subagent 위임 의사를 표현한 신호로 보되, 역할 선택과 작업 분해는 팀장이 결정한다. background subagent 또는 동등한 실행 컨텍스트는 병렬성, 전문 gate, 장시간 실행, 사용자 요청, `-bd`, 런타임 허용 조건이 있을 때 사용한다.
-
-- 팀장은 설계, 범위 분류, 작업 분해, 역할 선택, 위임, 통합, gate 판정을 맡는다.
-- 독립 실행 단위가 여러 개면 병렬 디스패치를 우선 검토한다.
-- 구현, 문서 작성, 조사, QA, 리뷰, 보안 점검, 브라우저 검증은 작업 규모와 위험도가 맞을 때 적절한 역할 에이전트에 디스패치한다.
-- 단일 경량 작업은 현재 세션에서 직접 처리하고 검증할 수 있다.
-- 독립적인 sidecar 작업은 위임이 허용되면 병렬로 디스패치하고, 팀장은 기다리는 동안 다른 설계/통합 작업을 계속한다.
-- 즉시 다음 판단이 막히는 critical path 작업은 현재 세션에서 처리할지 foreground subagent에 맡길지 지연 비용을 보고 결정한다.
-- 각 하위 에이전트에는 명확한 owner, 작업 범위, 파일 소유권, 산출물 형식을 준다.
-- 같은 파일을 여러 하위 에이전트가 동시에 수정하지 않도록 write scope를 분리한다.
-- 하위 에이전트 결과가 돌아오면 팀장은 재작업하지 않고 검토, 통합, 보완, gate 판정을 수행한다.
-- 상위 지침, 도구 정책, 현재 런타임이 subagent 실행을 금지하거나 기능을 제공하지 않으면 로컬 실행/검증으로 대체할지 판단하고, 생략 이유와 남은 위험을 보고한다.
+Background dispatch의 세부 실행, 대화 양보, subagent lifecycle은 `background-dispatch` 스킬을 단일 기준으로 따른다. 이 하네스에서는 경량/표준/보호 분류 후 해당 스킬을 호출할지만 판단한다.
 
 ## Debugging Hook
 
