@@ -54,7 +54,7 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 - Brainstorming: 새 기능, 디자인, 동작 변경, 불명확한 요구사항이면 `skill-routing-hook-harness`를 거쳐 `brainstorming`을 먼저 사용한다.
 - Planning: Brainstorming 승인이 끝난 보호 작업은 `planning-hook-harness`를 적용한다.
 - 작업 트리: 저장소 수정 전에는 `worktree-hook-harness`를 적용한다.
-- 위임: 독립 실행 단위가 여러 개이거나, 전문 역할 gate가 필요하거나, 사용자가 명시적으로 요청했거나, 장시간 작업을 분리하는 편이 안전하면 `background-dispatch-hook-harness`를 거쳐 `background-dispatch` 스킬을 적용한다.
+- 위임: 독립 실행 단위가 여러 개이거나, 전문 역할 gate가 필요하거나, 사용자가 명시적으로 요청했거나, 장시간 작업을 분리하는 편이 안전하면 `background-dispatch` 스킬을 적용한다.
 - 구현/디버깅: 버그, 테스트 실패, 동작 변경은 `debugging-hook-harness`와 `tdd-behavior-change-hook-harness`를 적용한다.
 - 리뷰: 피드백 처리에는 `review-reception-hook-harness`를 적용한다.
 - QA/Security: 변경 성격에 맞춰 reviewer, qa, breaker, security gate를 적용한다.
@@ -105,7 +105,6 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 
 - `skill-routing-hook-harness`
 - `planning-hook-harness`
-- `background-dispatch-hook-harness`
 - `debugging-hook-harness`
 - `tdd-behavior-change-hook-harness`
 - `worktree-hook-harness`

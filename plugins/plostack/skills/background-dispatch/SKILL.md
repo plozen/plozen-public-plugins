@@ -1,6 +1,6 @@
 ---
 name: background-dispatch
-description: 사용자가 `-bd`, background dispatch, 백그라운드 위임, subagent 병렬 작업, 스폰 후 계속 대화를 명시하거나 오케스트레이션 중 background subagent를 띄울 때 사용한다. 스폰 직후 메인 대화를 오래 점유하지 않고, 명시적 취소 전까지 백그라운드 작업을 유지하며, 결과가 돌아오면 통합한다.
+description: 사용자가 `-bd`, background dispatch, 백그라운드 위임, subagent 병렬 작업, 스폰 후 계속 대화를 명시하거나 경량/표준/보호 분류 후 독립 실행 단위, 역할 분리, 장시간 작업 조건 때문에 background subagent 호출 여부를 판단해야 할 때 사용한다. 스폰 직후 메인 대화를 오래 점유하지 않고, 명시적 취소 전까지 백그라운드 작업을 유지하며, 결과가 돌아오면 통합한다.
 ---
 
 # Background Dispatch Skill
@@ -13,6 +13,7 @@ description: 사용자가 `-bd`, background dispatch, 백그라운드 위임, su
 
 - 사용자 입력 끝에 `-bd`가 있다.
 - 사용자가 "백그라운드로", "background dispatch", "서브에이전트로 돌리고 계속하자", "병렬로 맡겨"라고 말한다.
+- 경량/표준/보호 분류 후 독립 실행 단위, 역할 분리, 장시간 작업 조건 때문에 background subagent 호출 여부를 판단해야 한다.
 - 표준/보호 작업에서 장시간 조사, QA, 리뷰, 보안 점검, 구현 단위 분리가 필요하다.
 - subagent를 이미 스폰했고, 그 작업을 기다릴지 계속 대화할지 판단해야 한다.
 
