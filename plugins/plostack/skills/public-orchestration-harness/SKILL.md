@@ -150,11 +150,15 @@ Background dispatch의 세부 실행, 대화 양보, subagent lifecycle은 `back
 저장소 변경이 있는 표준/보호 작업은 수정 전에 branch, remote, dirty file 상태를 확인한다.
 
 - 보호 작업, 충돌 위험이 있는 작업, PR 대상 작업은 task branch를 가진 독립 worktree에서 진행한다.
-- worktree는 가능한 한 새 task branch에 붙여 만든다: `git worktree add <path> -b <task-branch> <base-branch>`.
+- agent/task worktree는 중앙 worktree root 아래에 만든다. 기본 root는 `/mnt/data/worktrees`이고, 환경별 override가 있으면 `PLOZEN_WORKTREE_ROOT` 또는 `CODEX_WORKTREE_ROOT`를 따른다.
+- 중앙 worktree 경로는 `<worktree-root>/<repo-slug>/<task-slug>` 형식으로 둔다. 예: `/mnt/data/worktrees/plozen-console/console-live-tab`.
+- repo 내부 `.worktrees/`는 legacy 예외다. 사용자가 명시하거나 기존 도구 호환이 필요한 경우가 아니면 새 worktree 생성에 사용하지 않는다.
+- worktree는 가능한 한 새 task branch에 붙여 만든다: `git worktree add <worktree-root>/<repo-slug>/<task-slug> -b <task-branch> <base-branch>`.
 - detached HEAD, base branch 직접 수정, 소유자가 불명확한 dirty worktree에서는 구현을 시작하지 않는다.
 - 사용자가 만든 dirty change는 되돌리지 않고, 의도한 파일만 commit에 포함한다.
-- 작업 완료 후 branch push, PR/merge 또는 final push, gate 증거 확인이 끝나고 worktree가 clean하면 worktree를 삭제하고 prune으로 정리한다.
-- dirty worktree, unmerged branch, 소유자가 불명확한 worktree는 삭제하지 않는다.
+- 작업 완료 후 branch push, PR/merge 또는 final push, gate 증거 확인이 끝나고 worktree가 clean하면 `git worktree remove <path>`와 `git worktree prune`으로 정리한다.
+- cleanup 전에는 `git worktree list`, `git status --porcelain`, `git merge-base --is-ancestor HEAD <base-ref>`로 worktree 등록, dirty 여부, 병합 여부를 확인한다.
+- dirty worktree, unmerged branch, 소유자가 불명확한 worktree는 삭제하지 않는다. 사용자가 명시적으로 폐기를 승인한 경우에만 `git worktree remove --force <path>`를 사용한다.
 
 ## Review Reception Hook
 

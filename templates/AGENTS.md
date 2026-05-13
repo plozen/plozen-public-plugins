@@ -22,3 +22,9 @@
 - 표준 작업에서 `-bd`가 있거나 독립 실행 단위가 2개 이상이면 public Plostack `background-dispatch` 스킬을 적용한다. 회귀 위험이 있으면 reviewer 또는 QA gate를 적용하고, 사용자 요청이나 저장소 정책이 있으면 commit/PR을 적용한다.
 - 보호 작업은 `Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디버깅 -> 리뷰 -> QA/Security -> 검증 -> 커밋/푸시/PR -> 팀장 확인 -> 병합/정리 -> 보고`를 기본 흐름으로 한다.
 - 새 기능, 동작 변경, 복잡한 다단계 작업, 요구사항이 불명확한 작업은 구현 전에 public Plostack `brainstorming`을 우선 고려한다.
+
+## Worktree Management
+- 새 agent/task worktree의 기본 위치는 `/mnt/data/worktrees/<repo-slug>/<task-slug>`이다. Windows 접근 경로는 `\\192.168.35.13\data\worktrees`다.
+- repo 내부 `.worktrees/`는 legacy 예외로만 사용한다. 새 작업, background dispatch, cleanup 기준은 중앙 worktree root를 우선한다.
+- cleanup 전에는 `git worktree list`, `git status --porcelain`, `git merge-base --is-ancestor HEAD <base-ref>`로 등록 상태, dirty 여부, 병합 여부를 확인한다.
+- clean + merged worktree만 일반 삭제한다. dirty 또는 unmerged worktree는 사용자가 명시적으로 폐기 승인한 경우에만 `git worktree remove --force`로 삭제한다.
