@@ -3,7 +3,7 @@ name: landing-page-design
 description: 새 마케팅 랜딩페이지를 만들거나 기존 HTML/CSS 랜딩페이지를 개선할 때 사용한다. 서비스 소개, 제품 페이지, 캠페인, 사전예약, 전환 중심 단일 HTML 랜딩 산출물에 사용하며, 랜딩이 아닌 대시보드/관리자/앱 UI는 web-app-design 또는 mobile-app-design을 사용한다.
 ---
 
-# Aegis 랜딩페이지 디자인 스킬
+# Plostack 랜딩페이지 디자인 스킬
 
 ## 역할
 

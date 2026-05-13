@@ -5,10 +5,10 @@
   },
   "plugins": [
     {
-      "name": "aegis",
+      "name": "plostack",
       "source": {
         "source": "local",
-        "path": "./plugins/aegis"
+        "path": "./plugins/plostack"
       },
       "policy": {
         "installation": "AVAILABLE",

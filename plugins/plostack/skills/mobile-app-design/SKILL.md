@@ -3,7 +3,7 @@ name: mobile-app-design
 description: React Native, Expo, NativeWind 기반 모바일 앱 화면이나 컴포넌트를 설계/생성할 때 사용한다. 로그인, 온보딩, 탭 화면, 설정, 마이페이지, 폼, 리스트, 모달 등 모바일 앱 UI 산출물에 사용하며 웹앱은 web-app-design, 랜딩페이지는 landing-page-design을 사용한다.
 ---
 
-# Aegis 모바일 앱 디자인 스킬
+# Plostack 모바일 앱 디자인 스킬
 
 ## 역할
 

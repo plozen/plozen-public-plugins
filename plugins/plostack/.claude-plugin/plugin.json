@@ -1,11 +1,11 @@
 {
-  "name": "aegis",
+  "name": "plostack",
   "description": "Claude Code용 공개 디자인, 문서 제작, 전달 오케스트레이션 스킬입니다.",
   "version": "0.6.0",
   "author": {
-    "name": "Aegis Contributors"
+    "name": "Plostack Contributors"
   },
-  "homepage": "https://github.com/plozen/plozen-public-plugins/tree/main/plugins/aegis",
+  "homepage": "https://github.com/plozen/plozen-public-plugins/tree/main/plugins/plostack",
   "repository": "https://github.com/plozen/plozen-public-plugins",
   "license": "MIT",
   "keywords": [

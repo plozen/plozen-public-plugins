@@ -21,7 +21,7 @@ plozen-public-plugins/
 ├── .opencode/marketplace.json
 ├── .hermes/marketplace.json
 └── plugins/
-    └── aegis/
+    └── plostack/
         ├── .codex-plugin/plugin.json
         ├── .claude-plugin/plugin.json
         └── skills/
@@ -49,7 +49,7 @@ Codex CLI는 marketplace 관리 명령을 제공하고, 플러그인 활성화�
 
 ```text
 /plugin marketplace add plozen/plozen-public-plugins
-/plugin install aegis@plozen-public-plugins
+/plugin install plostack@plozen-public-plugins
 ```
 
 ## OpenClaw / Hermes
@@ -61,11 +61,11 @@ Codex CLI는 marketplace 관리 명령을 제공하고, 플러그인 활성화�
 로컬 source와 Codex runtime cache가 같은지 확인합니다.
 
 ```bash
-VERSION="$(python3 -c 'import json; print(json.load(open("plugins/aegis/.codex-plugin/plugin.json"))["version"])')"
-test -d "$HOME/.codex/plugins/cache/plozen-public-plugins/aegis/$VERSION"
-diff -qr plugins/aegis "$HOME/.codex/plugins/cache/plozen-public-plugins/aegis/$VERSION"
+VERSION="$(python3 -c 'import json; print(json.load(open("plugins/plostack/.codex-plugin/plugin.json"))["version"])')"
+test -d "$HOME/.codex/plugins/cache/plozen-public-plugins/plostack/$VERSION"
+diff -qr plugins/plostack "$HOME/.codex/plugins/cache/plozen-public-plugins/plostack/$VERSION"
 ```
 
 ## 포함 플러그인
 
-- `aegis`: 공개 디자인, 문서 제작, HTML/PDF/PPTX, 전달 오케스트레이션 스킬팩
+- `plostack`: 공개 디자인, 문서 제작, HTML/PDF/PPTX, 전달 오케스트레이션 스킬팩

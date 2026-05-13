@@ -1,13 +1,13 @@
 ---
 name: public-orchestration-harness
-description: 저장소 변경, 새 기능, 동작 변경, 버그 수정, 테스트 실패, 다단계 작업, 작업 범위 분류, 스킬 라우팅, planning, worktree, debugging/TDD, 리뷰/QA/security gate, verification, PR/merge/cleanup 통합이 필요할 때 사용한다. 사용자가 Aegis를 명시하지 않아도 작업 성격상 필요하면 경량/표준/보호를 먼저 분류한다. background subagent 디스패치는 `background-dispatch` 스킬로 처리한다.
+description: 저장소 변경, 새 기능, 동작 변경, 버그 수정, 테스트 실패, 다단계 작업, 작업 범위 분류, 스킬 라우팅, planning, worktree, debugging/TDD, 리뷰/QA/security gate, verification, PR/merge/cleanup 통합이 필요할 때 사용한다. 사용자가 Plostack을 명시하지 않아도 작업 성격상 필요하면 경량/표준/보호를 먼저 분류한다. background subagent 디스패치는 `background-dispatch` 스킬로 처리한다.
 ---
 
-# Aegis 오케스트레이션 하네스
+# Plostack 오케스트레이션 하네스
 
 ## 적용 범위
 
-사용자가 `Aegis`를 명시하지 않아도, 작업이 저장소 변경/동작 변경/다단계 실행/검증/위임을 포함하면 먼저 이 하네스로 경량/표준/보호 작업을 분류한다. Aegis 작업 흐름은 모든 작업에 강제하지 않고 필요한 만큼만 적용한다.
+사용자가 `Plostack`을 명시하지 않아도, 작업이 저장소 변경/동작 변경/다단계 실행/검증/위임을 포함하면 먼저 이 하네스로 경량/표준/보호 작업을 분류한다. Plostack 작업 흐름은 모든 작업에 강제하지 않고 필요한 만큼만 적용한다.
 
 사용자는 짧은 작업 지시만 남겨도 된다. 팀장이 경량/표준/보호를 분류하고 [Workflow By Scope](#workflow-by-scope)를 선택한 뒤, 필요한 hook, subagent, gate, 검증 절차를 작업 성격에 맞게 조합한다.
 
@@ -15,7 +15,7 @@ description: 저장소 변경, 새 기능, 동작 변경, 버그 수정, 테스�
 - 표준 작업: 일반 기능 수정, 버그 수정, 테스트 추가, 문서 수정처럼 실행 산출물이 생기지만 위험이 낮은 작업이다. [Workflow By Scope](#workflow-by-scope)의 Standard 흐름으로 처리하고, `background-dispatch`, 작업 트리, 커밋, 푸시, PR은 필요한 경우에만 적용한다.
 - 보호 작업: 새 기능, 동작 변경, 대규모 리팩터링, 릴리스, 보안/인증/데이터/마이그레이션, 여러 하위 시스템이 섞인 작업이다. [Workflow By Scope](#workflow-by-scope)의 Protected 흐름을 기본 적용한다.
 
-사용자가 명시적으로 `Aegis로 진행`, `PR까지`, `팀장 모드`, `서브에이전트로 병렬 진행`처럼 요청하면 한 단계 높은 흐름으로 올릴 수 있다. 입력 끝의 `-bd`는 `background-dispatch` 스킬 호출 신호로 본다. Aegis 명시는 필수 트리거가 아니며 작업 성격이 조건에 맞으면 자동 적용한다.
+사용자가 명시적으로 `Plostack으로 진행`, `PR까지`, `팀장 모드`, `서브에이전트로 병렬 진행`처럼 요청하면 한 단계 높은 흐름으로 올릴 수 있다. 입력 끝의 `-bd`는 `background-dispatch` 스킬 호출 신호로 본다. Plostack 명시는 필수 트리거가 아니며 작업 성격이 조건에 맞으면 자동 적용한다.
 
 ## Workflow By Scope
 
@@ -103,7 +103,7 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 
 ## Skill Routing Hook
 
-작업 시작 전에 관련 Aegis skill이 있는지 판단한다. 사용자가 Aegis를 말하지 않아도 저장소 변경, 동작 변경, 검증, 위임, 리뷰, QA, PR이 필요한 작업이면 먼저 이 하네스로 범위를 분류한다.
+작업 시작 전에 관련 Plostack skill이 있는지 판단한다. 사용자가 Plostack을 말하지 않아도 저장소 변경, 동작 변경, 검증, 위임, 리뷰, QA, PR이 필요한 작업이면 먼저 이 하네스로 범위를 분류한다.
 
 - 새 기능, 디자인, 동작 변경, 불명확한 요구사항은 `brainstorming`을 먼저 사용한다.
 - 저장소 변경, 버그 수정, 테스트 실패, 다단계 실행, 검증/위임/리뷰/QA/PR이 필요한 작업은 이 orchestration harness로 경량/표준/보호를 먼저 분류한다.

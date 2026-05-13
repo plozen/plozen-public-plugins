@@ -1,6 +1,6 @@
-# Aegis
+# Plostack
 
-Aegis는 Codex와 Claude Code에서 사용할 수 있는 공개 디자인, 문서 제작, 전달 오케스트레이션 스킬팩입니다.
+Plostack은 Codex와 Claude Code에서 사용할 수 있는 공개 디자인, 문서 제작, 전달 오케스트레이션 스킬팩입니다.
 
 포함 범위:
 
@@ -24,7 +24,7 @@ Aegis는 Codex와 Claude Code에서 사용할 수 있는 공개 디자인, 문�
 - `html-to-pdf`
 - `pptx-generator`
 
-Aegis는 자체 완결형 스킬팩을 지향합니다. 로컬 메모리 파일, 외부 지식 저장소, 작업 공간 전용 하네스 노트에 의존하지 않습니다. 오케스트레이션 스킬은 작업 트리 우선, 독립 리뷰/QA 관문, 검증, PR 확인, 팀장 소유 병합/정리 흐름을 사용합니다. 커밋, 푸시, PR, 병합은 사용자 요청 또는 저장소 정책이 있을 때만 수행합니다.
+Plostack은 자체 완결형 스킬팩을 지향합니다. 로컬 메모리 파일, 외부 지식 저장소, 작업 공간 전용 하네스 노트에 의존하지 않습니다. 오케스트레이션 스킬은 작업 트리 우선, 독립 리뷰/QA 관문, 검증, PR 확인, 팀장 소유 병합/정리 흐름을 사용합니다. 커밋, 푸시, PR, 병합은 사용자 요청 또는 저장소 정책이 있을 때만 수행합니다.
 
 ## Codex 설치
 
@@ -40,7 +40,7 @@ Git marketplace로 등록된 경우 runtime cache를 갱신합니다.
 codex plugin marketplace upgrade plozen-public-plugins
 ```
 
-그 다음 Codex에서 plugin directory를 열고 Aegis를 활성화합니다.
+그 다음 Codex에서 plugin directory를 열고 Plostack을 활성화합니다.
 
 ```text
 /plugins
@@ -61,7 +61,7 @@ PLOZEN public marketplace를 등록한 뒤 플러그인을 설치합니다.
 
 ```text
 /plugin marketplace add plozen/plozen-public-plugins
-/plugin install aegis@plozen-public-plugins
+/plugin install plostack@plozen-public-plugins
 ```
 
 ## 업데이트

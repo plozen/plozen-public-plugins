@@ -1,11 +1,11 @@
 ---
 name: brainstorming
-description: Aegis 작업에서 새 기능, 디자인, 구성 요소, 동작 변경, 다단계 전달 작업, 불명확한 요구사항, 접근안 비교, 전략 탐색, 의사결정 브리프가 필요할 때 구현 전에 설계로 정리한다.
+description: Plostack 작업에서 새 기능, 디자인, 구성 요소, 동작 변경, 다단계 전달 작업, 불명확한 요구사항, 접근안 비교, 전략 탐색, 의사결정 브리프가 필요할 때 구현 전에 설계로 정리한다.
 ---
 
-# Aegis 브레인스토밍 스킬
+# Plostack 브레인스토밍 스킬
 
-이 스킬은 Superpowers의 brainstorming 방법론과 구조화 브레인스토밍 절차를 Aegis에 맞게 합친 설계 관문이다. 구현 스킬이 아니라, 불명확한 아이디어를 승인 가능한 설계와 검증 가능한 결정으로 바꾸는 절차다.
+이 스킬은 Superpowers의 brainstorming 방법론과 구조화 브레인스토밍 절차를 Plostack에 맞게 합친 설계 관문이다. 구현 스킬이 아니라, 불명확한 아이디어를 승인 가능한 설계와 검증 가능한 결정으로 바꾸는 절차다.
 
 ## 사용 시점
 
@@ -122,7 +122,7 @@ description: Aegis 작업에서 새 기능, 디자인, 구성 요소, 동작 변
 공식 설계 문서가 필요하면 프로젝트의 기존 설계 문서 위치에 저장한다. 위치가 없으면 아래를 사용한다.
 
 ```text
-docs/aegis/specs/YYYY-MM-DD-topic-design.md
+docs/plostack/specs/YYYY-MM-DD-topic-design.md
 ```
 
 ## 설계 원칙
@@ -137,4 +137,4 @@ docs/aegis/specs/YYYY-MM-DD-topic-design.md
 
 사용자가 승인하면 `public-orchestration-harness`로 돌아간다. 팀장이 작업 트리, 위임, 관문, 구현 계획을 정한다.
 
-출처: Superpowers brainstorming 방법론과 avinashchby/claude-brainstorm-skill 계열 구조화 브레인스토밍 절차를 Aegis 공개 스킬에 맞게 재구성했다.
+출처: Superpowers brainstorming 방법론과 avinashchby/claude-brainstorm-skill 계열 구조화 브레인스토밍 절차를 Plostack 공개 스킬에 맞게 재구성했다.

@@ -3,7 +3,7 @@ name: web-app-design
 description: React, Next.js, Tailwind CSS 기반 웹앱 UI를 설계/구현할 때 사용한다. 관리자, SaaS 대시보드, CRM, 설정, 마이페이지, 데이터 테이블, 폼, 필터, 모달, 사이드시트, 반복 업무 화면에 사용하며 랜딩페이지는 landing-page-design, React Native/Expo 앱은 mobile-app-design을 사용한다.
 ---
 
-# Aegis 웹앱 디자인 스킬
+# Plostack 웹앱 디자인 스킬
 
 ## 역할
 
