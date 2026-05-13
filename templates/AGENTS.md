@@ -24,7 +24,7 @@
 - 새 기능, 동작 변경, 복잡한 다단계 작업, 요구사항이 불명확한 작업은 구현 전에 public Plostack `brainstorming`을 우선 고려한다.
 
 ## Worktree Management
-- 새 agent/task worktree의 기본 위치는 `/mnt/data/worktrees/<repo-slug>/<task-slug>`이다. Windows 접근 경로는 `\\192.168.35.13\data\worktrees`다.
-- repo 내부 `.worktrees/`는 legacy 예외로만 사용한다. 새 작업, background dispatch, cleanup 기준은 중앙 worktree root를 우선한다.
+- 새 agent/task worktree의 기본 위치는 `<repo-root>/.worktrees/<task-slug>`이다.
+- repo root의 `.gitignore`에는 `.worktrees/`를 추가해 GitHub 저장소에 worktree 파일이 push되지 않게 한다.
 - cleanup 전에는 `git worktree list`, `git status --porcelain`, `git merge-base --is-ancestor HEAD <base-ref>`로 등록 상태, dirty 여부, 병합 여부를 확인한다.
 - clean + merged worktree만 일반 삭제한다. dirty 또는 unmerged worktree는 사용자가 명시적으로 폐기 승인한 경우에만 `git worktree remove --force`로 삭제한다.

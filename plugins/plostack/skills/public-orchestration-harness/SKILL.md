@@ -49,16 +49,16 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 
 보호 작업에서 팀장은 라우터, gate 판정자, 통합자 역할을 우선한다. 실행은 작업 규모와 런타임 정책에 따라 현재 세션, 역할 에이전트, 독립 실행 컨텍스트 중 적절한 경로가 맡는다. 최종 저장소 통합, 병합, 최종 푸시, 깨끗한 작업 트리 정리는 팀장이 책임진다.
 
-단계별 hook 연결:
+단계별 hook skill 연결:
 
-- Brainstorming: 새 기능, 디자인, 동작 변경, 불명확한 요구사항이면 [Skill Routing Hook](#skill-routing-hook)을 거쳐 `brainstorming`을 먼저 사용한다.
-- Planning: Brainstorming 승인이 끝난 보호 작업은 [Planning Hook](#planning-hook)을 적용한다.
-- 작업 트리: 저장소 수정 전에는 [Worktree / Git Safety Hook](#worktree--git-safety-hook)을 적용한다.
-- 위임: 독립 실행 단위가 여러 개이거나, 전문 역할 gate가 필요하거나, 사용자가 명시적으로 요청했거나, 장시간 작업을 분리하는 편이 안전하면 `background-dispatch` 스킬을 적용한다.
-- 구현/디버깅: 버그, 테스트 실패, 동작 변경은 [Debugging Hook](#debugging-hook)과 [TDD / Behavior Change Hook](#tdd--behavior-change-hook)을 적용한다.
-- 리뷰: 피드백 처리에는 [Review Reception Hook](#review-reception-hook)을 적용한다.
+- Brainstorming: 새 기능, 디자인, 동작 변경, 불명확한 요구사항이면 `skill-routing-hook-harness`를 거쳐 `brainstorming`을 먼저 사용한다.
+- Planning: Brainstorming 승인이 끝난 보호 작업은 `planning-hook-harness`를 적용한다.
+- 작업 트리: 저장소 수정 전에는 `worktree-hook-harness`를 적용한다.
+- 위임: 독립 실행 단위가 여러 개이거나, 전문 역할 gate가 필요하거나, 사용자가 명시적으로 요청했거나, 장시간 작업을 분리하는 편이 안전하면 `background-dispatch-hook-harness`를 거쳐 `background-dispatch` 스킬을 적용한다.
+- 구현/디버깅: 버그, 테스트 실패, 동작 변경은 `debugging-hook-harness`와 `tdd-behavior-change-hook-harness`를 적용한다.
+- 리뷰: 피드백 처리에는 `review-reception-hook-harness`를 적용한다.
 - QA/Security: 변경 성격에 맞춰 reviewer, qa, breaker, security gate를 적용한다.
-- 검증/완료: 완료, fixed, ready, merge, cleanup 전에는 [Verification / Branch Finish Hook](#verification--branch-finish-hook)을 적용한다.
+- 검증/완료: 완료, fixed, ready, merge, cleanup 전에는 `verification-branch-finish-hook-harness`를 적용한다.
 
 ## 역할 위임 경계
 
@@ -90,7 +90,7 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 
 ## 완료 기준
 
-보호 작업은 필요한 gate가 통과하거나, 생략 이유와 남은 위험이 기록되어야 완료할 수 있다. 완료 선언 전에는 [Verification / Branch Finish Hook](#verification--branch-finish-hook)을 적용한다.
+보호 작업은 필요한 gate가 통과하거나, 생략 이유와 남은 위험이 기록되어야 완료할 수 있다. 완료 선언 전에는 `verification-branch-finish-hook-harness`를 적용한다.
 
 - 코드, schema, API, auth, data 변경: `reviewer` gate
 - 동작 변경, 테스트 추가, 회귀 위험: `qa` gate
@@ -99,83 +99,15 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 - `reviewer` BLOCK, `qa` FAIL, `security` Critical, 핵심 사용자 흐름 실패는 완료를 막는다.
 - gate를 생략하면 최종 보고에 생략 이유와 남은 위험을 남긴다.
 
-# Hooks
+# Hook Skills
 
-## Skill Routing Hook
+훅 세부 프롬프트는 별도 skill로 분리한다. 이 하네스는 작업 범위를 분류하고 필요한 hook skill을 연결한다.
 
-작업 시작 전에 관련 Plostack skill이 있는지 판단한다. 사용자가 Plostack을 말하지 않아도 저장소 변경, 동작 변경, 검증, 위임, 리뷰, QA, PR이 필요한 작업이면 먼저 이 하네스로 범위를 분류한다.
-
-- 새 기능, 디자인, 동작 변경, 불명확한 요구사항은 `brainstorming`을 먼저 사용한다.
-- 저장소 변경, 버그 수정, 테스트 실패, 다단계 실행, 검증/위임/리뷰/QA/PR이 필요한 작업은 이 orchestration harness로 경량/표준/보호를 먼저 분류한다.
-- 구현, PR, 리뷰, QA, 위임이 필요하면 이 orchestration harness를 적용한다.
-- 버그, 테스트 실패, 예상 밖 동작은 수정 전에 Debugging Hook을 적용한다.
-- 완료, 성공, 통과, fixed를 말하기 전에는 Verification Hook을 적용한다.
-- 경량 작업에는 skill 흐름을 강제하지 않는다. 관련 skill을 생략하면 이유와 남은 위험을 짧게 남긴다.
-
-## Planning Hook
-
-Brainstorming 승인이 끝난 보호 작업은 구현 전에 실행 계획을 만든다.
-
-- 작업을 작고 검증 가능한 task로 나눈다.
-- 각 task에는 수정 대상 파일, owner, 금지 범위, 검증 명령을 둔다.
-- 여러 하위 시스템이 섞이면 하위 프로젝트나 독립 task group으로 나눈다.
-- 파일 ownership을 나눠 subagent 간 write conflict를 막는다.
-- 계획이 불명확하면 구현으로 넘어가지 않고 사용자 확인을 받는다.
-
-## Background Dispatch Hook
-
-Background dispatch의 세부 실행, 대화 양보, subagent lifecycle은 `background-dispatch` 스킬을 단일 기준으로 따른다. 이 하네스에서는 경량/표준/보호 분류 후 해당 스킬을 호출할지만 판단한다.
-
-## Debugging Hook
-
-버그, 테스트 실패, 빌드 실패, 예상 밖 동작은 수정 전에 원인을 좁힌다.
-
-- 먼저 재현 절차와 관찰된 증상을 기록한다.
-- root cause를 확인하기 전에는 임시 수정이나 추측성 패치를 하지 않는다.
-- 원인 후보를 나누고 증거로 하나씩 제거한다.
-- 수정 후 같은 재현 절차로 문제가 사라졌는지 확인한다.
-- 가능하면 회귀 테스트나 재발 방지 검증을 추가한다.
-
-## TDD / Behavior Change Hook
-
-동작 변경, 버그 수정, 리팩터링은 구현 전에 검증 기준을 먼저 만든다.
-
-- 가능한 경우 실패하는 테스트를 먼저 작성하고 실패를 확인한다.
-- 테스트가 부적절한 작업은 수동 검증 절차와 기대 결과를 먼저 적는다.
-- 문서, 설정, throwaway prototype은 예외가 될 수 있지만 예외 이유를 남긴다.
-- 구현은 검증 기준을 통과시키는 최소 변경부터 시작한다.
-
-## Worktree / Git Safety Hook
-
-저장소 변경이 있는 표준/보호 작업은 수정 전에 branch, remote, dirty file 상태를 확인한다.
-
-- 보호 작업, 충돌 위험이 있는 작업, PR 대상 작업은 task branch를 가진 독립 worktree에서 진행한다.
-- agent/task worktree는 중앙 worktree root 아래에 만든다. 기본 root는 `/mnt/data/worktrees`이고, 환경별 override가 있으면 `PLOZEN_WORKTREE_ROOT` 또는 `CODEX_WORKTREE_ROOT`를 따른다.
-- 중앙 worktree 경로는 `<worktree-root>/<repo-slug>/<task-slug>` 형식으로 둔다. 예: `/mnt/data/worktrees/plozen-console/console-live-tab`.
-- repo 내부 `.worktrees/`는 legacy 예외다. 사용자가 명시하거나 기존 도구 호환이 필요한 경우가 아니면 새 worktree 생성에 사용하지 않는다.
-- worktree는 가능한 한 새 task branch에 붙여 만든다: `git worktree add <worktree-root>/<repo-slug>/<task-slug> -b <task-branch> <base-branch>`.
-- detached HEAD, base branch 직접 수정, 소유자가 불명확한 dirty worktree에서는 구현을 시작하지 않는다.
-- 사용자가 만든 dirty change는 되돌리지 않고, 의도한 파일만 commit에 포함한다.
-- 작업 완료 후 branch push, PR/merge 또는 final push, gate 증거 확인이 끝나고 worktree가 clean하면 `git worktree remove <path>`와 `git worktree prune`으로 정리한다.
-- cleanup 전에는 `git worktree list`, `git status --porcelain`, `git merge-base --is-ancestor HEAD <base-ref>`로 worktree 등록, dirty 여부, 병합 여부를 확인한다.
-- dirty worktree, unmerged branch, 소유자가 불명확한 worktree는 삭제하지 않는다. 사용자가 명시적으로 폐기를 승인한 경우에만 `git worktree remove --force <path>`를 사용한다.
-
-## Review Reception Hook
-
-리뷰 피드백은 바로 수용하거나 반박하지 않고 기술적으로 검증한다.
-
-- 피드백을 전체 맥락에서 읽고 요구사항을 재진술한다.
-- 코드베이스 현실과 대조해 맞는 지적인지 확인한다.
-- 맞으면 수정하고 관련 검증을 실행한다.
-- 애매하거나 틀린 피드백은 근거를 들어 질문하거나 반박한다.
-- reviewer BLOCK은 해결 또는 명시적 override 전까지 완료를 막는다.
-
-## Verification / Branch Finish Hook
-
-완료 선언 전에는 fresh verification evidence를 확보한다.
-
-- 완료, fixed, 통과, ready를 말하기 전에 증명할 명령이나 절차를 실행 단위로 만든다. 검증 책임을 분리할 필요가 있으면 subagent에 위임한다.
-- 실행 결과, exit code, 실패 수, 확인한 artifact를 읽고 gate를 판정한다.
-- 검증을 실행할 수 없으면 완료가 아니라 미검증 상태로 보고한다.
-- branch 작업 완료 후에는 PR 생성, 병합, branch 유지, 폐기, worktree cleanup 중 하나를 선택한다.
-- 선택한 경로와 남은 위험을 최종 보고에 남긴다.
+- `skill-routing-hook-harness`
+- `planning-hook-harness`
+- `background-dispatch-hook-harness`
+- `debugging-hook-harness`
+- `tdd-behavior-change-hook-harness`
+- `worktree-hook-harness`
+- `review-reception-hook-harness`
+- `verification-branch-finish-hook-harness`
