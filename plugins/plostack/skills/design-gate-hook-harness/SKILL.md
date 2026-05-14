@@ -55,6 +55,7 @@ Marketing Brief
 - 있으면 먼저 읽고 mock/구현이 그 규칙을 따르게 한다.
 - 없고 프로젝트에 남는 화면/컴포넌트/디자인 시스템 변경이면 `DESIGN.md`를 만든다.
 - `DESIGN.md`에는 제품 톤, 폰트, 색상 토큰, spacing, 컴포넌트 상태, 레이아웃 원칙, 접근성, 금지 패턴, 검증 기준을 포함한다.
+- 모바일 화면이면 기준 폭, navigation 규칙, bottom tab 규칙, card/surface 사용 기준, 수치 검증 기준을 `DESIGN.md`에 기록한다. 요청 폭이 없으면 390px을 기본값으로 두고, `Z Fold 5 folded`/`folded`/`344px` 요청이 있으면 344px을 blocker 기준으로 둔다.
 - Google `design.md` CLI 호환이 필요한 경우 YAML front matter를 포함하고 `npx -y @google/design.md lint DESIGN.md`를 통과시킨다.
 - 기존 프로젝트의 `DESIGN.md`가 prose-only 문서일 수 있다. 이 경우 lint warning 자체가 blocker는 아니지만, “CLI 호환 DESIGN.md가 아님”을 명시하고 필요 시 별도 보강 작업으로 분리한다.
 
@@ -83,6 +84,8 @@ project/
 규칙:
 
 - 기본 퍼블리싱 원본은 `design-lab/pub/`에 둔다.
+- `design-lab/pub/`는 raw publishing/artboard 원본이다. 디바이스 프레임, 휴대폰 mockup, 손에 든 폰 합성, 배경 장식, 크몽 썸네일용 composite를 넣지 않는다.
+- 썸네일/포트폴리오 합성이 필요하면 `kmong-thumbnail/`, `design-lab/composite/`, 또는 별도 composite page로 분리한다. composite는 `pub` 원본을 참조할 수 있지만 `pub` 원본을 대체하지 않는다.
 - 캡처 산출물은 `design-lab/screenshots/`에 둔다.
 - 실제 구현 handoff 문서가 필요하면 `design-lab/handoff.md`에 둔다.
 - 단일 repo 또는 단일 포트폴리오 작업에서는 `design-lab/pub/<project-slug>/` 중첩을 기본값으로 쓰지 않는다.
@@ -91,14 +94,28 @@ project/
 - 단일 HTML, Tailwind, React/Vite, Next static route 중 프로젝트에 맞는 최소 스택을 쓴다.
 - TODO, lorem ipsum, placeholder-only, wireframe-only 산출물은 gate fail이다.
 
+### 3-1. Mobile Navigation / Surface Gate
+
+모바일 앱 mock이면 아래 규칙을 먼저 고정한다.
+
+- 기준 폭은 사용자 요청값을 따른다. 요청이 없으면 390px, `Z Fold 5 folded`/`folded`/`344px` 요청이면 344px이다.
+- bottom tab root 화면은 back button이 없다. task/detail/modal/secondary flow 화면은 back button이 필수다.
+- bottom tab은 fixed 또는 safe-area anchored 상태여야 하며, scroll content가 tab 아래로 가려지지 않게 하단 padding을 둔다.
+- 카드 사용 여부를 먼저 분류한다. 독립 데이터 묶음/결과/입력은 카드가 맞고, header/hero/band/list wrapper/navigation/sticky action은 카드가 아니다.
+- 화면 안에 surface 유형을 최소 2~3개 섞는다. 예: hero band, compact list row, filled card, outline panel, sticky action.
+
 ### 4. Screenshot / Browser Verification Gate
 
 최소 검증:
 
 - 데스크톱 1440px 폭 screenshot
-- 모바일 390px 폭 screenshot
+- 모바일 screenshot은 요청 폭을 따른다. 요청이 없으면 390px, Z Fold 5 folded/344px 요청이면 344px screenshot을 blocker 기준으로 저장한다.
 - screenshot 파일은 기본적으로 `design-lab/screenshots/`에 저장
 - 텍스트/카드/nav/table/form 겹침 없음
+- hero/header/status panel/list/bottom tab overlap 0px
+- 좌우 최소 여백 16px 이상, touch target 44px 이상, 주요 CTA 48px 이상
+- bottom tab fixed/anchored, root tab back 없음, task/detail/modal back 있음
+- text overflow, clipped copy, safe-area 침범 없음
 - 한국어 문구 자연스러움
 - 사용자가 요청한 화면 수를 실제 이미지로 생성
 
@@ -112,9 +129,10 @@ Fail 조건:
 
 - AI 템플릿 느낌, 과한 보라/파랑 gradient, 의미 없는 neon/glass 남용
 - 금지 폰트 또는 프로젝트 DESIGN.md와 다른 폰트
-- 카드 반복만 있는 평범한 3열 레이아웃
+- 카드 반복만 있는 평범한 3열 레이아웃 또는 모바일 전체가 같은 카드 UI로 수렴한 구조
+- 카드가 아닌 header/band/list/functional surface까지 전부 카드로 감싼 구조
 - TODO, `...`, lorem ipsum, generic placeholder
-- 모바일 깨짐, 텍스트 overflow, 클릭 가능한 요소의 상태 부재
+- 모바일 깨짐, 텍스트 overflow, overlap, bottom tab 미고정, navigation back 규칙 불일치, 클릭 가능한 요소의 상태 부재
 - 마케팅 훅과 실제 화면이 연결되지 않음
 
 통과하면 실제 구현으로 넘길 수 있는 “승인된 mock”으로 표시한다.
@@ -127,7 +145,10 @@ handoff에는 아래를 포함한다.
 
 - 승인된 `DESIGN.md` 경로
 - 승인된 mock 경로(`design-lab/pub/` 또는 예외적으로 `design-lab/pub/<slug>/`)
+- pub/composite 목적 분리 여부(`design-lab/pub/`는 raw 원본, thumbnail/composite는 별도 경로)
 - screenshot 경로(`design-lab/screenshots/`)
+- 검증 폭과 blocker 수치(예: 390px 또는 344px, overlap 0px, 최소 좌우 여백 16px 이상, bottom tab fixed/anchored, text overflow 없음)
+- navigation 판정(root tab back 없음, task/detail/modal back 있음)
 - 실제 구현 대상 화면/컴포넌트
 - 실제 앱 코드에서 수정 허용되는 파일 범위
 - 구현하지 않을 범위(DB/API/auth/운영 데이터 등)
@@ -153,7 +174,9 @@ handoff에는 아래를 포함한다.
 - Handoff: [design-lab/handoff.md 또는 생략 사유]
 
 검증한 것:
-- Desktop/mobile 폭
+- Desktop/mobile 폭과 요청 폭 기준
+- overlap 0px / 최소 좌우 여백 16px 이상 / bottom tab fixed·anchored / text overflow 없음
+- root tab back 없음 / task-detail-modal back 있음
 - design-quality 기준
 - 실제 앱 미수정 여부
 
@@ -168,6 +191,7 @@ handoff에는 아래를 포함한다.
 
 - DESIGN.md를 만들었다고 디자인이 끝난 게 아니다. screenshot으로 실제 화면을 봐야 한다.
 - design-lab이 실제 앱과 너무 멀어져도 문제다. 토큰, 폰트, 정보 구조는 실제 구현 가능성을 유지한다.
+- `design-lab/pub/`를 디바이스 mockup/썸네일 합성용 페이지로 쓰지 않는다. raw 원본과 composite 목적을 섞으면 reviewer와 developer handoff가 깨진다.
 - 단일 repo/단일 포트폴리오 작업에서 습관적으로 `design-lab/pub/<project-slug>/`를 만들지 않는다. 중첩은 여러 실험이 동시에 있을 때만 쓴다.
 - 포트폴리오용 mock은 과장하면 안 된다. “포트폴리오 표현을 위해 재구성한 고도화 UI 예시”처럼 실제 운영 사실과 표현용 재구성을 구분한다.
 - 오케스트레이션 프롬프트에 긴 디자인 규칙을 복붙하지 말고 이 스킬로 라우팅한다.
