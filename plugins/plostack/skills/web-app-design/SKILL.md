@@ -17,7 +17,7 @@ description: React, Next.js, Tailwind CSS 기반 웹앱 UI를 설계/구현할 �
 
 ## 프로젝트 디자인 원본
 
-프로젝트 저장소 안에서 작업 중이면 `DESIGN.md`를 디자인 원본으로 사용한다.
+프로젝트 저장소 안에서 작업 중이면 `DESIGN.md`를 디자인 원본으로 사용한다. 새 앱/SaaS/SPA/주요 관리자 UI/포트폴리오 화면처럼 디자인이 제품 성공이나 판매 전환에 영향을 주는 작업은 실제 구현 전에 `design-gate-hook-harness`를 적용한다.
 
 - 기존 `DESIGN.md` 또는 `design.md`가 있으면 먼저 읽고 웹앱 UI 규칙을 맞춘다.
 - 둘 다 없고 새 화면/컴포넌트/디자인 시스템 변경이 프로젝트에 남는다면 `DESIGN.md`를 만든다.
@@ -30,7 +30,7 @@ description: React, Next.js, Tailwind CSS 기반 웹앱 UI를 설계/구현할 �
 - Font: Pretendard. Inter, Roboto, Noto Sans KR 금지
 - Icons: 프로젝트에 아이콘 라이브러리가 있으면 그것을 사용한다. 없으면 `lucide-react` 또는 Iconify Solar를 사용하되 버튼에는 텍스트보다 아이콘을 우선한다.
 - Charts: 기존 라이브러리를 우선하고, 없으면 Recharts 또는 Tremor 계열을 검토한다.
-- Output: 기존 프로젝트에 바로 붙는 컴포넌트/페이지 파일. 단일 HTML 랜딩 요청은 `landing-page-design`을 우선한다.
+- Output: 기존 프로젝트의 구현 단계라면 바로 붙는 컴포넌트/페이지 파일을 만든다. 단, 새 제품/주요 화면/포트폴리오용 UI는 실제 앱 코드에 붙이기 전에 `design-lab/`, `publishing/`, `mockups/` 같은 분리 공간에서 퍼블리싱 mock과 screenshot을 먼저 만든다. 단일 HTML 랜딩 요청은 `landing-page-design`을 우선한다.
 
 ## 레이아웃 기준
 

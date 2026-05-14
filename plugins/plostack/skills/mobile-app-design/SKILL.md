@@ -17,7 +17,7 @@ description: React Native, Expo, NativeWind 기반 모바일 앱 화면이나 �
 
 ## 프로젝트 디자인 원본
 
-프로젝트 저장소 안에서 작업 중이면 `DESIGN.md`를 디자인 원본으로 사용한다.
+프로젝트 저장소 안에서 작업 중이면 `DESIGN.md`를 디자인 원본으로 사용한다. 새 모바일 앱/주요 화면/포트폴리오용 앱 화면은 실제 앱 구현 전에 `design-gate-hook-harness`를 적용해 marketing brief, `DESIGN.md`, 별도 퍼블리싱/mock 화면, screenshot, design review를 통과시킨다.
 
 - 기존 `DESIGN.md` 또는 `design.md`가 있으면 먼저 읽고 모바일 앱 UI 규칙을 맞춘다.
 - 둘 다 없고 새 앱 화면/컴포넌트 세트를 프로젝트에 추가한다면 `DESIGN.md`를 만든다.

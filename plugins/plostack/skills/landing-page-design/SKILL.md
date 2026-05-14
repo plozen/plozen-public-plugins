@@ -24,7 +24,7 @@ description: 새 마케팅 랜딩페이지를 만들거나 기존 HTML/CSS 랜�
 
 ## 프로젝트 디자인 원본
 
-프로젝트 저장소 안에서 작업 중이면 `DESIGN.md`를 디자인 원본으로 사용한다.
+프로젝트 저장소 안에서 작업 중이면 `DESIGN.md`를 디자인 원본으로 사용한다. 새 랜딩/전환 화면/포트폴리오 상세 이미지처럼 판매 전환에 영향을 주는 작업은 실제 서비스 코드에 붙이기 전에 `design-gate-hook-harness`를 적용해 marketing brief, `DESIGN.md`, 별도 퍼블리싱 mock, screenshot, design review를 확인한다.
 
 - 기존 `DESIGN.md` 또는 `design.md`가 있으면 먼저 읽고, 랜딩의 색상/타이포/컴포넌트 규칙을 맞춘다.
 - 둘 다 없고 작업이 단발 HTML 산출물이 아니라 프로젝트에 남는 변경이면 `DESIGN.md`를 만든다.
