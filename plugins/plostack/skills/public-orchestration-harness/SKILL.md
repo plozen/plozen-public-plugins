@@ -52,7 +52,8 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 단계별 hook skill 연결:
 
 - Brainstorming: 새 기능, 디자인, 동작 변경, 불명확한 요구사항이면 `brainstorming`을 먼저 사용한다.
-- Planning: Brainstorming 승인이 끝난 보호 작업은 `planning-hook-harness`를 적용한다.
+- Design Gate: 새 앱/SaaS/SPA/랜딩/관리자 UI/포트폴리오 화면처럼 디자인이 제품 성공과 판매 전환에 영향을 주는 작업은 실제 구현 전에 `design-gate-hook-harness`를 적용한다. 이 gate에서 marketing brief, `DESIGN.md`, 별도 `design-lab/` 퍼블리싱 mock, screenshot, design review 통과 여부를 확인한다.
+- Planning: Brainstorming 및 필요한 Design Gate 승인이 끝난 보호 작업은 `planning-hook-harness`를 적용한다.
 - 작업 트리: 저장소 수정 전에는 `worktree-hook-harness`를 적용한다.
 - 위임: 독립 실행 단위가 여러 개이거나, 전문 역할 gate가 필요하거나, 사용자가 명시적으로 요청했거나, 장시간 작업을 분리하는 편이 안전하면 `background-dispatch` 스킬을 적용한다.
 - 구현/디버깅: 버그, 테스트 실패, 동작 변경은 `debugging-hook-harness`를 적용한다.
@@ -95,6 +96,7 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 - 코드, schema, API, auth, data 변경: `reviewer` gate
 - 동작 변경, 테스트 추가, 회귀 위험: `qa` gate
 - UI 또는 browser-facing 변경: `breaker` 또는 `qa` browser gate
+- 새 앱/SaaS/SPA/랜딩/관리자 UI/포트폴리오 화면: `design-gate-hook-harness` + `design-reviewer` gate. 승인된 `DESIGN.md`와 별도 mock/screenshot 없이 실제 구현으로 바로 들어가면 완료를 막는다.
 - secrets, auth, infra, dependency 변경: `security` gate
 - `reviewer` BLOCK, `qa` FAIL, `security` Critical, 핵심 사용자 흐름 실패는 완료를 막는다.
 - gate를 생략하면 최종 보고에 생략 이유와 남은 위험을 남긴다.
