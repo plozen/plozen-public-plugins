@@ -19,7 +19,7 @@ description: 랜딩페이지, 웹앱, 모바일 앱 화면이 평범한 AI 템�
 
 ## DESIGN.md 원칙
 
-프로젝트 저장소 안에서 디자인 작업을 하면 `DESIGN.md`를 디자인 원본으로 둔다. 새 앱/SaaS/SPA/랜딩/관리자 UI/포트폴리오 화면처럼 디자인이 제품 성공이나 판매 전환에 영향을 주는 작업은 실제 구현 전에 `design-gate-hook-harness`를 적용한다.
+프로젝트 저장소 안에서 디자인 작업을 하면 `DESIGN.md`를 디자인 원본으로 둔다. 새 앱/SaaS/SPA/랜딩/관리자 UI/포트폴리오 화면처럼 디자인이 제품 성공이나 판매 전환에 영향을 주는 작업은 실제 구현 전에 `design-gate-hook-harness`를 적용한다. 기본 퍼블리싱 원본은 `design-lab/pub/`, 캡처 산출물은 `design-lab/screenshots/`, 실제 구현 handoff 문서는 필요 시 `design-lab/handoff.md`다.
 
 - 기존 `DESIGN.md` 또는 `design.md`가 있으면 먼저 읽고 코드와 문구를 맞춘다.
 - 둘 다 없고 단발 산출물이 아닌 프로젝트 변경이면 `DESIGN.md`를 만든다.
@@ -101,7 +101,8 @@ transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 
 ## 출력 전 점검
 
-- `design-gate-hook-harness` 적용 대상이면 marketing brief, `DESIGN.md`, 별도 `design-lab/` mock, desktop/mobile screenshot, design review gate가 완료됐는가?
+- `design-gate-hook-harness` 적용 대상이면 `Marketing Brief -> DESIGN.md -> pub mock -> screenshots -> design review -> implementation handoff` 흐름과 `design-lab/pub/`, `design-lab/screenshots/`, 필요 시 `design-lab/handoff.md` 산출물이 완료됐는가?
+- 단일 repo/단일 포트폴리오 작업에서 `design-lab/pub/<project-slug>/` 중첩을 불필요하게 만들지 않았는가? 여러 디자인 실험이 동시에 있을 때만 `pub/<slug>/`를 예외로 썼는가?
 - `DESIGN.md`가 필요하면 생성/갱신됐는가?
 - 선택한 분위기와 레이아웃 아키타입이 실제 코드에 반영됐는가?
 - 금지 폰트, 아이콘, 테두리, 그림자, 레이아웃, 모션 패턴이 없는가?

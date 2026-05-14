@@ -17,7 +17,7 @@ description: React Native, Expo, NativeWind 기반 모바일 앱 화면이나 �
 
 ## 프로젝트 디자인 원본
 
-프로젝트 저장소 안에서 작업 중이면 `DESIGN.md`를 디자인 원본으로 사용한다. 새 모바일 앱/주요 화면/포트폴리오용 앱 화면은 실제 앱 구현 전에 `design-gate-hook-harness`를 적용해 marketing brief, `DESIGN.md`, 별도 퍼블리싱/mock 화면, screenshot, design review를 통과시킨다.
+프로젝트 저장소 안에서 작업 중이면 `DESIGN.md`를 디자인 원본으로 사용한다. 새 모바일 앱/주요 화면/포트폴리오용 앱 화면은 실제 앱 구현 전에 `design-gate-hook-harness`를 적용해 `Marketing Brief -> DESIGN.md -> pub mock -> screenshots -> design review -> implementation handoff` 흐름을 통과시킨다. 퍼블리싱/mock 원본은 `design-lab/pub/`, 캡처 산출물은 `design-lab/screenshots/`, 구현 handoff는 필요 시 `design-lab/handoff.md`에 둔다.
 
 - 기존 `DESIGN.md` 또는 `design.md`가 있으면 먼저 읽고 모바일 앱 UI 규칙을 맞춘다.
 - 둘 다 없고 새 앱 화면/컴포넌트 세트를 프로젝트에 추가한다면 `DESIGN.md`를 만든다.
@@ -32,7 +32,7 @@ description: React Native, Expo, NativeWind 기반 모바일 앱 화면이나 �
 - Icons: `@expo/vector-icons` 또는 `react-native-vector-icons`. Solar 계열을 우선한다.
 - Charts: 필요할 때만 `react-native-chart-kit` 또는 `victory-native`
 - Animation: 복잡한 전환에만 `react-native-reanimated`. 단순 상태 변화는 `useState` 우선
-- Output: 실제 프로젝트에 붙여 넣을 수 있는 완전한 `.tsx`
+- Output: 실제 프로젝트에 붙여 넣을 수 있는 완전한 `.tsx`. 단, design gate 단계의 브라우저 확인용 mock은 `design-lab/pub/`에 두고 캡처는 `design-lab/screenshots/`에 저장한다. 단일 repo/단일 포트폴리오 작업에서는 `design-lab/pub/<project-slug>/` 중첩을 기본값으로 쓰지 않는다.
 - 이모지 금지. 필요한 표시는 아이콘으로 대체한다.
 
 ## React Native 규칙

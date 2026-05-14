@@ -5,6 +5,7 @@ Plostack은 Codex와 Claude Code에서 사용할 수 있는 공개 디자인, �
 포함 범위:
 
 - 프리미엄 디자인 품질 게이트와 `DESIGN.md` 관리
+- `design-lab/pub/` 퍼블리싱 원본, `design-lab/screenshots/` 캡처, 필요 시 `design-lab/handoff.md` 구현 handoff 흐름
 - 랜딩페이지 생성과 개선
 - 웹앱 UI 설계와 구현
 - 모바일 앱 UI 설계와 구현

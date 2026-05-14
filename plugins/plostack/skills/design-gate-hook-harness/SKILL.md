@@ -1,6 +1,6 @@
 ---
 name: design-gate-hook-harness
-description: 새 앱, SaaS, SPA, 랜딩, 관리자 UI, 포트폴리오 화면처럼 디자인이 제품 성공과 판매 전환에 영향을 주는 작업에서 실제 구현 전에 marketing brief, DESIGN.md, 별도 design-lab 퍼블리싱 mock, screenshot, design review gate를 강제한다.
+description: 새 앱, SaaS, SPA, 랜딩, 관리자 UI, 포트폴리오 화면처럼 디자인이 제품 성공과 판매 전환에 영향을 주는 작업에서 실제 구현 전에 marketing brief, DESIGN.md, design-lab/pub 퍼블리싱 mock, design-lab/screenshots 캡처, design review gate를 강제한다.
 ---
 
 # Plostack Design Gate Hook Harness
@@ -25,13 +25,15 @@ description: 새 앱, SaaS, SPA, 랜딩, 관리자 UI, 포트폴리오 화면처
 
 ## Gate Flow
 
+Design gate 흐름은 항상 `Marketing Brief -> DESIGN.md -> pub mock -> screenshots -> design review -> implementation handoff` 순서를 유지한다.
+
 ```text
-Marketing Brief Gate
-  -> DESIGN.md Gate
-  -> Publishing Mock Gate
-  -> Screenshot / Browser Verification Gate
-  -> Design Review Gate
-  -> Implementation Handoff Gate
+Marketing Brief
+  -> DESIGN.md
+  -> pub mock
+  -> screenshots
+  -> design review
+  -> implementation handoff
 ```
 
 ### 1. Marketing Brief Gate
@@ -60,7 +62,7 @@ Marketing Brief Gate
 
 실제 앱 코드에 바로 들어가지 말고 별도 mock 공간을 우선 만든다.
 
-권장 구조:
+표준 구조:
 
 ```text
 project/
@@ -68,19 +70,23 @@ project/
   docs/
     marketing-brief.md          # 선택
   design-lab/
-    <feature-or-page>/
-      README.md
+    pub/                         # 기본 퍼블리싱 원본
       index.html 또는 src/
-      screenshots/
-        desktop-main.png
-        desktop-detail.png
-        mobile.png
+    screenshots/                 # 캡처 산출물
+      desktop-main.png
+      desktop-detail.png
+      mobile.png
+    handoff.md                   # 실제 구현 handoff가 필요할 때만 작성
   app/ 또는 src/                 # 실제 앱 코드, gate 전에는 건드리지 않음
 ```
 
 규칙:
 
-- 포트폴리오/제안/초기 제품 화면은 `design-lab/`, `publishing/`, `mockups/` 같은 분리 폴더에서 먼저 만든다.
+- 기본 퍼블리싱 원본은 `design-lab/pub/`에 둔다.
+- 캡처 산출물은 `design-lab/screenshots/`에 둔다.
+- 실제 구현 handoff 문서가 필요하면 `design-lab/handoff.md`에 둔다.
+- 단일 repo 또는 단일 포트폴리오 작업에서는 `design-lab/pub/<project-slug>/` 중첩을 기본값으로 쓰지 않는다.
+- 여러 디자인 실험이 동시에 존재해 산출물 충돌이 날 때만 `design-lab/pub/<slug>/` 예외를 허용한다. 이 경우 screenshot 파일명이나 하위 폴더에도 같은 slug를 반영한다.
 - 실제 운영 앱 코드, DB, API, auth, routing을 수정하지 않는다. 필요하면 사용자 승인 후 Implementation Handoff에서 별도 작업으로 승격한다.
 - 단일 HTML, Tailwind, React/Vite, Next static route 중 프로젝트에 맞는 최소 스택을 쓴다.
 - TODO, lorem ipsum, placeholder-only, wireframe-only 산출물은 gate fail이다.
@@ -91,6 +97,7 @@ project/
 
 - 데스크톱 1440px 폭 screenshot
 - 모바일 390px 폭 screenshot
+- screenshot 파일은 기본적으로 `design-lab/screenshots/`에 저장
 - 텍스트/카드/nav/table/form 겹침 없음
 - 한국어 문구 자연스러움
 - 사용자가 요청한 화면 수를 실제 이미지로 생성
@@ -114,13 +121,13 @@ Fail 조건:
 
 ### 6. Implementation Handoff Gate
 
-실제 개발은 별도 작업으로 승격한다.
+실제 개발은 별도 작업으로 승격한다. 구현 handoff가 필요하면 `design-lab/handoff.md`를 작성한다.
 
 handoff에는 아래를 포함한다.
 
 - 승인된 `DESIGN.md` 경로
-- 승인된 mock 경로
-- screenshot 경로
+- 승인된 mock 경로(`design-lab/pub/` 또는 예외적으로 `design-lab/pub/<slug>/`)
+- screenshot 경로(`design-lab/screenshots/`)
 - 실제 구현 대상 화면/컴포넌트
 - 실제 앱 코드에서 수정 허용되는 파일 범위
 - 구현하지 않을 범위(DB/API/auth/운영 데이터 등)
@@ -141,8 +148,9 @@ handoff에는 아래를 포함한다.
 ```text
 완료한 것:
 - DESIGN.md: [경로/상태]
-- Mock: [경로]
-- Screenshots: [경로]
+- Mock: [design-lab/pub/ 경로]
+- Screenshots: [design-lab/screenshots/ 경로]
+- Handoff: [design-lab/handoff.md 또는 생략 사유]
 
 검증한 것:
 - Desktop/mobile 폭
@@ -160,5 +168,6 @@ handoff에는 아래를 포함한다.
 
 - DESIGN.md를 만들었다고 디자인이 끝난 게 아니다. screenshot으로 실제 화면을 봐야 한다.
 - design-lab이 실제 앱과 너무 멀어져도 문제다. 토큰, 폰트, 정보 구조는 실제 구현 가능성을 유지한다.
+- 단일 repo/단일 포트폴리오 작업에서 습관적으로 `design-lab/pub/<project-slug>/`를 만들지 않는다. 중첩은 여러 실험이 동시에 있을 때만 쓴다.
 - 포트폴리오용 mock은 과장하면 안 된다. “포트폴리오 표현을 위해 재구성한 고도화 UI 예시”처럼 실제 운영 사실과 표현용 재구성을 구분한다.
 - 오케스트레이션 프롬프트에 긴 디자인 규칙을 복붙하지 말고 이 스킬로 라우팅한다.

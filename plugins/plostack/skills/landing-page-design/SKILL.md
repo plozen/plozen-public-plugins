@@ -24,7 +24,7 @@ description: 새 마케팅 랜딩페이지를 만들거나 기존 HTML/CSS 랜�
 
 ## 프로젝트 디자인 원본
 
-프로젝트 저장소 안에서 작업 중이면 `DESIGN.md`를 디자인 원본으로 사용한다. 새 랜딩/전환 화면/포트폴리오 상세 이미지처럼 판매 전환에 영향을 주는 작업은 실제 서비스 코드에 붙이기 전에 `design-gate-hook-harness`를 적용해 marketing brief, `DESIGN.md`, 별도 퍼블리싱 mock, screenshot, design review를 확인한다.
+프로젝트 저장소 안에서 작업 중이면 `DESIGN.md`를 디자인 원본으로 사용한다. 새 랜딩/전환 화면/포트폴리오 상세 이미지처럼 판매 전환에 영향을 주는 작업은 실제 서비스 코드에 붙이기 전에 `design-gate-hook-harness`를 적용해 `Marketing Brief -> DESIGN.md -> pub mock -> screenshots -> design review -> implementation handoff` 흐름을 확인한다. 퍼블리싱 원본은 `design-lab/pub/`, 캡처 산출물은 `design-lab/screenshots/`, 구현 handoff는 필요 시 `design-lab/handoff.md`에 둔다.
 
 - 기존 `DESIGN.md` 또는 `design.md`가 있으면 먼저 읽고, 랜딩의 색상/타이포/컴포넌트 규칙을 맞춘다.
 - 둘 다 없고 작업이 단발 HTML 산출물이 아니라 프로젝트에 남는 변경이면 `DESIGN.md`를 만든다.
@@ -45,7 +45,7 @@ description: 새 마케팅 랜딩페이지를 만들거나 기존 HTML/CSS 랜�
 
 ## 새 랜딩 생성
 
-출력은 단일 standalone HTML이다.
+출력은 단일 standalone HTML이다. 프로젝트 gate 산출물로 남길 때는 기본 파일을 `design-lab/pub/index.html`에 둔다. 단일 repo/단일 포트폴리오 작업에서는 `design-lab/pub/<project-slug>/` 중첩을 기본값으로 쓰지 않고, 여러 랜딩 실험이 동시에 존재할 때만 `pub/<slug>/` 예외를 허용한다.
 
 - Tailwind CSS CDN을 사용한다.
 - Pretendard CDN을 로드하고 primary font로 지정한다.
