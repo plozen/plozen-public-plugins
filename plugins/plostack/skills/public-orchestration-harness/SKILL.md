@@ -55,7 +55,7 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 - Design Gate: 새 앱/SaaS/SPA/랜딩/관리자 UI/포트폴리오 화면처럼 디자인이 제품 성공과 판매 전환에 영향을 주는 작업은 실제 구현 전에 `design-gate-hook-harness`를 적용한다. 이 gate에서 `Marketing Brief -> DESIGN.md -> pub mock -> screenshots -> design review -> implementation handoff` 흐름과 `design-lab/pub/`, `design-lab/screenshots/`, 필요 시 `design-lab/handoff.md` 산출물 여부를 확인한다.
 - Planning: Brainstorming 및 필요한 Design Gate 승인이 끝난 보호 작업은 `planning-hook-harness`를 적용한다.
 - 작업 트리: 저장소 수정 전에는 `worktree-hook-harness`를 적용한다.
-- 위임: 독립 실행 단위가 여러 개이거나, 전문 역할 gate가 필요하거나, 사용자가 명시적으로 요청했거나, 장시간 작업을 분리하는 편이 안전하면 `background-dispatch` 스킬을 적용한다.
+- 위임: 독립 실행 단위가 여러 개이거나, 전문 역할 gate가 필요하거나, 사용자가 명시적으로 요청했거나, 장시간 작업을 분리하는 편이 안전하면 `background-dispatch` 스킬을 적용한다. 이때 새 subagent를 바로 만들지 말고 같은 역할/같은 작업 라인의 기존 agent를 `send_input` 또는 `resume_agent`로 재사용할 수 있는지 먼저 확인한다.
 - 구현/디버깅: 버그, 테스트 실패, 동작 변경은 `debugging-hook-harness`를 적용한다.
 - 리뷰: 피드백 처리에는 `review-reception-hook-harness`를 적용한다.
 - QA/Security: 변경 성격에 맞춰 reviewer, qa, breaker, security gate를 적용한다.
@@ -70,6 +70,14 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 - 질문 답변, 상태 확인, 범위 분류, 라우팅, 설계, 작업 방향 제시
 - 위임 준비를 위한 최소 파일 읽기와 작업 트리/브랜치/커밋/푸시/PR/병합/정리 같은 통합 작업
 - 위임 결과 검토, gate 판정, 최종 보고
+
+subagent lifecycle 기본값:
+
+- 동일 역할과 동일 작업 라인의 후속 작업은 기존 agent 재사용을 우선한다.
+- 새 agent 생성 전 `send_input`으로 이어갈 수 있는지 확인하고, 이미 닫은 agent라도 맥락을 이어갈 가치가 있으면 `resume_agent`를 먼저 시도한다.
+- `completed`는 결과 수신 상태일 뿐 자동 종료 신호가 아니다. 후속 피드백 가능성이 있으면 agent를 유지한다.
+- `close_agent`는 작업 라인 종료, 취소, 컨텍스트 폐기, 또는 세션 유지가 더 위험한 경우에만 사용한다.
+- 역할별로 `designer`, `developer`, `qa`, `reviewer` 같은 장기 작업 슬롯을 유지할 수 있다. 단, 파일 ownership이 겹치거나 역할이 달라 충돌 위험이 있으면 새 agent를 만들 수 있다.
 
 역할별 우선 호출 기준:
 
