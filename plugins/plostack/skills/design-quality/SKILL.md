@@ -21,6 +21,8 @@ description: 랜딩페이지, 웹앱, 모바일 앱 화면이 평범한 AI 템�
 
 프로젝트 저장소 안에서 디자인 작업을 하면 `DESIGN.md`를 디자인 원본으로 둔다. 새 앱/SaaS/SPA/랜딩/관리자 UI/포트폴리오 화면처럼 디자인이 제품 성공이나 판매 전환에 영향을 주는 작업은 실제 구현 전에 `design-gate-hook-harness`를 적용한다. 기본 퍼블리싱 원본은 `design-lab/pub/`, 캡처 산출물은 `design-lab/screenshots/`, 실제 구현 handoff 문서는 필요 시 `design-lab/handoff.md`다.
 
+`design-lab/pub/`는 raw publishing/artboard 원본이다. 개발 참조용 화면 구조, 토큰, 상태, 레이아웃을 그대로 보여줘야 하며 디바이스 목업/손 mockup/배경 합성/크몽 썸네일용 composite를 포함하지 않는다. 썸네일·포트폴리오 합성은 `kmong-thumbnail/` 또는 `design-lab/composite/` 같은 별도 경로로 분리한다.
+
 - 기존 `DESIGN.md` 또는 `design.md`가 있으면 먼저 읽고 코드와 문구를 맞춘다.
 - 둘 다 없고 단발 산출물이 아닌 프로젝트 변경이면 `DESIGN.md`를 만든다.
 - 새 `DESIGN.md`에는 브랜드 톤, 폰트, 색상 토큰, spacing, 컴포넌트 상태, 레이아웃 원칙, 접근성, 금지 패턴, 검증 기준을 간결하게 기록한다.
@@ -35,7 +37,7 @@ description: 랜딩페이지, 웹앱, 모바일 앱 화면이 평범한 AI 템�
 - 금지 폰트: Inter, Noto Sans KR, Roboto, Arial, Open Sans, Helvetica, Malgun Gothic.
 - 금지 아이콘: 두꺼운 Lucide, FontAwesome, Material Icons 남용. 랜딩은 Iconify Solar, 앱은 프로젝트 아이콘 시스템을 우선한다.
 - 금지 테두리/그림자: 의미 없는 `1px solid gray`, 거친 `shadow-md`, `rgba(0,0,0,0.3)` 기본 그림자.
-- 금지 레이아웃: 평범한 sticky nav, 대칭 3열 카드 반복, 모든 섹션이 같은 구조, 카드 안의 카드.
+- 금지 레이아웃: 평범한 sticky nav, 대칭 3열 카드 반복, 모든 섹션이 같은 구조, 카드 안의 카드, 모바일 화면 전체를 동일 카드 패턴으로 도배하는 구조.
 - 금지 모션: `linear`, 무분별한 `ease-in-out`, 즉시 상태 변경, 과도한 scroll listener.
 - 금지 문구: "혁신적인", "원활한", "차세대", "한 차원 높은", "게임 체인저".
 
@@ -76,6 +78,25 @@ description: 랜딩페이지, 웹앱, 모바일 앱 화면이 평범한 AI 템�
 - 테이블/리스트는 loading, empty, pagination 또는 scroll 상태를 고려한다.
 - 상태 없는 버튼, 입력, 토글, 모달은 납품하지 않는다.
 
+## Surface / Card 기준
+
+카드는 독립 데이터 묶음, 결과, 입력, 선택지를 담는 surface다. 모든 section을 카드로 감싸면 정보 구조가 무너진다.
+
+- 카드 사용: 개별 task/장소/프로그램 항목, 신청 결과 요약, 입력 form group, 견적/분석 결과, 상태 알림 묶음.
+- 카드 비사용: hero/header, section title, 설명 band, navigation, timeline/list wrapper, sticky action area, 단순 메타/라벨.
+- 카드 유형은 최소 2~3개로 분화한다. 예: filled surface, outline card, compact row, statistic chip, media tile, full-width functional surface.
+- 리스트는 row density와 scan speed를 우선한다. 모든 row를 큰 카드로 만들지 말고 divider, band, grouped section, inline action을 섞는다.
+- 모바일에서는 기능 surface, list, section, detail panel의 역할을 이름 붙여 구분한 뒤 시각 스타일을 다르게 준다.
+
+## 모바일 검증 기준
+
+- 기준 폭은 요청값을 따른다. 없으면 390px, `Z Fold 5 folded`/`folded`/`344px` 요청이면 344px을 blocker 기준으로 삼는다.
+- root tab 화면은 back button이 없어야 한다. task/detail/modal/secondary flow는 back button이 있어야 한다.
+- bottom tab은 fixed/anchored 상태여야 하며 콘텐츠를 가리면 fail이다.
+- hero panel, status band, card/list, bottom tab 간 overlap은 0px이어야 한다.
+- 좌우 최소 여백은 16px 이상, touch target은 44px 이상, 주요 CTA는 48px 이상을 기본으로 본다.
+- 텍스트 overflow, 잘림, 줄바꿈 깨짐, safe-area 침범은 blocker다.
+
 ## 모션 기준
 
 모션은 `transform`과 `opacity`를 중심으로 제한한다.
@@ -102,11 +123,14 @@ transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 ## 출력 전 점검
 
 - `design-gate-hook-harness` 적용 대상이면 `Marketing Brief -> DESIGN.md -> pub mock -> screenshots -> design review -> implementation handoff` 흐름과 `design-lab/pub/`, `design-lab/screenshots/`, 필요 시 `design-lab/handoff.md` 산출물이 완료됐는가?
+- `design-lab/pub/`가 디바이스 목업/썸네일 합성이 아니라 raw publishing/artboard 원본인가? composite/thumbnail이 필요하면 별도 경로로 분리했는가?
 - 단일 repo/단일 포트폴리오 작업에서 `design-lab/pub/<project-slug>/` 중첩을 불필요하게 만들지 않았는가? 여러 디자인 실험이 동시에 있을 때만 `pub/<slug>/`를 예외로 썼는가?
 - `DESIGN.md`가 필요하면 생성/갱신됐는가?
 - 선택한 분위기와 레이아웃 아키타입이 실제 코드에 반영됐는가?
 - 금지 폰트, 아이콘, 테두리, 그림자, 레이아웃, 모션 패턴이 없는가?
 - 주요 CTA와 입력/버튼에 hover, active, focus, disabled/loading 상태가 있는가?
-- 모바일에서 텍스트, 카드, nav, 버튼이 겹치지 않는가?
+- 모바일에서 요청 폭 또는 기본 390px 기준으로 텍스트, 카드, nav, 버튼이 겹치지 않는가? Z Fold 5 folded 요청이면 344px에서 통과했는가?
+- root tab/back button 규칙, bottom tab fixed/anchored, overlap 0px, 최소 좌우 여백 16px 이상, text overflow 없음이 확인됐는가?
+- 카드가 필요한 데이터 묶음/결과/입력과 카드가 아닌 header/band/list/functional surface가 구분됐는가?
 - 한국어 문구가 번역투가 아니라 자연스러운가?
 - 결과물이 AI 템플릿이 아니라 의도적으로 설계한 제품 화면처럼 보이는가?
