@@ -1,0 +1,78 @@
+version = 1
+base_branch = "main"
+allow_main_push = false
+require_pr = true
+stage_strategy = "explicit" # explicit | all_safe
+
+[local_preflight]
+diff_check = true
+secret_scan = "auto" # auto | gitleaks | detect-secrets | fallback | off
+require_clean_after_commit = false
+
+secret_file_patterns = [
+  ".env",
+  ".env.*",
+  "*.pem",
+  "*.key",
+  "*.p12",
+  "*.pfx",
+  "id_rsa",
+  "id_ed25519",
+  "credentials.json",
+  "service-account*.json",
+  "kakao-config.local.js",
+]
+
+allowed_secret_templates = [
+  ".env.example",
+  ".env.sample",
+  "*.example",
+  "*.template",
+]
+
+stage_allow = [
+  "plugins/plostack/skills/**",
+  "plugins/plostack/README.md",
+  "README.md",
+]
+
+stage_deny = [
+  ".env*",
+  "*.pem",
+  "*.key",
+  "credentials*.json",
+  "service-account*.json",
+  "kakao-config.local.js",
+]
+
+[[local_preflight.commands]]
+name = "skill-frontmatter"
+command = "python3 scripts/validate-skills.py plugins/plostack/skills"
+required = true
+
+[[local_preflight.commands]]
+name = "lint"
+command = "pnpm lint"
+required = false
+
+[[local_preflight.commands]]
+name = "test"
+command = "pnpm test"
+required = false
+
+[[local_preflight.commands]]
+name = "build"
+command = "pnpm build"
+required = false
+
+[[local_preflight.commands]]
+name = "design"
+command = "pnpm run design:check"
+required = false
+
+[pr]
+base = "main"
+draft = false
+checks_watch = true
+checks_timeout_minutes = 30
+no_checks_status = "NO_CHECKS"

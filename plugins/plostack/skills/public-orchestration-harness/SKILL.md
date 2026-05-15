@@ -37,14 +37,14 @@ description: 저장소 변경, 새 기능, 동작 변경, 버그 수정, 테스�
 
 - `-bd`가 있거나 독립 실행 단위가 2개 이상이면 `background-dispatch` 스킬을 적용한다.
 - 회귀 위험이 있으면 reviewer 또는 QA gate를 적용한다.
-- 사용자 요청 또는 저장소 정책이 있으면 commit/PR을 적용한다.
+- 사용자 요청 또는 저장소 정책이 있으면 `verification-branch-finish-hook-harness`로 fresh evidence를 확인한 뒤 `finish-flow-harness`로 commit/push/PR gate를 적용한다.
 
 ### Protected
 
 보호 작업의 기본 흐름:
 
 ```text
-Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디버깅 -> 리뷰 -> QA/Security -> 검증 -> 커밋/푸시/PR -> 팀장 확인 -> 병합/정리 -> 보고
+Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디버깅 -> 리뷰 -> QA/Security -> 검증 -> finish-flow(local-preflight/commit/push/PR gate) -> 팀장 확인 -> 병합/정리 -> 보고
 ```
 
 보호 작업에서 팀장은 라우터, gate 판정자, 통합자 역할을 우선한다. 실행은 작업 규모와 런타임 정책에 따라 현재 세션, 역할 에이전트, 독립 실행 컨텍스트 중 적절한 경로가 맡는다. 최종 저장소 통합, 병합, 최종 푸시, 깨끗한 작업 트리 정리는 팀장이 책임진다.
@@ -59,7 +59,8 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 - 구현/디버깅: 버그, 테스트 실패, 동작 변경은 `debugging-hook-harness`를 적용한다.
 - 리뷰: 피드백 처리에는 `review-reception-hook-harness`를 적용한다.
 - QA/Security: 변경 성격에 맞춰 reviewer, qa, breaker, security gate를 적용한다.
-- 검증/완료: 완료, fixed, ready, merge, cleanup 전에는 `verification-branch-finish-hook-harness`를 적용한다.
+- 검증/완료: 완료, fixed, ready, merge, cleanup 전에는 `verification-branch-finish-hook-harness`를 적용해 마지막 변경 이후 fresh verification evidence를 확보한다.
+- 종료 자동화: commit, push, PR, remote checks까지 닫아야 하면 fresh verification 후 `finish-flow-harness`를 적용한다. 이 단계는 `local-preflight -> commit -> push -> pr-gate`를 담당하고, `main` 직접 push 기본 차단, secret 파일 차단, `NO_CHECKS` 별도 보고를 강제한다.
 
 ## 역할 위임 경계
 
@@ -99,7 +100,7 @@ subagent lifecycle 기본값:
 
 ## 완료 기준
 
-보호 작업은 필요한 gate가 통과하거나, 생략 이유와 남은 위험이 기록되어야 완료할 수 있다. 완료 선언 전에는 `verification-branch-finish-hook-harness`를 적용한다.
+보호 작업은 필요한 gate가 통과하거나, 생략 이유와 남은 위험이 기록되어야 완료할 수 있다. 완료 선언 전에는 `verification-branch-finish-hook-harness`를 적용한다. commit/push/PR까지 요청된 작업은 verification gate 통과 후 `finish-flow-harness`의 local-preflight, secret guard, push, PR remote gate 결과까지 보고되어야 한다.
 
 - 코드, schema, API, auth, data 변경: `reviewer` gate
 - 동작 변경, 테스트 추가, 회귀 위험: `qa` gate
