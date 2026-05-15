@@ -68,4 +68,4 @@ diff -qr plugins/plostack "$HOME/.codex/plugins/cache/plozen-public-plugins/plos
 
 ## 포함 플러그인
 
-- `plostack`: 공개 디자인, 문서 제작, HTML/PDF/PPTX, 전달 오케스트레이션 스킬팩
+- `plostack`: 공개 디자인, 문서 제작, HTML/PDF/PPTX, 전달 오케스트레이션, fresh verification, finish-flow 종료 자동화 스킬팩

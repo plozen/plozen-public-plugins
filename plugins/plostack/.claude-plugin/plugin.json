@@ -1,7 +1,7 @@
 {
   "name": "plostack",
   "description": "Claude Code용 공개 디자인, 문서 제작, 전달 오케스트레이션 스킬입니다.",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "author": {
     "name": "Plostack Contributors"
   },
@@ -26,6 +26,10 @@
     "git",
     "review",
     "qa",
-    "workflow"
+    "workflow",
+    "finish-flow",
+    "local-preflight",
+    "pr-checks",
+    "secrets"
   ]
 }
