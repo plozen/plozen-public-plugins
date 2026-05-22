@@ -1,6 +1,6 @@
 ---
 name: design-gate-hook-harness
-description: 새 앱, SaaS, SPA, 랜딩, 관리자 UI, 포트폴리오용 UI screenshot처럼 디자인이 제품 성공과 판매 전환에 영향을 주는 작업에서 실제 구현 전에 output format gate, marketing brief, DESIGN.md, design-lab/pub mock, screenshot, design review gate를 강제한다. 문서형 HTML/PDF/PPTX 산출물은 exportable-html-document로 분기한다.
+description: 새 앱, SaaS, SPA, 랜딩, 관리자 UI, 포트폴리오용 UI screenshot, Excalidraw/와이어프레임 레이아웃 기획처럼 디자인이 제품 성공과 판매 전환에 영향을 주는 작업에서 실제 구현 전에 output format gate, visual planning, marketing brief, DESIGN.md, design-lab/pub mock, screenshot, design review gate를 강제한다. 문서형 HTML/PDF/PPTX 산출물은 exportable-html-document로 분기한다.
 ---
 
 # Plostack Design Gate Hook Harness
@@ -21,6 +21,7 @@ description: 새 앱, SaaS, SPA, 랜딩, 관리자 UI, 포트폴리오용 UI scr
 - 기존 제품에 주요 화면, 대시보드, 관리자, 온보딩, 가격/전환 화면을 추가한다.
 - 포트폴리오/크몽/제안서에 넣을 제품 UI screenshot 또는 UI mock을 만들거나 개선한다.
 - 사용자가 “마케팅 먼저”, “클릭하게”, “궁금증”, “퍼블리싱 mock”, “DESIGN.md”, “디자인 게이트”를 언급한다.
+- 사용자가 Excalidraw, draw, whiteboard, 와이어프레임, 레이아웃 보드로 화면/페이지 구조를 먼저 잡자고 한다.
 - 에이전트가 바로 `src/`, `app/`, 실제 운영 앱 코드 구현으로 들어갈 위험이 있다.
 
 보고서, 제안서 문서, 포트폴리오 본문 HTML, PDF/PPTX 제출물, 다운로드 버튼이 있는 문서형 HTML은 `exportable-html-document`로 먼저 분기한다.
@@ -54,11 +55,28 @@ Output Format Gate
 | 이미 있는 HTML 파일을 PDF로 변환만 함 | `html-to-pdf` |
 | 이미 있는 HTML page/slide를 PPTX로 변환하거나 PPTX 다운로드 버튼/경로를 구현 | `html-to-pptx` |
 | 새 발표자료/피치덱을 기획하고 PPTX 생성 | `pptx-generator` |
+| Excalidraw/whiteboard/와이어프레임으로 화면 구조만 먼저 판단 | 이 design gate의 Visual Planning Gate + `design-quality` |
 
 포트폴리오/제안서 작업은 두 갈래로 나눈다.
 
 - 포트폴리오나 제안서에 넣을 제품 UI screenshot/mock: 이 design gate를 적용한다.
 - 포트폴리오 본문, 제안서 문서, 경력기술서, 보고서 HTML: `exportable-html-document`를 적용한다.
+
+### 0-1. Visual Planning Gate
+
+Excalidraw, whiteboard, rough wireframe은 `design-lab/pub/` mock 이전의 빠른 구조 판단 단계다. 이 단계는 긴 문서 대신 route, section, surface, CTA, evidence slot, data boundary를 눈으로 확인하는 용도이며, 승인된 퍼블리싱 mock이나 screenshot을 대체하지 않는다.
+
+Visual planning을 요청받으면 아래를 먼저 고정한다.
+
+- 페이지/화면 단위 frame을 분리한다. 예: blog main entry, portfolio main, case detail.
+- 각 frame에는 긴 문단이 아니라 slot label만 둔다. 예: `Problem 2 lines`, `Evidence links`, `Architecture slot`.
+- entry route와 CTA 흐름을 선으로 표시한다. 예: `/` hero CTA -> `/portfolio/` -> `/portfolio/{case}/`.
+- 공통 layout과 전용 layout을 구분한다. 예: common footer, page-specific hero.
+- 색상은 2~3개 neutral + 1 accent로 제한하고, 의미 없는 rainbow card를 쓰지 않는다.
+- 손글씨/rough 폰트 느낌이 판단을 흐리면 clean sans 기준으로 바꾼다.
+- `design-quality`로 폰트, 색, 카드 반복, 정보량, 한국어 라벨을 점검한다.
+
+이 단계의 산출물은 `layout decision board`와 짧은 handoff다. 실제 UI 구현이 필요해지면 이후 `DESIGN.md -> design-lab/pub mock -> screenshots -> design review`로 승격한다.
 
 ### 1. Marketing Brief Gate
 
@@ -215,6 +233,7 @@ handoff에는 아래를 포함한다.
 ## Pitfalls
 
 - DESIGN.md를 만들었다고 디자인이 끝난 게 아니다. screenshot으로 실제 화면을 봐야 한다.
+- Excalidraw/whiteboard는 디자인 방향을 빠르게 합의하는 도구일 뿐이다. 실제 구현 승인에는 DESIGN.md, pub mock, screenshot gate가 필요하다.
 - design-lab이 실제 앱과 너무 멀어져도 문제다. 토큰, 폰트, 정보 구조는 실제 구현 가능성을 유지한다.
 - `design-lab/pub/`를 디바이스 mockup/썸네일 합성용 페이지로 쓰지 않는다. raw 원본과 composite 목적을 섞으면 reviewer와 developer handoff가 깨진다.
 - 단일 repo/단일 포트폴리오 작업에서 습관적으로 `design-lab/pub/<project-slug>/`를 만들지 않는다. 중첩은 여러 실험이 동시에 있을 때만 쓴다.

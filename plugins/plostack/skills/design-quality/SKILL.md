@@ -1,6 +1,6 @@
 ---
 name: design-quality
-description: 랜딩페이지, 웹앱, 모바일 앱 화면이 평범한 AI 템플릿처럼 보이거나 폰트, 간격, 색상, 카드, 모션, 한국어 타이포그래피 품질을 프리미엄 수준으로 끌어올려야 할 때 사용한다. 디자인 리뷰, 품질 게이트, DESIGN.md 정리, 긴 디자인 산출물의 생략 없는 완성 기준에도 사용한다.
+description: 랜딩페이지, 웹앱, 모바일 앱 화면, Excalidraw/와이어프레임 레이아웃 보드가 평범한 AI 템플릿처럼 보이거나 폰트, 간격, 색상, 카드, 모션, 한국어 타이포그래피 품질을 프리미엄 수준으로 끌어올려야 할 때 사용한다. 디자인 리뷰, 품질 게이트, DESIGN.md 정리, 긴 디자인 산출물의 생략 없는 완성 기준에도 사용한다.
 ---
 
 # Plostack 디자인 품질 기준
@@ -20,6 +20,20 @@ description: 랜딩페이지, 웹앱, 모바일 앱 화면이 평범한 AI 템�
 - `pptx-generator`: 새 발표자료/피치덱을 기획하고 PptxGenJS 기반 HTML preview와 PPTX 생성기를 작성.
 
 작업 대상이 명확하면 해당 산출물 스킬을 먼저 적용하고, 이 스킬은 품질 기준과 점검에 사용한다.
+
+## Excalidraw / Wireframe 품질 기준
+
+Excalidraw, draw, whiteboard, low-fi wireframe은 구현물이 아니라 구조 합의 도구다. 그래도 결과가 이후 구현 방향을 결정하므로 `design-gate-hook-harness`의 Visual Planning Gate를 적용하고 아래 기준으로 점검한다.
+
+- frame은 실제 route/page/screen 단위로 나눈다. 예: blog main entry, portfolio main, detail template.
+- 공통 layout과 전용 layout을 구분한다. 예: common footer, page-specific hero.
+- 긴 기획 문장을 쓰지 말고 slot label과 짧은 CTA만 둔다. 예: `Case Index`, `Problem 2 lines`, `Evidence links`.
+- 색은 2~3개 neutral과 1개 accent를 기본으로 한다. 의미 없는 rainbow card, 프로젝트마다 다른 강한 배경색, 단색 계열 도배를 피한다.
+- 손글씨/rough 느낌 폰트가 의사결정을 흐리면 clean sans 기준으로 바꾼다.
+- 카드 벽을 만들지 말고 row, strip, band, diagram slot, proof block을 섞는다.
+- 이동 흐름은 arrow로 표시한다. 예: `/` hero CTA -> `/portfolio/` -> `/portfolio/{case}/`.
+- 보드 옆에는 route, approved layout, content source, implementation notes를 10줄 안팎의 handoff로 남긴다.
+- Excalidraw 보드는 pub mock이나 screenshot gate를 대체하지 않는다. 구현 전에는 필요 수준에 따라 `DESIGN.md`, `design-lab/pub/`, `design-lab/screenshots/`로 승격한다.
 
 ## DESIGN.md 원칙
 
@@ -140,6 +154,7 @@ transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 ## 출력 전 점검
 
 - `design-gate-hook-harness` 적용 대상이면 `Output Format Gate -> Marketing Brief -> DESIGN.md -> pub mock -> screenshots -> design review -> implementation handoff` 흐름과 `design-lab/pub/`, `design-lab/screenshots/`, 필요 시 `design-lab/handoff.md` 산출물이 완료됐는가?
+- Excalidraw/whiteboard/와이어프레임 단계라면 Visual Planning Gate를 적용했고, frame/page 분리, common vs page-specific layout 구분, 제한된 palette, clean font, 짧은 slot label, route arrow, 10줄 안팎 handoff가 있는가?
 - 작업이 문서형 HTML/PDF/PPTX 산출물이라면 랜딩/웹앱 gate 대신 `exportable-html-document`로 라우팅했는가?
 - 이미 있는 HTML의 PDF/PPTX 변환 요청이라면 각각 `html-to-pdf`, `html-to-pptx`로 분리했는가?
 - 문서형 export 산출물에서 `.page`/`.slide` canvas, `@page`, toolbar 숨김, PDF text/link, PPTX slide count를 확인했는가?
