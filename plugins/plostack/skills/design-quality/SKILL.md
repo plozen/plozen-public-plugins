@@ -14,6 +14,10 @@ description: 랜딩페이지, 웹앱, 모바일 앱 화면이 평범한 AI 템�
 - `landing-page-design`: 새 랜딩페이지 생성 또는 기존 HTML/CSS 랜딩 개선.
 - `web-app-design`: React/Next/Tailwind 기반 웹앱, 관리자, 대시보드, 반복 업무 UI.
 - `mobile-app-design`: React Native/Expo/NativeWind 기반 모바일 앱 UI.
+- `exportable-html-document`: PDF/PPTX export를 전제로 새 HTML 문서를 설계.
+- `html-to-pdf`: 이미 있는 HTML 파일을 PDF로 변환.
+- `html-to-pptx`: 이미 있는 HTML page/slide를 PPTX로 변환.
+- `pptx-generator`: 새 발표자료/피치덱을 기획하고 PptxGenJS 기반 HTML preview와 PPTX 생성기를 작성.
 
 작업 대상이 명확하면 해당 산출물 스킬을 먼저 적용하고, 이 스킬은 품질 기준과 점검에 사용한다.
 
@@ -22,6 +26,8 @@ description: 랜딩페이지, 웹앱, 모바일 앱 화면이 평범한 AI 템�
 프로젝트 저장소 안에서 디자인 작업을 하면 `DESIGN.md`를 디자인 원본으로 둔다. 새 앱/SaaS/SPA/랜딩/관리자 UI/포트폴리오 화면처럼 디자인이 제품 성공이나 판매 전환에 영향을 주는 작업은 실제 구현 전에 `design-gate-hook-harness`를 적용한다. 기본 퍼블리싱 원본은 `design-lab/pub/`, 캡처 산출물은 `design-lab/screenshots/`, 실제 구현 handoff 문서는 필요 시 `design-lab/handoff.md`다.
 
 `design-lab/pub/`는 raw publishing/artboard 원본이다. 개발 참조용 화면 구조, 토큰, 상태, 레이아웃을 그대로 보여줘야 하며 디바이스 목업/손 mockup/배경 합성/크몽 썸네일용 composite를 포함하지 않는다. 썸네일·포트폴리오 합성은 `kmong-thumbnail/` 또는 `design-lab/composite/` 같은 별도 경로로 분리한다.
+
+보고서, 제안서 문서, 포트폴리오 본문, 이력서, 경력기술서처럼 PDF/PPTX export가 최종 목표인 HTML은 랜딩/웹앱 mock이 아니다. 이 경우 `exportable-html-document`를 먼저 적용하고, 디자인 품질은 page canvas, print/export fidelity, 읽기 구조를 중심으로 점검한다.
 
 - 기존 `DESIGN.md` 또는 `design.md`가 있으면 먼저 읽고 코드와 문구를 맞춘다.
 - 둘 다 없고 단발 산출물이 아닌 프로젝트 변경이면 `DESIGN.md`를 만든다.
@@ -97,6 +103,17 @@ description: 랜딩페이지, 웹앱, 모바일 앱 화면이 평범한 AI 템�
 - 좌우 최소 여백은 16px 이상, touch target은 44px 이상, 주요 CTA는 48px 이상을 기본으로 본다.
 - 텍스트 overflow, 잘림, 줄바꿈 깨짐, safe-area 침범은 blocker다.
 
+## 문서형 Export 품질 기준
+
+PDF/PPTX 제출물을 전제로 만든 HTML은 웹페이지처럼 보이는 것이 목표가 아니다. 브라우저 preview는 원본 확인용이고, 최종 품질은 export 결과에서 판정한다.
+
+- `.page` 또는 `.slide` 단위의 고정 canvas를 쓰고 `@page` 크기와 일치시킨다.
+- print media에서 레이아웃, 타이포그래피, spacing을 새로 설계하지 않는다.
+- toolbar, preview-only control, debug label은 PDF/PPTX에 포함하지 않는다.
+- screen preview와 PDF/PPTX 산출물의 page count, 주요 여백, 제목 위치, 링크 상태가 일치해야 한다.
+- 포트폴리오/제안서/경력기술서 문서는 과한 랜딩 hero, 반복 카드, 앱 대시보드 스타일로 흐르지 않게 본문 읽기와 증빙 흐름을 우선한다.
+- PDF는 텍스트 추출과 hyperlink annotation을 확인한다. PPTX는 slide count와 편집성/시각 fidelity tradeoff를 보고한다.
+
 ## 모션 기준
 
 모션은 `transform`과 `opacity`를 중심으로 제한한다.
@@ -122,7 +139,10 @@ transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 
 ## 출력 전 점검
 
-- `design-gate-hook-harness` 적용 대상이면 `Marketing Brief -> DESIGN.md -> pub mock -> screenshots -> design review -> implementation handoff` 흐름과 `design-lab/pub/`, `design-lab/screenshots/`, 필요 시 `design-lab/handoff.md` 산출물이 완료됐는가?
+- `design-gate-hook-harness` 적용 대상이면 `Output Format Gate -> Marketing Brief -> DESIGN.md -> pub mock -> screenshots -> design review -> implementation handoff` 흐름과 `design-lab/pub/`, `design-lab/screenshots/`, 필요 시 `design-lab/handoff.md` 산출물이 완료됐는가?
+- 작업이 문서형 HTML/PDF/PPTX 산출물이라면 랜딩/웹앱 gate 대신 `exportable-html-document`로 라우팅했는가?
+- 이미 있는 HTML의 PDF/PPTX 변환 요청이라면 각각 `html-to-pdf`, `html-to-pptx`로 분리했는가?
+- 문서형 export 산출물에서 `.page`/`.slide` canvas, `@page`, toolbar 숨김, PDF text/link, PPTX slide count를 확인했는가?
 - `design-lab/pub/`가 디바이스 목업/썸네일 합성이 아니라 raw publishing/artboard 원본인가? composite/thumbnail이 필요하면 별도 경로로 분리했는가?
 - 단일 repo/단일 포트폴리오 작업에서 `design-lab/pub/<project-slug>/` 중첩을 불필요하게 만들지 않았는가? 여러 디자인 실험이 동시에 있을 때만 `pub/<slug>/`를 예외로 썼는가?
 - `DESIGN.md`가 필요하면 생성/갱신됐는가?

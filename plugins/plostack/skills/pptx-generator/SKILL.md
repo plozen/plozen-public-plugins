@@ -1,13 +1,15 @@
 ---
 name: pptx-generator
-description: PPT, PPTX, PowerPoint, 발표 자료, 프레젠테이션, 슬라이드, 피치덱을 HTML/CSS/JavaScript와 PptxGenJS로 생성해야 할 때 사용한다.
+description: 새 발표자료, 프레젠테이션, 슬라이드, 피치덱을 기획/작성하고 PptxGenJS 기반 HTML preview와 PPTX 생성기를 만들어야 할 때 사용한다. 이미 있는 HTML page/slide를 PPTX로 변환하는 요청은 html-to-pptx를 사용한다.
 ---
 
 # PPTX 생성 스킬
 
 ## 목적
 
-PptxGenJS를 사용해 전문적인 PowerPoint 파일을 생성한다. 기본 방식은 단일 HTML 파일이다. 브라우저에서 슬라이드 미리보기를 보고, 버튼 클릭으로 `.pptx`를 다운로드할 수 있어야 한다.
+PptxGenJS를 사용해 새 PowerPoint 발표자료를 기획하고 생성한다. 기본 방식은 단일 HTML 파일이다. 브라우저에서 슬라이드 미리보기를 보고, 버튼 클릭으로 `.pptx`를 다운로드할 수 있어야 한다.
+
+이미 존재하는 HTML page/slide를 PPTX로 변환하거나, exportable HTML 문서의 PPTX 버튼만 구현하는 작업은 `html-to-pptx`로 먼저 라우팅한다. 이 스킬은 그 내부 구현에서 PptxGenJS 규칙이 필요할 때 참조할 수 있다.
 
 ## 아키텍처
 

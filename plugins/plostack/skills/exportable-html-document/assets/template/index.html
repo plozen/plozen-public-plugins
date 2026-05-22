@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exportable HTML Document</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="export-toolbar" data-html-only>
+    <button type="button" data-export="pdf">PDF 다운로드</button>
+    <button type="button" data-export="pptx">PPTX 다운로드</button>
+  </div>
+
+  <main class="document">
+    <section class="page">
+      <div class="page-frame">
+        <p class="kicker">Document</p>
+        <h1>PDF/PPTX export를 전제로 만든 HTML 원본</h1>
+      </div>
+    </section>
+  </main>
+
+  <script src="./export.js"></script>
+</body>
+</html>

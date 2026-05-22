@@ -1,32 +1,33 @@
 ---
 name: html-to-pdf
-description: HTML 파일을 PDF로 변환해야 하며 텍스트, hyperlink, 이미지, 디자인을 보존해야 할 때 사용한다. "/html-to-pdf", "/html-pdf", "HTML PDF 변환", "PDF로 변환", "PDF 만들어", "page.pdf" 요청에 사용한다.
+description: 이미 존재하는 HTML 파일을 PDF로 변환해야 하며 텍스트, hyperlink, 이미지, 디자인을 보존해야 할 때 사용한다. "/html-to-pdf", "/html-pdf", "HTML PDF 변환", "PDF로 변환", "page.pdf" 요청에 사용한다. HTML 작성부터 필요하면 exportable-html-document를 먼저 사용한다.
 ---
 
 # HTML to PDF 변환 스킬
 
 ## 목적
 
-Playwright의 `page.pdf()`를 직접 호출해 HTML을 PDF로 변환한다. PNG 캡처 방식이 아니라 텍스트 객체, hyperlink annotation, 이미지, 배경을 보존하는 PDF를 만든다.
+Playwright의 `page.pdf()`를 직접 호출해 이미 만들어진 HTML을 PDF로 변환한다. PNG 캡처 방식이 아니라 텍스트 객체, hyperlink annotation, 이미지, 배경을 보존하는 PDF를 만든다.
 
 ## 사용 시점
 
 | 명시 트리거 | 암묵 트리거 |
 |---|---|
-| `/html-to-pdf` | HTML 파일을 PDF로 내보내야 할 때 |
-| `/html-pdf` | 공모전, 보고서, 프레젠테이션 PDF 출력 |
+| `/html-to-pdf` | 이미 있는 HTML 파일을 PDF로 내보내야 할 때 |
+| `/html-pdf` | HTML 경로가 주어진 공모전, 보고서, 프레젠테이션 PDF 출력 |
 | `HTML PDF 변환` | 텍스트와 링크 보존이 중요한 PDF |
-| `HTML을 PDF로` | 슬라이드 HTML을 PDF로 변환 |
+| `HTML을 PDF로` | 기존 슬라이드/문서 HTML을 PDF로 변환 |
 | `PDF로 변환` | |
-| `PDF 만들어` | |
 | `PDF 출력` | |
 | `page.pdf` | |
 
 사용하지 않는 경우:
 
+- HTML 문서 작성부터 필요하면 `exportable-html-document`로 구조를 만든 뒤 이 스킬로 변환한다.
 - 이미지 캡처 요청은 Playwright screenshot을 사용한다.
 - DOCX 변환은 별도 도구를 사용한다.
-- PPTX 생성은 `pptx-generator`을 사용한다.
+- 이미 있는 HTML/slide를 PPTX로 변환하면 `html-to-pptx`를 사용한다.
+- 새 발표자료/피치덱을 기획하고 PPTX 생성기를 만들면 `pptx-generator`를 사용한다.
 - 기존 PDF 편집은 PDF 편집 도구를 사용한다.
 
 ## 사전 요구 사항
@@ -67,7 +68,7 @@ sudo apt install poppler-utils
 | 페이지 분리 셀렉터 | `.slide-wrapper` |
 | 폰트 대기 시간 | 2500ms |
 
-HTML 경로가 명확하고 출력 경로를 추론할 수 있으면 바로 변환한다. 빠진 항목이 있으면 필요한 것만 한 번에 묻는다.
+HTML 경로가 명확하고 출력 경로를 추론할 수 있으면 바로 변환한다. HTML을 아직 만들어야 하는 요청이면 변환을 시작하지 말고 `exportable-html-document` 또는 해당 디자인 스킬로 authoring 단계를 먼저 분리한다. 빠진 항목이 있으면 필요한 것만 한 번에 묻는다.
 
 ## 1단계: 변환
 

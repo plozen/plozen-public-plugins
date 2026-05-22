@@ -1,7 +1,7 @@
 {
   "name": "plostack",
-  "version": "0.6.7",
-  "description": "Plostack은 Codex용 공개 디자인, 문서 제작, 전달 오케스트레이션 스킬팩입니다.",
+  "version": "0.6.8",
+  "description": "Plostack은 Codex용 공개 디자인, exportable HTML 문서, PDF/PPTX 변환, 전달 오케스트레이션 스킬팩입니다.",
   "author": {
     "name": "Plostack Contributors",
     "url": "https://github.com/plozen"
@@ -16,8 +16,14 @@
     "landing-pages",
     "web-apps",
     "mobile-apps",
+    "html",
+    "exportable-html",
     "pdf",
+    "html-to-pdf",
     "pptx",
+    "html-to-pptx",
+    "portfolio",
+    "casebook",
     "brainstorming",
     "orchestration",
     "background-dispatch",
@@ -36,8 +42,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Plostack",
-    "shortDescription": "프리미엄 UI, 랜딩/웹앱/모바일 디자인, PDF, PPTX, 전달 흐름.",
-    "longDescription": "Plostack은 프리미엄 디자인 품질 기준, 생략 없는 랜딩페이지 생성/개선, 웹앱 UI, 모바일 앱 UI, HTML-to-PDF 변환, 프레젠테이션 생성, 브레인스토밍, 백그라운드 디스패치, 리뷰/QA/검증/브랜치/PR 관문, local-preflight/commit/push/PR checks 종료 자동화를 포함한 공개 재사용 스킬을 묶은 플러그인입니다. 작업은 경량/표준/보호로 먼저 분류하고, 위임/작업 트리/커밋/푸시/PR/병합은 작업 위험도, 사용자 요청, 저장소 정책이 있을 때 적용합니다.",
+    "shortDescription": "프리미엄 UI, exportable HTML, HTML-to-PDF/PPTX, 전달 흐름.",
+    "longDescription": "Plostack은 프리미엄 디자인 품질 기준, 생략 없는 랜딩페이지 생성/개선, 웹앱 UI, 모바일 앱 UI, PDF/PPTX export를 전제로 한 문서형 HTML 설계, 기존 HTML-to-PDF 변환, 기존 HTML-to-PPTX 변환, 새 프레젠테이션 생성, 브레인스토밍, 백그라운드 디스패치, 리뷰/QA/검증/브랜치/PR 관문, local-preflight/commit/push/PR checks 종료 자동화를 포함한 공개 재사용 스킬을 묶은 플러그인입니다. 작업은 경량/표준/보호로 먼저 분류하고, 위임/작업 트리/커밋/푸시/PR/병합은 작업 위험도, 사용자 요청, 저장소 정책이 있을 때 적용합니다.",
     "developerName": "Plostack Contributors",
     "category": "Coding",
     "capabilities": [
@@ -49,6 +55,7 @@
     "defaultPrompt": [
       "Plostack으로 프리미엄 랜딩페이지를 생성하거나 개선해줘.",
       "Plostack으로 웹앱/모바일앱 UI를 DESIGN.md 기준으로 설계해줘.",
+      "Plostack으로 PDF/PPTX export 가능한 포트폴리오 HTML 문서를 설계해줘.",
       "Plostack으로 리뷰, QA, 검증, PR 관문이 있는 작업을 조율해줘."
     ],
     "brandColor": "#2563EB",

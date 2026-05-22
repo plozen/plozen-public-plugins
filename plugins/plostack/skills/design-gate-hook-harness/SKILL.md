@@ -1,13 +1,15 @@
 ---
 name: design-gate-hook-harness
-description: 새 앱, SaaS, SPA, 랜딩, 관리자 UI, 포트폴리오 화면처럼 디자인이 제품 성공과 판매 전환에 영향을 주는 작업에서 실제 구현 전에 marketing brief, DESIGN.md, design-lab/pub 퍼블리싱 mock, design-lab/screenshots 캡처, design review gate를 강제한다.
+description: 새 앱, SaaS, SPA, 랜딩, 관리자 UI, 포트폴리오용 UI screenshot처럼 디자인이 제품 성공과 판매 전환에 영향을 주는 작업에서 실제 구현 전에 output format gate, marketing brief, DESIGN.md, design-lab/pub mock, screenshot, design review gate를 강제한다. 문서형 HTML/PDF/PPTX 산출물은 exportable-html-document로 분기한다.
 ---
 
 # Plostack Design Gate Hook Harness
 
 ## 역할
 
-이 스킬은 앱/SaaS/SPA/랜딩/관리자 UI/포트폴리오 화면 작업이 바로 실제 구현으로 튀지 않게 막는 디자인 게이트다. 목적은 기능 명세보다 먼저 팔릴 이유, 클릭 훅, 사용자 심리, 유통 각도, 시각 시스템, 퍼블리싱 mock을 확정한 뒤 실제 개발로 승격하는 것이다.
+이 스킬은 앱/SaaS/SPA/랜딩/관리자 UI/포트폴리오용 UI screenshot 작업이 바로 실제 구현으로 튀지 않게 막는 디자인 게이트다. 목적은 기능 명세보다 먼저 팔릴 이유, 클릭 훅, 사용자 심리, 유통 각도, 시각 시스템, 퍼블리싱 mock을 확정한 뒤 실제 개발로 승격하는 것이다.
+
+단, 보고서, 제안서 문서, 포트폴리오 본문, 이력서, 경력기술서처럼 HTML 자체가 PDF/PPTX export 원본이면 이 스킬로 웹페이지 mock을 만들지 않고 `exportable-html-document`로 라우팅한다.
 
 팀장은 디자인 산출물을 직접 만드는 사람이 아니라 gate owner다. 팀장은 `DESIGN.md`와 mock 산출물의 존재, 품질, 검증 상태를 확인하고 통과/보류를 판정한다.
 
@@ -17,24 +19,46 @@ description: 새 앱, SaaS, SPA, 랜딩, 관리자 UI, 포트폴리오 화면처
 
 - 새 앱, SaaS, SPA, 웹앱, 모바일 앱, 랜딩페이지를 시작한다.
 - 기존 제품에 주요 화면, 대시보드, 관리자, 온보딩, 가격/전환 화면을 추가한다.
-- 포트폴리오/크몽/제안서용 UI screenshot을 만들거나 개선한다.
+- 포트폴리오/크몽/제안서에 넣을 제품 UI screenshot 또는 UI mock을 만들거나 개선한다.
 - 사용자가 “마케팅 먼저”, “클릭하게”, “궁금증”, “퍼블리싱 mock”, “DESIGN.md”, “디자인 게이트”를 언급한다.
 - 에이전트가 바로 `src/`, `app/`, 실제 운영 앱 코드 구현으로 들어갈 위험이 있다.
+
+보고서, 제안서 문서, 포트폴리오 본문 HTML, PDF/PPTX 제출물, 다운로드 버튼이 있는 문서형 HTML은 `exportable-html-document`로 먼저 분기한다.
 
 단순 버그 수정, 문구 수정, 기존 디자인 토큰을 따르는 작은 컴포넌트 수정에는 생략할 수 있다. 생략하면 이유를 보고한다.
 
 ## Gate Flow
 
-Design gate 흐름은 항상 `Marketing Brief -> DESIGN.md -> pub mock -> screenshots -> design review -> implementation handoff` 순서를 유지한다.
+Design gate 흐름은 항상 `Output Format Gate -> Marketing Brief -> DESIGN.md -> pub mock -> screenshots -> design review -> implementation handoff` 순서를 유지한다. Output Format Gate에서 문서형 export 산출물로 판정되면 여기서 멈추고 `exportable-html-document`로 넘긴다.
 
 ```text
-Marketing Brief
+Output Format Gate
+  -> Marketing Brief
   -> DESIGN.md
   -> pub mock
   -> screenshots
   -> design review
   -> implementation handoff
 ```
+
+### 0. Output Format Gate
+
+구현 전에 최종 산출물 형태를 먼저 판정한다. “포트폴리오 페이지”라는 표현만으로 웹페이지 작업이라고 단정하지 않는다. 제출, 공유, PDF, PPTX, 다운로드 버튼이 핵심이면 문서형 export 작업이다.
+
+| 최종 산출물 | 라우팅 |
+|---|---|
+| 마케팅 웹페이지, 제품 소개 랜딩 | `landing-page-design` |
+| 앱, 관리자, 대시보드, 반복 업무 UI | `web-app-design` |
+| React Native/Expo 모바일 앱 화면 | `mobile-app-design` |
+| PDF/PPTX export를 전제로 새 HTML 문서를 작성 | `exportable-html-document` |
+| 이미 있는 HTML 파일을 PDF로 변환만 함 | `html-to-pdf` |
+| 이미 있는 HTML page/slide를 PPTX로 변환하거나 PPTX 다운로드 버튼/경로를 구현 | `html-to-pptx` |
+| 새 발표자료/피치덱을 기획하고 PPTX 생성 | `pptx-generator` |
+
+포트폴리오/제안서 작업은 두 갈래로 나눈다.
+
+- 포트폴리오나 제안서에 넣을 제품 UI screenshot/mock: 이 design gate를 적용한다.
+- 포트폴리오 본문, 제안서 문서, 경력기술서, 보고서 HTML: `exportable-html-document`를 적용한다.
 
 ### 1. Marketing Brief Gate
 
@@ -85,6 +109,7 @@ project/
 
 - 기본 퍼블리싱 원본은 `design-lab/pub/`에 둔다.
 - `design-lab/pub/`는 raw publishing/artboard 원본이다. 디바이스 프레임, 휴대폰 mockup, 손에 든 폰 합성, 배경 장식, 크몽 썸네일용 composite를 넣지 않는다.
+- 문서형 export HTML은 `design-lab/pub/` UI mock 흐름의 기본 대상이 아니다. PDF/PPTX 원본 HTML은 `exportable-html-document`의 page canvas 규칙을 따른다.
 - 썸네일/포트폴리오 합성이 필요하면 `kmong-thumbnail/`, `design-lab/composite/`, 또는 별도 composite page로 분리한다. composite는 `pub` 원본을 참조할 수 있지만 `pub` 원본을 대체하지 않는다.
 - 캡처 산출물은 `design-lab/screenshots/`에 둔다.
 - 실제 구현 handoff 문서가 필요하면 `design-lab/handoff.md`에 둔다.
@@ -194,4 +219,5 @@ handoff에는 아래를 포함한다.
 - `design-lab/pub/`를 디바이스 mockup/썸네일 합성용 페이지로 쓰지 않는다. raw 원본과 composite 목적을 섞으면 reviewer와 developer handoff가 깨진다.
 - 단일 repo/단일 포트폴리오 작업에서 습관적으로 `design-lab/pub/<project-slug>/`를 만들지 않는다. 중첩은 여러 실험이 동시에 있을 때만 쓴다.
 - 포트폴리오용 mock은 과장하면 안 된다. “포트폴리오 표현을 위해 재구성한 고도화 UI 예시”처럼 실제 운영 사실과 표현용 재구성을 구분한다.
+- “포트폴리오 페이지”, “제안서”, “PDF” 같은 단어만 보고 랜딩/웹앱 mock으로 라우팅하지 않는다. 최종 산출물이 문서면 `exportable-html-document`, 기존 HTML 변환이면 `html-to-pdf` 또는 `html-to-pptx`다.
 - 오케스트레이션 프롬프트에 긴 디자인 규칙을 복붙하지 말고 이 스킬로 라우팅한다.
