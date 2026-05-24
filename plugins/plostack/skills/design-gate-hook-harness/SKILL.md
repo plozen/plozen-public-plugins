@@ -71,6 +71,7 @@ Visual planning을 요청받으면 아래를 먼저 고정한다.
 - 페이지/화면 단위 frame을 분리한다. 예: blog main entry, portfolio main, case detail.
 - 각 frame에는 긴 문단이 아니라 slot label만 둔다. 예: `Problem 2 lines`, `Evidence links`, `Architecture slot`.
 - entry route와 CTA 흐름을 선으로 표시한다. 예: `/` hero CTA -> `/portfolio/` -> `/portfolio/{case}/`.
+- `Architecture slot`, 운영 구조, 멀티 에이전트 구조는 표/카드벽이 아니라 `design-quality`의 node-arrow flow 기준으로 판단한다. 최소한 `입력/요청 -> 처리 노드 -> 공유 상태/메모리 -> 기록/출력` 방향성이 보여야 한다.
 - 공통 layout과 전용 layout을 구분한다. 예: common footer, page-specific hero.
 - 색상은 2~3개 neutral + 1 accent로 제한하고, 의미 없는 rainbow card를 쓰지 않는다.
 - 손글씨/rough 폰트 느낌이 판단을 흐리면 clean sans 기준으로 바꾼다.
