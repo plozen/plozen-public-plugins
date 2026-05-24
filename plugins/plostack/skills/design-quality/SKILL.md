@@ -31,6 +31,7 @@ Excalidraw, draw, whiteboard, low-fi wireframe은 구현물이 아니라 구조 
 - 색은 2~3개 neutral과 1개 accent를 기본으로 한다. 의미 없는 rainbow card, 프로젝트마다 다른 강한 배경색, 단색 계열 도배를 피한다.
 - 손글씨/rough 느낌 폰트가 의사결정을 흐리면 clean sans 기준으로 바꾼다.
 - 카드 벽을 만들지 말고 row, strip, band, diagram slot, proof block을 섞는다.
+- 운영/구조/아키텍처 다이어그램은 표/카드벽으로 검토하지 않고 node -> arrow -> state/output 흐름으로 검토한다. 예: `request -> agents -> shared memory -> recorded output`. 에이전트/모듈/저장소/산출물은 node, 책임은 짧은 label, 관계는 방향 arrow로 둔다.
 - 이동 흐름은 arrow로 표시한다. 예: `/` hero CTA -> `/portfolio/` -> `/portfolio/{case}/`.
 - 보드 옆에는 route, approved layout, content source, implementation notes를 10줄 안팎의 handoff로 남긴다.
 - Excalidraw 보드는 pub mock이나 screenshot gate를 대체하지 않는다. 구현 전에는 필요 수준에 따라 `DESIGN.md`, `design-lab/pub/`, `design-lab/screenshots/`로 승격한다.
@@ -154,7 +155,7 @@ transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 ## 출력 전 점검
 
 - `design-gate-hook-harness` 적용 대상이면 `Output Format Gate -> Marketing Brief -> DESIGN.md -> pub mock -> screenshots -> design review -> implementation handoff` 흐름과 `design-lab/pub/`, `design-lab/screenshots/`, 필요 시 `design-lab/handoff.md` 산출물이 완료됐는가?
-- Excalidraw/whiteboard/와이어프레임 단계라면 Visual Planning Gate를 적용했고, frame/page 분리, common vs page-specific layout 구분, 제한된 palette, clean font, 짧은 slot label, route arrow, 10줄 안팎 handoff가 있는가?
+- Excalidraw/whiteboard/와이어프레임 단계라면 Visual Planning Gate를 적용했고, frame/page 분리, common vs page-specific layout 구분, 제한된 palette, clean font, 짧은 slot label, route arrow, 운영/구조 다이어그램의 node-flow 검토, 10줄 안팎 handoff가 있는가?
 - 작업이 문서형 HTML/PDF/PPTX 산출물이라면 랜딩/웹앱 gate 대신 `exportable-html-document`로 라우팅했는가?
 - 이미 있는 HTML의 PDF/PPTX 변환 요청이라면 각각 `html-to-pdf`, `html-to-pptx`로 분리했는가?
 - 문서형 export 산출물에서 `.page`/`.slide` canvas, `@page`, toolbar 숨김, PDF text/link, PPTX slide count를 확인했는가?
