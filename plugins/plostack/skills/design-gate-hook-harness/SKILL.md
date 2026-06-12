@@ -42,6 +42,8 @@ Output Format Gate
   -> implementation handoff
 ```
 
+Design-to-Service Sync rule: confirmed `DESIGN.md`와 승인된 `design-kit/` 또는 `design-lab/pub/`이 구현의 source of truth다. 필요한 UX/state/slot이 여기에 없으면 구현하지 말고 planning meeting 안건으로 보고한다. design/pub을 먼저 갱신한 뒤 service code를 sync하며, API wiring은 승인된 design slot 안에서만 허용한다. `-bd`나 subagent dispatch도 이 gate를 우회하지 못한다.
+
 ### 0. Output Format Gate
 
 구현 전에 최종 산출물 형태를 먼저 판정한다. “포트폴리오 페이지”라는 표현만으로 웹페이지 작업이라고 단정하지 않는다. 제출, 공유, PDF, PPTX, 다운로드 버튼이 핵심이면 문서형 export 작업이다.
