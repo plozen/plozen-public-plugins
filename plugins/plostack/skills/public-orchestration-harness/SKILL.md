@@ -15,6 +15,8 @@ description: 저장소 변경, 새 기능, 동작 변경, 버그 수정, 테스�
 - 표준 작업: 일반 기능 수정, 버그 수정, 테스트 추가, 문서 수정처럼 실행 산출물이 생기지만 위험이 낮은 작업이다. [Workflow By Scope](#workflow-by-scope)의 Standard 흐름으로 처리하고, `background-dispatch`, 작업 트리, 커밋, 푸시, PR은 필요한 경우에만 적용한다.
 - 보호 작업: 새 기능, 동작 변경, 대규모 리팩터링, 릴리스, 보안/인증/데이터/마이그레이션, 여러 하위 시스템이 섞인 작업이다. [Workflow By Scope](#workflow-by-scope)의 Protected 흐름을 기본 적용한다.
 
+관리자웹에서 상세/등록/수정 폼, 목록 테이블, bulk action, toast, 상태 badge, 검색조건처럼 여러 페이지에 반복되는 UI 패턴을 수정하거나 사용자가 "공통화", "다른 페이지도 일관성", "상세 수정 UI", "버튼 통일"을 말하면 `admin-ui-consistency-harness`를 먼저 적용한다. 이 하네스는 같은 역할의 페이지를 찾아 공통 컴포넌트 사용 여부, 상세/수정 카드 구성 유지, 상태값/날짜/정렬/버튼/알림 규칙을 점검한 뒤 브라우저 검증까지 연결한다.
+
 사용자가 명시적으로 `Plostack으로 진행`, `PR까지`, `팀장 모드`, `서브에이전트로 병렬 진행`처럼 요청하면 한 단계 높은 흐름으로 올릴 수 있다. 입력 끝의 `-bd`는 `background-dispatch` 스킬 호출 신호로 본다. Plostack 명시는 필수 트리거가 아니며 작업 성격이 조건에 맞으면 자동 적용한다.
 
 ## Workflow By Scope
@@ -37,6 +39,7 @@ description: 저장소 변경, 새 기능, 동작 변경, 버그 수정, 테스�
 
 - `-bd`가 있거나 독립 실행 단위가 2개 이상이면 `background-dispatch` 스킬을 적용한다.
 - 회귀 위험이 있으면 reviewer 또는 QA gate를 적용한다.
+- 관리자웹 공통 UI 패턴을 바꾸거나 한 페이지 수정사항을 다른 페이지에도 맞춰야 하면 `admin-ui-consistency-harness`를 적용한다.
 - 사용자 요청 또는 저장소 정책이 있으면 `verification-branch-finish-hook-harness`로 fresh evidence를 확인한 뒤 `finish-flow-harness`로 commit/push/PR gate를 적용한다.
 
 ### Protected
@@ -54,6 +57,7 @@ Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디�
 - Brainstorming: 새 기능, 디자인, 동작 변경, 불명확한 요구사항이면 `brainstorming`을 먼저 사용한다.
 - Output Artifact Routing: HTML/PDF/PPTX/디자인 산출물은 먼저 최종 형태를 판정한다. 새 문서형 standalone HTML 작성은 `exportable-html-document`, 이미 있는 HTML을 PDF로 변환만 하면 `html-to-pdf`, 이미 있는 HTML page/slide를 PPTX로 변환하거나 PPTX 다운로드 버튼/경로를 구현하면 `html-to-pptx`, 새 발표자료/피치덱 작성은 `pptx-generator`, Excalidraw/whiteboard/와이어프레임으로 화면 구조만 먼저 잡는 작업은 `design-gate-hook-harness`의 Visual Planning Gate와 `design-quality`, 새 랜딩/웹앱/모바일 UI mock은 `design-gate-hook-harness`와 해당 디자인 스킬로 보낸다.
 - Design Gate: 새 앱/SaaS/SPA/랜딩/관리자 UI/포트폴리오용 UI screenshot처럼 디자인이 제품 성공과 판매 전환에 영향을 주는 작업은 실제 구현 전에 `design-gate-hook-harness`를 적용한다. Excalidraw/draw/whiteboard/와이어프레임은 pub mock 이전의 visual planning으로 다루고, frame/page 분리, common vs page-specific layout 구분, 제한된 palette, clean font, 짧은 slot label, route arrow, 짧은 handoff를 `design-quality`로 점검한다. 보고서, 제안서 문서, 포트폴리오 본문, 경력기술서처럼 PDF/PPTX export가 최종물인 HTML은 design gate 대신 `exportable-html-document`로 분기한다. 이 gate에서 `Output Format Gate -> Marketing Brief -> DESIGN.md -> pub mock -> screenshots -> design review -> implementation handoff` 흐름과 `design-lab/pub/`, `design-lab/screenshots/`, 필요 시 `design-lab/handoff.md` 산출물 여부를 확인한다. Confirmed `DESIGN.md`와 승인된 `design-kit/` 또는 `design-lab/pub/`을 source of truth로 두고, 없는 UX는 planning으로 되돌린 뒤 design/pub을 먼저 갱신하고 service/API sync를 진행한다. `-bd`는 design gate 우회 사유가 아니다. 모바일/포트폴리오 mock은 `design-lab/pub/`를 raw publishing/artboard 원본으로 유지하고, 디바이스 mockup·크몽 썸네일·composite page는 별도 경로로 분리했는지 확인한다. 요청 폭이 없으면 390px, Z Fold 5 folded/344px 요청이면 344px 기준 screenshot과 blocker 수치를 요구한다.
+- Admin UI Common Gate: 관리자웹 상세/수정/등록/목록/검색/bulk action/toast/status badge/date display를 바꾸거나 다른 페이지 일관성 적용이 필요하면 `admin-ui-consistency-harness`를 적용한다. 특히 상세 모드와 수정 모드는 같은 카드 구성과 순서를 유지하고, 수정 가능한 카드만 editable로 바뀌는지 확인한다.
 - Planning: Brainstorming 및 필요한 Design Gate 승인이 끝난 보호 작업은 `planning-hook-harness`를 적용한다.
 - 작업 트리: 저장소 수정 전에는 `worktree-hook-harness`를 적용한다.
 - 위임: 독립 실행 단위가 여러 개이거나, 전문 역할 gate가 필요하거나, 사용자가 명시적으로 요청했거나, 장시간 작업을 분리하는 편이 안전하면 `background-dispatch` 스킬을 적용한다. 이때 새 subagent를 바로 만들지 말고 같은 역할/같은 작업 라인의 기존 agent를 `send_input` 또는 `resume_agent`로 재사용할 수 있는지 먼저 확인한다.
@@ -105,6 +109,7 @@ subagent lifecycle 기본값:
 
 - 코드, schema, API, auth, data 변경: `reviewer` gate
 - 동작 변경, 테스트 추가, 회귀 위험: `qa` gate
+- 관리자웹 공통 UI 변경: `admin-ui-consistency-harness` gate. 상세/수정 카드 구성, 상태값, 날짜, 버튼, toast, bulk action, 테이블 정렬이 같은 역할의 페이지와 일관되는지 확인한다.
 - UI 또는 browser-facing 변경: `breaker` 또는 `qa` browser gate
 - 새 앱/SaaS/SPA/랜딩/관리자 UI/포트폴리오 화면: `design-gate-hook-harness` + `design-reviewer` gate. 승인된 `DESIGN.md`, raw `design-lab/pub/` mock, `design-lab/screenshots/` 캡처 없이 실제 구현으로 바로 들어가면 완료를 막는다. 모바일 화면은 root tab/back 규칙, bottom tab fixed/anchored, overlap 0px, 최소 좌우 여백 16px 이상, text overflow 없음 같은 수치 기준이 handoff에 있어야 한다. 구현 handoff가 필요하면 `design-lab/handoff.md`를 확인한다.
 - secrets, auth, infra, dependency 변경: `security` gate
