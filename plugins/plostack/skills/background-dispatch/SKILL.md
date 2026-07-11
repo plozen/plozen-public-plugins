@@ -63,13 +63,7 @@ subagent 프롬프트에는 아래를 반드시 넣는다.
 
 파일 쓰기 작업이면 "다른 작업자가 있을 수 있으니 타인의 변경을 되돌리지 말라"를 포함한다.
 
-디자인/모바일 pub 작업이면 아래 hard guard도 포함한다.
-
-- `design-lab/pub/`는 raw publishing/artboard 원본이다. 디바이스 목업/손 mockup/배경 합성/크몽 썸네일로 감싸지 말라.
-- thumbnail/composite가 필요하면 `kmong-thumbnail/` 또는 `design-lab/composite/` 같은 별도 경로로 분리하고 `pub` 원본을 덮어쓰지 말라.
-- 기준 모바일 폭은 요청값을 따른다. 없으면 390px, Z Fold 5 folded/344px 요청이면 344px으로 검증하라.
-- root tab은 back button 없음, task/detail/modal flow는 back button 필수다.
-- reviewer handoff에는 overlap 0px, 최소 좌우 여백 16px 이상, bottom tab fixed/anchored, text overflow 없음 같은 수치 기준을 포함하라.
+UI/browser-facing 작업이면 screenshot 생성 허용 여부와 저장 경로, 확인할 viewport, commit/push/PR 허용 여부를 명확히 적는다. 별도 mock 산출물은 기본 요구사항이 아니다.
 
 ### 3. 양보
 

@@ -1,6 +1,6 @@
 {
   "name": "plostack",
-  "description": "Claude Code용 공개 디자인, exportable HTML 문서, PDF/PPTX 변환, 전달 오케스트레이션 스킬입니다.",
+  "description": "Claude Code용 exportable HTML 문서, PDF/PPTX 변환, 전달 오케스트레이션 스킬입니다.",
   "version": "0.6.9",
   "author": {
     "name": "Plostack Contributors"
@@ -10,11 +10,6 @@
   "license": "MIT",
   "keywords": [
     "skills",
-    "design",
-    "design-system",
-    "landing-pages",
-    "web-apps",
-    "mobile-apps",
     "html",
     "exportable-html",
     "pdf",

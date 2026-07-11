@@ -20,9 +20,7 @@ HTML을 최종 웹페이지가 아니라 PDF/PPTX로 내보낼 수 있는 문서
 
 사용하지 않는 경우:
 
-- 반응형 마케팅 웹페이지가 최종물이면 `landing-page-design`.
-- 반복 조작 UI, 관리자, 대시보드가 최종물이면 `web-app-design`.
-- React Native/Expo 모바일 앱 화면이면 `mobile-app-design`.
+- 최종 산출물이 일반 웹페이지, 앱 화면, 관리자 UI처럼 브라우저/앱에서 직접 쓰는 제품 화면이면 이 스킬이 아니라 일반 구현 작업으로 다룬다.
 - 이미 있는 HTML을 PDF로 변환만 하면 `html-to-pdf`.
 - 이미 있는 HTML/slide source를 PPTX로 변환하거나 PPTX 다운로드 버튼/경로만 구현하면 `html-to-pptx`.
 

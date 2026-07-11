@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: Plostack 작업에서 새 기능, 디자인, 구성 요소, 동작 변경, 다단계 전달 작업, 불명확한 요구사항, 접근안 비교, 전략 탐색, 의사결정 브리프가 필요할 때 구현 전에 설계로 정리한다.
+description: Plostack 작업에서 새 기능, 화면 구성, 구성 요소, 동작 변경, 다단계 전달 작업, 불명확한 요구사항, 접근안 비교, 전략 탐색, 의사결정 브리프가 필요할 때 구현 전에 설계로 정리한다.
 ---
 
 # Plostack 브레인스토밍 스킬
@@ -122,7 +122,7 @@ description: Plostack 작업에서 새 기능, 디자인, 구성 요소, 동작 
 공식 설계 문서가 필요하면 프로젝트의 기존 설계 문서 위치에 저장한다. 위치가 없으면 아래를 사용한다.
 
 ```text
-docs/plostack/specs/YYYY-MM-DD-topic-design.md
+docs/plostack/specs/YYYY-MM-DD-topic-spec.md
 ```
 
 ## 설계 원칙

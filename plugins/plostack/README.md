@@ -1,14 +1,9 @@
 # Plostack
 
-Plostack은 Codex와 Claude Code에서 사용할 수 있는 공개 디자인, 문서 제작, 전달 오케스트레이션 스킬팩입니다.
+Plostack은 Codex와 Claude Code에서 사용할 수 있는 공개 문서 제작, 전달 오케스트레이션 스킬팩입니다.
 
 포함 범위:
 
-- 프리미엄 디자인 품질 게이트와 `DESIGN.md` 관리
-- `design-lab/pub/` 퍼블리싱 원본, `design-lab/screenshots/` 캡처, 필요 시 `design-lab/handoff.md` 구현 handoff 흐름
-- 랜딩페이지 생성과 개선
-- 웹앱 UI 설계와 구현
-- 모바일 앱 UI 설계와 구현
 - PDF/PPTX export를 전제로 한 문서형 HTML 설계
 - 기존 HTML-to-PDF 변환
 - 기존 HTML-to-PPTX 변환
@@ -22,10 +17,6 @@ Plostack은 Codex와 Claude Code에서 사용할 수 있는 공개 디자인, �
 - `public-orchestration-harness`
 - `verification-branch-finish-hook-harness`
 - `finish-flow-harness`
-- `design-quality`
-- `landing-page-design`
-- `web-app-design`
-- `mobile-app-design`
 - `exportable-html-document`
 - `html-to-pdf`
 - `html-to-pptx`

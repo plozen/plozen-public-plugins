@@ -118,7 +118,7 @@ commit/push 전에 로컬에서 반드시 확인한다.
    - secret 후보 문자열은 그대로 출력하지 않는다. 파일명, 라인, 패턴명만 보고한다.
 5. repo별 commands
    - `.plostack/finish.toml`의 `[[local_preflight.commands]]`를 순서대로 실행한다.
-   - 일반 예: lint, test, build, design check.
+   - 일반 예: lint, test, build, repo-specific check.
    - `required = true` 명령 실패는 push를 막는다.
 6. staged/untracked summary
    - commit에 들어갈 파일과 들어가지 않는 파일을 따로 보여준다.
@@ -235,11 +235,6 @@ name = "build"
 command = "pnpm build"
 required = false
 
-[[local_preflight.commands]]
-name = "design"
-command = "pnpm run design:check"
-required = false
-
 [pr]
 base = "main"
 draft = false
@@ -254,7 +249,7 @@ no_checks_status = "NO_CHECKS"
 - `NO_CHECKS`: push/PR은 됐지만 remote checks가 없다. 성공으로 포장하지 않는다.
 - `NO_CHANGES`: stage 대상 변경이 없어 commit하지 않았다.
 - `UNVERIFIED`: 필요한 local verification evidence가 없거나 실행할 수 없다.
-- `LOCAL_PREFLIGHT_FAILED`: diff, lint/test/build/design, dirty ownership 중 하나가 실패했다.
+- `LOCAL_PREFLIGHT_FAILED`: diff, lint/test/build/repo-specific check, dirty ownership 중 하나가 실패했다.
 - `SECRET_FILE_BLOCKED`: credential 파일이 staged/tracked 상태거나 ignored 확인 없이 포함될 위험이 있다.
 - `MAIN_PUSH_BLOCKED`: main/base branch 직접 push 조건을 충족하지 못했다.
 - `PUSH_FAILED`: local commit은 됐지만 push가 실패했다.

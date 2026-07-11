@@ -65,11 +65,6 @@ name = "build"
 command = "pnpm build"
 required = false
 
-[[local_preflight.commands]]
-name = "design"
-command = "pnpm run design:check"
-required = false
-
 [pr]
 base = "main"
 draft = false
