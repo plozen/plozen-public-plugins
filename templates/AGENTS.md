@@ -15,16 +15,10 @@
 ## Plostack Routing
 - Plostack 작업 흐름은 모든 작업에 강제하지 않는다. 경량/표준/보호 작업으로 먼저 분류하고 필요한 수준만 적용한다.
 - 사용자가 `Plostack`을 명시하지 않아도 저장소 변경, 새 기능, 동작 변경, 버그/테스트 실패, 다중 단계 작업, 검증/위임/리뷰/QA/PR이 필요한 작업은 public Plostack `public-orchestration-harness`로 먼저 경량/표준/보호 작업을 분류한다.
-- 짧은 사용자 작업 프롬프트도 리드 에이전트가 경량/표준/보호로 분류하고, 필요한 workflow, hook, subagent, gate, verification을 직접 조합한다. 사용자가 절차를 하나씩 써야만 실행하는 방식으로 해석하지 않는다.
-- 입력 프롬프트 끝의 `-bd`는 public Plostack `background-dispatch` 스킬 호출 신호로 본다.
+- 입력 프롬프트 끝의 `-bd`는 subagent 사용 권한을 연다. 호출 여부, 역할, 개수, 병렬화는 에이전트가 자율 판단하며 단순 작업이면 호출하지 않을 수 있다.
+- `-bd`가 없으면 작업 규모나 역할 분리 필요성과 관계없이 subagent를 호출하지 않고 현재 에이전트가 직접 수행한다.
 - 경량 작업은 `분류 -> 바로 답변/상태 확인 -> 필요한 근거 표시`로 처리한다.
 - 표준 작업은 `분류 -> git/worktree 상태 확인 -> 수정/실행 -> 검증 -> 보고`로 처리한다.
-- 표준 작업에서 `-bd`가 있거나 독립 실행 단위가 2개 이상이면 public Plostack `background-dispatch` 스킬을 적용한다. 회귀 위험이 있으면 reviewer 또는 QA gate를 적용하고, 사용자 요청이나 저장소 정책이 있으면 commit/PR을 적용한다.
-- 보호 작업은 `Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 위임 -> 구현/디버깅 -> 리뷰 -> QA/Security -> 검증 -> 커밋/푸시/PR -> 팀장 확인 -> 병합/정리 -> 보고`를 기본 흐름으로 한다.
+- `-bd`가 있고 subagent가 유용하다고 판단한 경우에만 `background-dispatch`를 적용한다.
+- 보호 작업은 `Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 구현/디버깅 -> 리뷰 -> QA/Security -> 검증 -> 커밋/푸시/PR -> 팀장 확인 -> 병합/정리 -> 보고`를 기본 흐름으로 한다. subagent 사용은 `-bd`가 있을 때만 선택적으로 추가한다.
 - 새 기능, 동작 변경, 복잡한 다단계 작업, 요구사항이 불명확한 작업은 구현 전에 public Plostack `brainstorming`을 우선 고려한다.
-
-## Worktree Management
-- 새 agent/task worktree의 기본 위치는 `<repo-root>/.worktrees/<task-slug>`이다.
-- repo root의 `.gitignore`에는 `.worktrees/`를 추가해 GitHub 저장소에 worktree 파일이 push되지 않게 한다.
-- cleanup 전에는 `git worktree list`, `git status --porcelain`, `git merge-base --is-ancestor HEAD <base-ref>`로 등록 상태, dirty 여부, 병합 여부를 확인한다.
-- clean + merged worktree만 일반 삭제한다. dirty 또는 unmerged worktree는 사용자가 명시적으로 폐기 승인한 경우에만 `git worktree remove --force`로 삭제한다.
