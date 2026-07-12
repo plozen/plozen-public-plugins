@@ -1,6 +1,6 @@
 ---
 name: background-dispatch
-description: 사용자 입력의 마지막 토큰이 `-bd`일 때 subagent 사용 여부, 역할, 개수, 병렬화를 자율 판단하고, 실제로 스폰한 경우 lifecycle과 결과 통합을 관리할 때 사용한다. `-bd`가 없으면 새 subagent를 호출하지 않는다.
+description: 메인 에이전트가 작업의 독립성, 병렬 처리 이점, 역할 분리, 지연과 충돌 위험을 평가해 background subagent가 유용하다고 판단하거나 사용자가 명시적으로 위임을 요청했을 때 사용한다. 스폰 이후 lifecycle과 결과 통합을 관리한다.
 ---
 
 # Background Dispatch Skill
@@ -9,20 +9,18 @@ description: 사용자 입력의 마지막 토큰이 `-bd`일 때 subagent 사�
 
 ## 사용 시점
 
-다음 경우에만 사용한다.
+다음 경우에 사용한다.
 
-- 현재 작업을 시작한 사용자 입력의 마지막 토큰이 `-bd`다.
-- 기존 `-bd` 작업에서 이미 스폰한 subagent의 lifecycle이나 결과를 후속 turn에서 관리한다.
+- 메인 에이전트가 독립 실행 단위, 역할 분리, 병렬 처리, 장시간 작업 때문에 subagent가 실질적으로 유리하다고 판단한다.
+- 사용자가 백그라운드 처리나 subagent 활용을 명시적으로 요청한다.
+- 이미 스폰한 subagent의 lifecycle이나 결과를 후속 turn에서 관리한다.
 
-`-bd` 없이 "백그라운드", "병렬", "서브에이전트"라는 표현만 있는 경우에는 새 subagent를 호출하지 않고 `-bd`를 붙여야 한다는 규칙을 안내한다.
+## Decision gate
 
-## Authorization gate
-
-- 입력 양끝 공백을 제거한 뒤 마지막 독립 토큰이 정확히 `-bd`인지 확인한다.
-- `-bd`는 subagent 사용 허가이지 강제 호출 명령이 아니다.
-- 허가 후에도 작업의 독립성, 지연 이점, 충돌 위험을 보고 현재 에이전트가 직접 수행할지 subagent를 사용할지 자율 판단한다.
-- `-bd`가 없으면 복잡성, 작업량, 역할 분리, 장시간 실행을 근거로 새 subagent를 호출하지 않는다.
-- 이미 승인된 `-bd` 작업의 기존 agent를 관리하는 후속 turn에는 `-bd` 반복 입력을 요구하지 않는다.
+- 단순 작업, 강하게 결합된 작업, write set이 겹치는 작업은 현재 에이전트가 직접 수행한다.
+- 독립성이 높고 병렬 처리로 지연을 줄이거나 reviewer/qa/security/documenter/researcher 역할 분리가 품질을 높일 때 subagent를 사용할 수 있다.
+- 호출 여부, 역할, 개수, 병렬화는 메인 에이전트가 자율 결정한다.
+- subagent를 사용하더라도 결과 통합, 검증, 사용자 보고 책임은 메인 에이전트에 남는다.
 
 ## 핵심 규칙
 
@@ -95,7 +93,7 @@ UI/browser-facing 작업이면 screenshot 생성 허용 여부와 저장 경로,
 
 ## 금지
 
-- `-bd` 요청 후 바로 `wait_agent`로 장시간 막기.
+- subagent를 스폰한 직후 이유 없이 `wait_agent`로 장시간 막기.
 - 사용자가 새 질문을 했다는 이유만으로 background agent를 종료하기.
 - 메인 에이전트가 background subagent와 같은 조사를 중복 수행하기.
 - background 결과를 받기 전에 성공/완료로 보고하기.

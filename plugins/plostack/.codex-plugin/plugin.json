@@ -1,6 +1,6 @@
 {
   "name": "plostack",
-  "version": "0.6.9+codex.20260712005532",
+  "version": "0.6.9+codex.20260712010719",
   "description": "Plostack은 Codex용 exportable HTML 문서, PDF/PPTX 변환, 전달 오케스트레이션 스킬팩입니다.",
   "author": {
     "name": "Plostack Contributors",
@@ -38,7 +38,7 @@
   "interface": {
     "displayName": "Plostack",
     "shortDescription": "Exportable HTML, HTML-to-PDF/PPTX, 전달 흐름.",
-    "longDescription": "Plostack은 PDF/PPTX export를 전제로 한 문서형 HTML 설계, 기존 HTML-to-PDF 변환, 기존 HTML-to-PPTX 변환, 새 프레젠테이션 생성, 브레인스토밍, 백그라운드 디스패치, 리뷰/QA/검증/브랜치/PR 관문, local-preflight/commit/push/PR checks 종료 자동화를 포함한 공개 재사용 스킬을 묶은 플러그인입니다. 작업은 경량/표준/보호로 분류하며, subagent는 사용자 입력 끝에 -bd가 있을 때만 자율 판단으로 사용합니다.",
+    "longDescription": "Plostack은 PDF/PPTX export를 전제로 한 문서형 HTML 설계, 기존 HTML-to-PDF 변환, 기존 HTML-to-PPTX 변환, 새 프레젠테이션 생성, 브레인스토밍, 백그라운드 디스패치, 리뷰/QA/검증/브랜치/PR 관문, local-preflight/commit/push/PR checks 종료 자동화를 포함한 공개 재사용 스킬을 묶은 플러그인입니다. 작업은 경량/표준/보호로 분류하며, subagent 활용은 메인 에이전트가 작업 성격에 따라 자율 판단합니다.",
     "developerName": "Plostack Contributors",
     "category": "Coding",
     "capabilities": [
