@@ -68,6 +68,10 @@ scope -> evidence-plan -> run-verification -> inspect-results -> gate-decision -
 - UI/browser-facing: browser smoke 또는 screenshot 기반 evidence.
 - security/secret/auth: secret scan + security review/gate.
 
+동작 변경, 버그 수정, 리팩터링은 구현 전에 재현 절차, 관찰된 증상, 검증 기준을 기록한다. 원인 후보를 나눠 증거로 하나씩 제거하고 root cause 전 추측성 패치를 하지 않는다. 가능한 경우 실패 테스트를 먼저 확인하고, 테스트가 부적절하면 수동 검증 절차와 기대 결과를 적는다. 문서/설정/throwaway prototype 예외는 이유를 남기며, 구현은 검증 기준을 통과시키는 최소 변경부터 시작해 같은 재현 절차와 회귀 검증을 반복한다.
+
+리뷰 피드백은 전체 맥락에서 요구사항을 재진술하고 코드베이스 현실과 대조해 타당성을 확인한다. 맞으면 수정 후 관련 검증을 실행하고, 애매하거나 틀리면 근거를 들어 질문하거나 반박한다. reviewer BLOCK은 해결 또는 명시적 override 전까지 완료를 막는다.
+
 명령을 찾을 수 없으면 파일 구조와 README/package scripts를 확인한다. 그래도 없으면 `UNVERIFIED`로 보고하고, 어떤 evidence가 비었는지 적는다.
 
 ### 3. run-verification

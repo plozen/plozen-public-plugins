@@ -17,9 +17,6 @@ description: 저장소 변경, 새 기능, 동작 변경, 버그 수정, 테스�
 
 적용 범위에서는 등급만 판정한다. 실제 흐름은 [Workflow By Scope](#workflow-by-scope)를 따른다. Plostack 작업 흐름은 모든 작업에 강제하지 않고 필요한 만큼만 적용한다.
 
-특수 라우팅:
-
-- 관리자웹 공통 UI 패턴은 `admin-ui-consistency-harness`로 보낸다.
 - subagent 사용 여부와 구성은 메인 에이전트가 자율 판단한다. 별도 사용자 플래그를 요구하지 않는다.
 - 명시 요청이 있으면 한 단계 높은 흐름으로 올릴 수 있다.
 
@@ -50,7 +47,6 @@ Brainstorming, 작업 트리, 위임, PR을 강제하지 않는다.
 
 - subagent가 유용하다고 판단한 경우 `background-dispatch` 스킬을 적용한다.
 - 회귀 위험이 있으면 reviewer 또는 QA gate를 적용한다.
-- 관리자웹 공통 UI 패턴을 바꾸거나 한 페이지 수정사항을 다른 페이지에도 맞춰야 하면 `admin-ui-consistency-harness`를 적용한다.
 - 사용자 요청 또는 저장소 정책이 있으면 `verification-branch-finish-hook-harness`로 fresh evidence를 확인한 뒤 `finish-flow-harness`로 commit/push/PR gate를 적용한다.
 
 ### Protected
@@ -65,12 +61,8 @@ Brainstorming, 작업 트리, 위임, PR을 강제하지 않는다.
 |---|---|
 | Brainstorming | `brainstorming` |
 | Output Artifact Routing | `exportable-html-document`, `html-to-pdf`, `html-to-pptx`, `pptx-generator` |
-| Admin UI Common Gate | `admin-ui-consistency-harness` |
-| Planning | `planning-hook-harness` |
 | 작업 트리 | `worktree-hook-harness` |
 | Background dispatch | `background-dispatch` |
-| 구현/디버깅 | `debugging-hook-harness` |
-| 리뷰/피드백 | `review-reception-hook-harness` |
 | 검증/완료 | `verification-branch-finish-hook-harness` |
 | 종료 자동화 | `finish-flow-harness` |
 
@@ -80,17 +72,16 @@ Brainstorming, 작업 트리, 위임, PR을 강제하지 않는다.
 - 사용자가 별도 플래그를 붙일 필요가 없으며, 단일 작업이거나 현재 에이전트가 더 효율적이면 직접 수행한다.
 - subagent를 사용하면 역할과 파일 ownership을 분리하고 결과 통합과 최종 검증은 메인 에이전트가 맡는다.
 - 스폰, 재사용, lifecycle, 보고 세부 규칙은 `background-dispatch` 한 곳에서만 정의한다.
+- 보호 작업은 구현 전에 작고 검증 가능한 task로 나누고, 각 task의 수정 파일, owner, 금지 범위, 검증 명령을 정한다. 여러 하위 시스템은 독립 task group으로 나눠 write conflict를 막는다.
+- 계획이 불명확하면 구현으로 넘어가지 않고 사용자 확인을 받는다.
 
 역할별 우선 호출 기준:
 
 | 역할 | 호출 기준 |
 |---|---|
-| `developer-senior` | 새 기능, 복잡한 구현, 아키텍처, 다중 파일 리팩터링, 어려운 디버깅 |
-| `developer-mid` | 버그 수정, 단순 CRUD, 집중 테스트 추가, 단일/소규모 파일 변경 |
-| `developer-junior` | 문구, 오타, 주석, import 정리, 포맷팅, 상수 변경처럼 로직 없는 수정 |
+| `developer` | 작업 범위에 맞는 최소권한 구현·수정 |
 | `reviewer` | 코드, schema, API, LLM trust boundary, 구조 위험 리뷰 |
 | `qa` | 테스트 실행, 회귀 확인, 재현 절차, 검증 리포트 |
-| `breaker` | 브라우저 흐름, 사용자 관점 edge case, 비직관적 UX 검증 |
 | `security` | secrets, auth, infra, dependency, supply-chain 위험 |
 | `documenter` | 문서, spec, README, 릴리스 노트, Markdown 변환 |
 | `researcher` | 외부/기술 조사, 라이브러리/API 확인, 출처 기반 비교 |
@@ -105,8 +96,7 @@ Brainstorming, 작업 트리, 위임, PR을 강제하지 않는다.
 |---|---|
 | 코드, schema, API, auth, data | reviewer |
 | 동작 변경, 테스트 추가, 회귀 위험 | qa |
-| 관리자웹 공통 UI | `admin-ui-consistency-harness` |
-| UI 또는 browser-facing 변경 | qa 또는 breaker browser gate |
+| UI 또는 browser-facing 변경 | qa |
 | secrets, auth, infra, dependency | security |
 | commit, push, PR, merge, cleanup | `verification-branch-finish-hook-harness` -> `finish-flow-harness` |
 
