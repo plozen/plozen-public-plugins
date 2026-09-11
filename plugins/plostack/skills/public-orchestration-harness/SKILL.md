@@ -1,6 +1,6 @@
 ---
 name: public-orchestration-harness
-description: 저장소 변경, 새 기능, 동작 변경, 버그 수정, 테스트 실패, 다단계 작업, 작업 범위 분류, 스킬 라우팅, planning, worktree, debugging/TDD, 리뷰/QA/security gate, verification, PR/merge/cleanup 통합이 필요할 때 사용한다. 사용자가 Plostack을 명시하지 않아도 작업 성격상 필요하면 경량/표준/보호를 먼저 분류하고 subagent 활용 여부를 자율 판단한다.
+description: 복잡하거나 고위험인 저장소 작업 또는 사용자가 명시적으로 Plostack 오케스트레이션을 요청한 경우에만 선택해 위험을 분류하고 필요한 하네스를 라우팅한다. 저위험 작업에는 강제하지 않는다.
 ---
 
 # Plostack 오케스트레이션 하네스
