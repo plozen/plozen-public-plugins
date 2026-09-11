@@ -13,12 +13,18 @@
 - 완료 보고는 `완료한 것`, `검증한 것`, `남은 것`, `다음 액션`이 있으면 그 순서로 짧게 남긴다.
 
 ## Plostack Routing
-- Plostack 작업 흐름은 모든 작업에 강제하지 않는다. 경량/표준/보호 작업으로 먼저 분류하고 필요한 수준만 적용한다.
-- 사용자가 `Plostack`을 명시하지 않아도 저장소 변경, 새 기능, 동작 변경, 버그/테스트 실패, 다중 단계 작업, 검증/위임/리뷰/QA/PR이 필요한 작업은 public Plostack `public-orchestration-harness`로 먼저 경량/표준/보호 작업을 분류한다.
-- subagent 사용 여부, 역할, 개수, 병렬화는 메인 에이전트가 작업의 독립성, 지연 이점, 위험, write conflict를 보고 자율 판단한다. 별도 사용자 플래그를 요구하지 않는다.
-- 단순하거나 강하게 결합된 작업은 직접 수행하고, 독립 실행 단위나 역할 분리가 실질적으로 유리할 때만 subagent를 사용한다.
-- 경량 작업은 `분류 -> 바로 답변/상태 확인 -> 필요한 근거 표시`로 처리한다.
-- 표준 작업은 `분류 -> git/worktree 상태 확인 -> 수정/실행 -> 검증 -> 보고`로 처리한다.
-- 메인 에이전트가 subagent 사용이 유용하다고 판단한 경우 `background-dispatch`를 적용한다.
-- 보호 작업은 `Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 구현/디버깅 -> 리뷰 -> QA/Security -> 검증 -> 커밋/푸시/PR -> 팀장 확인 -> 병합/정리 -> 보고`를 기본 흐름으로 하며, subagent 사용은 에이전트 판단에 따라 선택적으로 추가한다.
-- 새 기능, 동작 변경, 복잡한 다단계 작업, 요구사항이 불명확한 작업은 구현 전에 public Plostack `brainstorming`을 우선 고려한다.
+
+글로벌 지침이 기본 레이어다. public-orchestration-harness는 호환용 위험 분류·라우터이며, 저위험 작업에 Plostack 흐름을 강제하지 않는다.
+
+- Lightweight: 읽기, 질문, 상태 확인, 단순 문구 수정은 하네스 없이 직접 처리한다.
+- Standard: 작은 로컬 변경은 직접 수행하고 변경에 맞는 targeted verification만 선택한다.
+- Protected: 새 동작, 대규모 리팩터링, 보안·인증·데이터·인프라, 릴리스, 다중 시스템만 필요한 primary concern과 risk-required verifier를 선택한다. 자동 cascade는 없다.
+- 보호·다단계 계획은 구현 전에 task, owner, 허용·금지 범위, 검증 명령을 정하고 불명확하면 확인한다.
+- 동작 변경·버그·리팩터링은 증상·재현·root cause 근거와 검증 기준을 먼저 세운다. 추측성 패치 대신 최소 수정 후 같은 절차를 재현하고 가능하면 회귀 검증을 추가한다.
+- 리뷰 피드백은 요구를 재진술하고 코드 현실과 대조한다. 맞으면 수정·검증하고, 애매하거나 틀리면 근거로 질문·반박한다. BLOCK은 해소 또는 명시적 override 전까지 닫지 않는다.
+- subagent는 독립 실행, 병렬 처리, 장시간 작업, 역할 분리가 실질적으로 이득일 때만 선택한다. 강결합·겹치는 write set은 직접 수행한다.
+- high-risk, 충돌 위험, PR 작업은 repo 내부 .worktrees/의 feature branch를 사용한다. dirty 변경을 보존하고 reset, checkout, clean, 광범위 destructive action을 사용하지 않는다.
+- secret 값과 credential 파일을 출력·복사·stage하지 않는다. destructive action은 정확한 대상을 먼저 확인하고 복구 가능한 경로를 우선한다.
+- 마지막 변경 뒤 fresh verification을 실행하고 command, exit code, failures/skips, artifact를 기록한다. 필수 검증이 FAIL 또는 UNVERIFIED면 완료로 말하지 않는다.
+- UI/browser 변경은 Playwright 격리 context에서 실제 화면·DOM·console/network를 확인하고, 사용자의 기존 탭을 탈취하지 않는다.
+- push는 feature branch에서 사용자 요청 또는 저장소 정책이 있을 때만 한다. main/master/base 직접 push는 명시 승인과 설정된 안전 flag가 모두 있어야 한다.
