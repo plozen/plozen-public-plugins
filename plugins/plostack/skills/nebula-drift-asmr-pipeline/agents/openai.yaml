@@ -1,4 +1,4 @@
 interface:
   display_name: "Nebula Drift ASMR Pipeline"
-  short_description: "이미지·음악을 수면 영상으로 편집하고 예약 게시"
-  default_prompt: "$nebula-drift-asmr-pipeline을 사용해서 네뷸라 에피소드 원안(없으면 현재 세계관에서 짧은 원안)을 바탕으로 16:9 이미지 후보 3개를 생성하고 대표님이 선택한 이미지와 날짜 폴더의 음악으로 1시간 수면 영상을 만들어 preview 검증 후 YouTube 예약 게시 manifest까지 준비해줘."
+  short_description: "새로운 우주 풍경 3안·수면 영상·예약 게시"
+  default_prompt: "$nebula-drift-asmr-pipeline을 사용해서 네뷸라의 세계관 안에서 새로운 우주 풍경 아이디어를 스스로 만들고 16:9 이미지 후보 3개를 생성한 뒤 대표님이 선택한 이미지와 날짜 폴더의 음악으로 1시간 수면 영상을 만들어 preview 검증 후 YouTube 예약 게시 manifest까지 준비해줘."

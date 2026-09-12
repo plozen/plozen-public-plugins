@@ -1,24 +1,24 @@
 ---
 name: nebula-drift-asmr-pipeline
-description: "Create a story-led Nebula Drift ASMR episode: derive the scene and media brief from an episode treatment, generate or select the 16:9 image, render a long-form sleep video from audio assets with FFmpeg, and optionally upload or schedule it on YouTube after explicit confirmation."
+description: "Create a world-led Nebula Drift ASMR episode: invent a fresh quiet cosmic discovery, generate or select a 16:9 image, render a long-form sleep video from audio assets with FFmpeg, and optionally upload or schedule it on YouTube after explicit confirmation."
 ---
 
 # Nebula Drift ASMR Pipeline
 
 ## Scope
 
-This skill handles the first manual-production version of the story-led Nebula Drift ASMR loop:
+This skill handles the first manual-production version of the world-led Nebula Drift ASMR loop:
 
-- a concise episode treatment or story seed that preserves continuity with the previous episode
-- a visual and audio brief derived from that story source
-- one 16:9 still image, generated through `nebula-drift-asmr-image-style` and the built-in image generation tool when needed
+- the Nebula world premise and one fresh scene concept invented for each episode
+- a visual and optional audio mood brief derived from that concept
+- three 16:9 still-image candidates, generated through `nebula-drift-asmr-image-style` and the built-in image generation tool when needed
 - one or more sleep-music tracks, played in order and looped as a sequence
 - optional spaceship ambience
 - a 30-minute to one-hour FFmpeg render
 - metadata preparation
 - optional YouTube OAuth upload and scheduled publishing
 
-Music remains user-provided or explicitly selected. This skill does not generate music, TTS, subtitles, or n8n workflows. Full novel writing is a separate later capability; the current loop still requires a short, engaging episode treatment as its creative source of truth.
+Music remains user-provided or explicitly selected. This skill does not generate music, TTS, subtitles, or n8n workflows. It does not require a novel, plot continuity, a fixed destination order, or a previous-episode story. Previous assets may guide shared style and prevent accidental repetition, but they do not constrain the next discovery.
 
 The current project asset convention is a date folder such as:
 
@@ -26,17 +26,17 @@ The current project asset convention is a date folder such as:
 
 When running in WSL, the equivalent is normally `/mnt/c/Users/moon/ObsidianVault/02-Projects/nebula-drift-asmr/2026-09-12/`. Prefer an explicit `--input-dir` over guessing a date folder.
 
-## Story-first loop
+## World-led scene loop
 
-Every episode starts with the narrative source, even when the final format is only image plus sleep music.
+Every episode is a self-contained quiet discovery inside the same Nebula world. Continuity means a consistent visual identity, not a continuing plot.
 
-- Read the Nebula project note, the previous episode record, and any user-provided story material before choosing the next location or scene.
-- Create or use a concise episode treatment: continuity from the previous episode, current waypoint, scene, emotional movement, and a quiet ending suitable for sleep content.
-- Derive two briefs from the treatment: a visual brief for the image and an audio brief for music/ambience. Do not add a location, object, or mood that the story does not support.
-- Hand the visual brief to `nebula-drift-asmr-image-style`; generate three image candidates by default with the built-in image tool when an image is not already supplied. Save candidates under the project `imgs/` folder as `draft`, let the user select one, then copy only the selected image into an episode-specific date-folder input directory for rendering and record the treatment source, prompts, and statuses in the image log.
-- If the treatment is only a draft, label it as draft in the project record. A generated image can be previewed, but it must not silently become the canonical episode asset.
+- Keep the core premise: Nebula is a quiet traveler exploring the universe from a spacecraft, planets, moons, stations, and unknown regions.
+- If the user gives an idea, develop it. Otherwise invent a fresh, beautiful discovery by combining a location, one strong visual anchor, a minimal quiet activity, and sleep-friendly light/mood. Do not force a sequential destination or ask for a story source first. Suitable directions include a Moon campfire beneath the stars, a ringed planet with a luminous comet tail or auroral ribbon, an unknown planet with impossible homes or city architecture, a nebula canyon, an alien ocean, or a quiet station window.
+- Draft a compact concept brief: location, visual anchor, Nebula's implied presence or quiet action, light/mood, and optional sound cues. Keep the scene calm, safe, and visually legible; avoid threat, chase, horror, or plot-heavy drama.
+- Hand the visual brief to `nebula-drift-asmr-image-style`; generate three image candidates by default with the built-in image tool when an image is not already supplied. Keep the concept and style fixed while varying composition. Save candidates under the project `imgs/` folder as `draft`, let the user select one, then copy only the selected image into an episode-specific date-folder input directory for rendering and record the concept source, prompts, and statuses in the image log.
+- If an idea is only a draft, label it as draft in the project record. A generated image can be previewed, but it must not silently become the canonical episode asset.
 
-The story treatment is the minimum current input. TTS narration and a full novel workflow can be added later without removing this continuity layer.
+The concept brief is enough to start the image-and-sleep-music loop. TTS narration, subtitles, and a full novel workflow are outside the current loop.
 
 ## Side-effect policy
 
@@ -51,10 +51,10 @@ Never publish publicly by default. Never put client secrets, access tokens, refr
 
 ## Input contract
 
-Story stage:
+Concept stage:
 
-- Use an existing episode treatment/story note or draft one from the current canon before asset generation.
-- The treatment may be supplied in the request or kept in the Nebula project notes; it must identify the episode and its continuity link.
+- A user idea is optional. If none is supplied, invent a new world-consistent discovery and write a compact concept brief before image generation.
+- A story note, episode treatment, previous-episode record, and plot continuity are optional and must never block asset generation.
 
 Render stage:
 
@@ -68,10 +68,10 @@ If multiple images or ambience files exist, stop and ask the user to choose with
 
 ## Workflow
 
-### 1. Story and image brief
+### 1. World concept and image brief
 
-- Follow the [story-first loop](#story-first-loop).
-- Confirm that the user-selected image expresses the episode treatment and is framed for longform sleep use before proceeding to preflight.
+- Follow the [world-led scene loop](#world-led-scene-loop).
+- Confirm that the user-selected image expresses the chosen discovery concept and is framed for longform sleep use before proceeding to preflight.
 
 ### 2. Preflight
 
@@ -88,7 +88,7 @@ The script must write a sidecar manifest beside the output with source paths, in
 
 ### 4. Metadata
 
-Prepare a JSON file with title, description, tags, category, language, and the explicit audience declaration. Start from `references/metadata.example.json`, then adapt the episode idea. Do not invent claims about sounds, locations, or licensing that the supplied assets do not support.
+Prepare a JSON file with title, description, tags, category, language, and the explicit audience declaration. Start from `references/metadata.example.json`, then adapt the selected discovery concept. Do not invent claims about sounds, locations, or licensing that the supplied assets do not support.
 
 ### 5. Upload and schedule
 
@@ -100,7 +100,7 @@ Prepare a JSON file with title, description, tags, category, language, and the e
 
 ### 6. Record
 
-After a successful local render, record the episode treatment reference, render path, and manifest in the Nebula project log through the Obsidian CLI. After a live upload, record only non-secret metadata and the YouTube video ID/status; never record OAuth files or tokens. If the upload is not executed, report it as pending rather than implying it was scheduled.
+After a successful local render, record the discovery concept, selected image, render path, and manifest in the Nebula project log through the Obsidian CLI. After a live upload, record only non-secret metadata and the YouTube video ID/status; never record OAuth files or tokens. If the upload is not executed, report it as pending rather than implying it was scheduled.
 
 ## Commands
 
