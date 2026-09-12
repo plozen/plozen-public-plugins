@@ -1,28 +1,42 @@
 ---
 name: nebula-drift-asmr-pipeline
-description: "Create a Nebula Drift ASMR long-form sleep video from a date-folder image and audio assets with FFmpeg, then optionally upload and schedule it on YouTube through OAuth after explicit confirmation. Use when the user asks to render, preview, upload, or schedule a Nebula Drift ASMR sleep-music video."
+description: "Create a story-led Nebula Drift ASMR episode: derive the scene and media brief from an episode treatment, generate or select the 16:9 image, render a long-form sleep video from audio assets with FFmpeg, and optionally upload or schedule it on YouTube after explicit confirmation."
 ---
 
 # Nebula Drift ASMR Pipeline
 
 ## Scope
 
-This skill handles the first manual-production version of Nebula Drift ASMR:
+This skill handles the first manual-production version of the story-led Nebula Drift ASMR loop:
 
-- one 16:9 still image
+- a concise episode treatment or story seed that preserves continuity with the previous episode
+- a visual and audio brief derived from that story source
+- one 16:9 still image, generated through `nebula-drift-asmr-image-style` and the built-in image generation tool when needed
 - one or more sleep-music tracks, played in order and looped as a sequence
 - optional spaceship ambience
 - a 30-minute to one-hour FFmpeg render
 - metadata preparation
 - optional YouTube OAuth upload and scheduled publishing
 
-It does not generate images, music, TTS, stories, subtitles, or n8n workflows. Use the existing `nebula-drift-asmr-image-style` skill for image creation and keep user-provided audio as the source of truth.
+Music remains user-provided or explicitly selected. This skill does not generate music, TTS, subtitles, or n8n workflows. Full novel writing is a separate later capability; the current loop still requires a short, engaging episode treatment as its creative source of truth.
 
 The current project asset convention is a date folder such as:
 
 `C:\Users\moon\ObsidianVault\02-Projects\nebula-drift-asmr\2026-09-12\`
 
 When running in WSL, the equivalent is normally `/mnt/c/Users/moon/ObsidianVault/02-Projects/nebula-drift-asmr/2026-09-12/`. Prefer an explicit `--input-dir` over guessing a date folder.
+
+## Story-first loop
+
+Every episode starts with the narrative source, even when the final format is only image plus sleep music.
+
+- Read the Nebula project note, the previous episode record, and any user-provided story material before choosing the next location or scene.
+- Create or use a concise episode treatment: continuity from the previous episode, current waypoint, scene, emotional movement, and a quiet ending suitable for sleep content.
+- Derive two briefs from the treatment: a visual brief for the image and an audio brief for music/ambience. Do not add a location, object, or mood that the story does not support.
+- Hand the visual brief to `nebula-drift-asmr-image-style`; generate the image with the built-in image tool when an image is not already supplied. Save the canonical image under the project `imgs/` folder, copy it into an episode-specific date-folder input directory when rendering, and record the treatment source, prompt, and status in the image log.
+- If the treatment is only a draft, label it as draft in the project record. A generated image can be previewed, but it must not silently become the canonical episode asset.
+
+The story treatment is the minimum current input. TTS narration and a full novel workflow can be added later without removing this continuity layer.
 
 ## Side-effect policy
 
@@ -37,6 +51,13 @@ Never publish publicly by default. Never put client secrets, access tokens, refr
 
 ## Input contract
 
+Story stage:
+
+- Use an existing episode treatment/story note or draft one from the current canon before asset generation.
+- The treatment may be supplied in the request or kept in the Nebula project notes; it must identify the episode and its continuity link.
+
+Render stage:
+
 At the top level of the input folder provide:
 
 - exactly one image: `.png`, `.jpg`, `.jpeg`, or `.webp`
@@ -47,24 +68,29 @@ If multiple images or ambience files exist, stop and ask the user to choose with
 
 ## Workflow
 
-### 1. Preflight
+### 1. Story and image brief
+
+- Follow the [story-first loop](#story-first-loop).
+- Confirm that the generated/selected image expresses the episode treatment and is framed for longform sleep use.
+
+### 2. Preflight
 
 - Confirm the input folder and selected files exist.
 - Run `ffprobe` on each source and reject missing audio/video streams.
 - Confirm the target duration, output path, and whether ambience is included.
 - For YouTube work, validate metadata with [references/metadata-schema.md](references/metadata-schema.md) before loading any OAuth token.
 
-### 2. Render
+### 3. Render
 
 Run `scripts/render_video.py`. The default render is a calm static 1920x1080 image with all selected music tracks concatenated in order, then the complete sequence looped to the requested duration. If ambience exists, mix it quietly under the music using the requested volume. Apply conservative loudness normalization and encode H.264/AAC in an MP4 suitable for YouTube.
 
 The script must write a sidecar manifest beside the output with source paths, input hashes, output size, duration, and validation results. The manifest must not contain credentials.
 
-### 3. Metadata
+### 4. Metadata
 
 Prepare a JSON file with title, description, tags, category, language, and the explicit audience declaration. Start from `references/metadata.example.json`, then adapt the episode idea. Do not invent claims about sounds, locations, or licensing that the supplied assets do not support.
 
-### 4. Upload and schedule
+### 5. Upload and schedule
 
 - First run `scripts/youtube_publish.py ... --dry-run`.
 - For a live upload, use a dedicated local OAuth token created by `scripts/youtube_auth.py`; the scripts use Python's standard library and do not require third-party Google packages.
@@ -72,9 +98,9 @@ Prepare a JSON file with title, description, tags, category, language, and the e
 - A schedule requires an explicit future ISO 8601 timestamp and `--confirm-schedule`.
 - After upload, call `videos.list` and verify the returned video ID, title, description, tags (order-insensitive), category, language, explicit audience declaration, `privacyStatus`, and, when requested, `publishAt`. A successful upload without a successful readback is not a completed publish operation.
 
-### 5. Record
+### 6. Record
 
-After a successful local render, record the render path and manifest in the Nebula project log through the Obsidian CLI. After a live upload, record only non-secret metadata and the YouTube video ID/status; never record OAuth files or tokens. If the upload is not executed, report it as pending rather than implying it was scheduled.
+After a successful local render, record the episode treatment reference, render path, and manifest in the Nebula project log through the Obsidian CLI. After a live upload, record only non-secret metadata and the YouTube video ID/status; never record OAuth files or tokens. If the upload is not executed, report it as pending rather than implying it was scheduled.
 
 ## Commands
 

@@ -13,7 +13,7 @@ Use this skill when the user wants to create, revise, select, or organize images
 
 Keep Nebula Drift ASMR images visually consistent as a fantasy sci-fi sleep/ASMR travel-log channel.
 
-The channel premise: Nebula is a quiet space traveler aboard a spacecraft. The channel contains records from Nebula's journey through planets, moons, nebulae, stations, and unknown regions. Longform sleep videos are one category inside that world.
+The channel premise: Nebula is a quiet space traveler aboard a spacecraft. The channel contains records from Nebula's journey through planets, moons, nebulae, stations, and unknown regions. Longform sleep videos are one category inside that world. Each image must be grounded in the current episode treatment so the visual journey remains continuous.
 
 ## Project Paths
 
@@ -61,16 +61,16 @@ Recommended structure:
 3. Minimal action: sleeping, watching, drifting, resting, landing, quiet observation.
 4. Low visual noise: enough detail to feel premium, not so much that it distracts from sleep.
 
-## Concept Workflow
+## Story-led Concept Workflow
 
 Before generating an image:
 
-1. Clarify the episode concept in one sentence.
-2. Decide whether this is longform 16:9 or shorts 9:16.
-3. Pick a mood: majestic, lonely-safe, dreamy, cold-silent, warm-cabin, alien-ocean, deep-space.
-4. Draft the prompt in English.
-5. Include a negative/avoid section.
-6. Decide target filename before generation.
+1. Read the episode treatment and previous image/episode record.
+2. Extract the continuity link, current waypoint, scene, emotional movement, visual anchor, and any sound cues.
+3. Decide whether this is longform 16:9 or shorts 9:16; use 16:9 for the sleep-music pipeline.
+4. Pick a mood supported by the treatment: majestic, lonely-safe, dreamy, cold-silent, warm-cabin, alien-ocean, or deep-space.
+5. Draft the English image prompt from the treatment, then include a negative/avoid section.
+6. Decide the target filename before generation and record the treatment source with the image result.
 
 ## Prompt Template
 
@@ -78,6 +78,10 @@ Before generating an image:
 Create a cinematic 16:9 ultra high resolution image for the YouTube channel Nebula Drift ASMR.
 
 World: Nebula is a quiet space traveler recording peaceful sleep/ASMR scenes during a journey across the universe.
+
+Continuity: [what this scene continues from and where it leads]
+
+Story beat: [the single quiet visual moment to preserve from the episode treatment]
 
 Scene: [specific episode scene]
 
@@ -109,6 +113,7 @@ Examples:
 After generating or selecting an image, update `nebula-drift-asmr-image-log.md` with:
 
 - date
+- episode/treatment source and continuity link
 - concept name
 - status: draft, selected, used, rejected
 - tool/model if known
