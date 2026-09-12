@@ -19,7 +19,11 @@ from pathlib import Path
 from typing import Any
 
 
-SCOPE = "https://www.googleapis.com/auth/youtube.upload"
+SCOPES = (
+    "https://www.googleapis.com/auth/youtube.upload",
+    "https://www.googleapis.com/auth/youtube.readonly",
+)
+SCOPE = " ".join(SCOPES)
 
 
 def path_value(raw: str) -> Path:

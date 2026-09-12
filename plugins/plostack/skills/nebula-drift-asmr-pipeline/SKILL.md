@@ -33,7 +33,7 @@ Use the stages in order:
 3. `upload`: upload as `private` and verify the returned video resource.
 4. `schedule`: only after the user explicitly supplies the target time and confirms the external action. The script still uploads as `private` and verifies `status.publishAt` through the API.
 
-Never publish publicly by default. Never put client secrets, access tokens, refresh tokens, or channel identifiers into Vault notes, manifests committed to Git, screenshots, or chat output. Store OAuth material in a local ignored path or a secret manager. YouTube uploads require user OAuth; an API key alone is not sufficient, and service-account authentication is not supported for this user-channel flow. Read [references/youtube-api.md](references/youtube-api.md) before the first authorization.
+Never publish publicly by default. Never put client secrets, access tokens, refresh tokens, or channel identifiers into Vault notes, manifests committed to Git, screenshots, or chat output. Store OAuth material in a local ignored path or a secret manager. YouTube uploads require user OAuth; an API key alone is not sufficient, and service-account authentication is not supported for this user-channel flow. The bundled auth requests `youtube.upload` for upload and `youtube.readonly` for the mandatory API readback. Read [references/youtube-api.md](references/youtube-api.md) before the first authorization.
 
 ## Input contract
 

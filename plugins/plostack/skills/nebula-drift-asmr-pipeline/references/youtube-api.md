@@ -15,4 +15,4 @@ Read the current Google documentation before the first live authorization:
 5. Run `youtube_auth.py` interactively and complete Google consent in the user-visible browser.
 6. Keep the resulting token file outside the repository and outside the Obsidian Vault.
 
-The upload script requests the narrow `https://www.googleapis.com/auth/youtube.upload` scope. A schedule is sent with `privacyStatus=private` and a future ISO 8601 `publishAt`; the API does not allow setting `publishAt` on an already-published video.
+The auth script requests `https://www.googleapis.com/auth/youtube.upload` for upload and `https://www.googleapis.com/auth/youtube.readonly` for post-upload `videos.list` readback. A schedule is sent with `privacyStatus=private` and a future ISO 8601 `publishAt`; the API does not allow setting `publishAt` on an already-published video.

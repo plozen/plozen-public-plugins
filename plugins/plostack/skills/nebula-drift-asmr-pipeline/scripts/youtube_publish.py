@@ -20,6 +20,10 @@ from typing import Any
 YOUTUBE_API = "https://www.googleapis.com/youtube/v3"
 YOUTUBE_UPLOAD_API = "https://www.googleapis.com/upload/youtube/v3/videos"
 UPLOAD_CHUNK_SIZE = 8 * 1024 * 1024
+REQUIRED_SCOPES = {
+    "https://www.googleapis.com/auth/youtube.upload",
+    "https://www.googleapis.com/auth/youtube.readonly",
+}
 
 
 class PublishError(RuntimeError):
@@ -148,8 +152,9 @@ def load_token(token_file: Path) -> dict[str, Any]:
     if not isinstance(data, dict) or not data.get("access_token") or not data.get("refresh_token"):
         raise PublishError("OAuth token file lacks the required access_token/refresh_token fields")
     scope = str(data.get("scope", ""))
-    if scope and "https://www.googleapis.com/auth/youtube.upload" not in scope:
-        raise PublishError("OAuth token does not include the YouTube upload scope; run youtube_auth.py again")
+    missing_scopes = REQUIRED_SCOPES - set(scope.split())
+    if missing_scopes:
+        raise PublishError("OAuth token lacks required YouTube upload/readback scopes; run youtube_auth.py again")
     return data
 
 
