@@ -22,7 +22,6 @@ from typing import Any, Iterable
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp"}
 AUDIO_EXTENSIONS = {".mp3", ".wav", ".m4a", ".flac", ".ogg", ".opus", ".aac"}
 AMBIENCE_WORDS = ("ambience", "ambient", "spaceship", "engine", "hum", "cabin")
-MUSIC_WORDS = ("music", "bgm", "sleep", "track", "song")
 
 
 class RenderError(RuntimeError):
@@ -114,25 +113,37 @@ def explicit_or_single(
     raise RenderError(f"Multiple {label} candidates found ({names}); pass --{label} explicitly.")
 
 
-def choose_music(folder: Path, raw: str | None, candidates: list[Path]) -> Path:
+def choose_music(folder: Path, raw: list[str] | None, candidates: list[Path]) -> list[Path]:
     if raw:
-        return explicit_or_single(folder, raw, candidates, label="music")
+        selected: list[Path] = []
+        for raw_path in raw:
+            path = explicit_or_single(folder, raw_path, candidates, label="music")
+            if path in selected:
+                raise RenderError(f"Music was selected more than once: {path.name}")
+            selected.append(path)
+        return selected
     non_ambience = [
         path for path in candidates if not any(word in path.stem.lower() for word in AMBIENCE_WORDS)
     ]
-    preferred = [
-        path for path in non_ambience if any(word in path.stem.lower() for word in MUSIC_WORDS)
-    ]
-    if len(preferred) == 1:
-        return preferred[0]
-    return explicit_or_single(folder, None, non_ambience, label="music")
+    if not non_ambience:
+        raise RenderError(f"No music found in {folder}; pass --music explicitly.")
+    return non_ambience
 
 
-def choose_ambience(folder: Path, raw: str | None, candidates: list[Path]) -> Path | None:
+def choose_ambience(
+    folder: Path,
+    raw: str | None,
+    candidates: list[Path],
+    selected_music: list[Path],
+) -> Path | None:
+    available = [path for path in candidates if path not in selected_music]
     if raw:
-        return explicit_or_single(folder, raw, candidates, label="ambience")
+        selected = explicit_or_single(folder, raw, candidates, label="ambience")
+        if selected in selected_music:
+            raise RenderError("Music and ambience must be different files")
+        return selected
     preferred = [
-        path for path in candidates if any(word in path.stem.lower() for word in AMBIENCE_WORDS)
+        path for path in available if any(word in path.stem.lower() for word in AMBIENCE_WORDS)
     ]
     if len(preferred) > 1:
         names = ", ".join(path.name for path in preferred)
@@ -168,7 +179,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input-dir", required=True, help="Folder containing source image/audio assets")
     parser.add_argument("--image", help="Image path; required when the folder has multiple images")
-    parser.add_argument("--music", help="Music path; required when the folder has multiple music files")
+    parser.add_argument(
+        "--music",
+        action="append",
+        help="Music path; repeat to set an explicit order (default: use every non-ambience audio file in filename order)",
+    )
     parser.add_argument("--ambience", help="Optional spaceship ambience path")
     parser.add_argument("--output", help="Output MP4 path; defaults to <input-dir>/renders/<date>_nebula_drift.mp4")
     parser.add_argument("--manifest", help="Manifest path; defaults to output path with .manifest.json")
@@ -199,12 +214,10 @@ def render(args: argparse.Namespace) -> dict[str, Any]:
     audio = files_with_extensions(input_dir, AUDIO_EXTENSIONS)
     image = explicit_or_single(input_dir, args.image, images, label="image")
     music = choose_music(input_dir, args.music, audio)
-    ambience = choose_ambience(input_dir, args.ambience, audio)
-    if ambience and ambience == music:
-        raise RenderError("Music and ambience must be different files")
+    ambience = choose_ambience(input_dir, args.ambience, audio, music)
 
     image_info = validate_input(image, "video")
-    music_info = validate_input(music, "audio")
+    music_info = [validate_input(path, "audio") for path in music]
     ambience_info = validate_input(ambience, "audio") if ambience else None
 
     date_slug = input_dir.name or datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -217,20 +230,37 @@ def render(args: argparse.Namespace) -> dict[str, Any]:
         f"scale={args.width}:{args.height}:force_original_aspect_ratio=decrease,"
         f"pad={args.width}:{args.height}:(ow-iw)/2:(oh-ih)/2:color=black,format=yuv420p"
     )
-    input_args = ["-loop", "1", "-framerate", str(args.fps), "-i", str(image), "-stream_loop", "-1", "-i", str(music)]
+    input_args = ["-loop", "1", "-framerate", str(args.fps), "-i", str(image)]
+    for music_path in music:
+        input_args += ["-i", str(music_path)]
     if ambience:
         input_args += ["-stream_loop", "-1", "-i", str(ambience)]
 
     command = ["ffmpeg", "-y", *input_args]
+    music_filter_parts = []
+    music_labels = []
+    for index in range(len(music)):
+        input_index = index + 1
+        label = f"music{index}"
+        music_filter_parts.append(f"[{input_index}:a]aresample=48000,asetpts=N/SR/TB[{label}]")
+        music_labels.append(label)
+    cycle_inputs = "".join(f"[{label}]" for label in music_labels)
+    music_filter_parts.append(
+        f"{cycle_inputs}concat=n={len(music_labels)}:v=0:a=1[cycle];"
+        f"[cycle]aloop=loop=-1:size=2147483647,atrim=duration={args.duration:.3f},asetpts=N/SR/TB[musicout]"
+    )
     if ambience:
+        ambience_input_index = len(music) + 1
         audio_filter = (
-            f"[1:a]volume=1.0[music];[2:a]volume={args.ambience_volume:.4f}[ambience];"
+            f"[musicout]volume=1.0[music];[{ambience_input_index}:a]aresample=48000,"
+            f"asetpts=N/SR/TB,volume={args.ambience_volume:.4f}[ambience];"
             f"[music][ambience]amix=inputs=2:duration=longest:dropout_transition=5:normalize=0,"
             f"loudnorm=I={args.target_lufs}:TP=-2:LRA=11[aout]"
         )
-        command += ["-filter_complex", audio_filter, "-map", "0:v:0", "-map", "[aout]"]
+        music_filter_parts.append(audio_filter)
     else:
-        command += ["-map", "0:v:0", "-map", "1:a:0", "-af", f"loudnorm=I={args.target_lufs}:TP=-2:LRA=11"]
+        music_filter_parts.append(f"[musicout]loudnorm=I={args.target_lufs}:TP=-2:LRA=11[aout]")
+    command += ["-filter_complex", ";".join(music_filter_parts), "-map", "0:v:0", "-map", "[aout]"]
     command += [
         "-vf",
         video_filter,

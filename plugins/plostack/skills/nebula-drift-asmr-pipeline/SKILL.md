@@ -10,7 +10,7 @@ description: "Create a Nebula Drift ASMR long-form sleep video from a date-folde
 This skill handles the first manual-production version of Nebula Drift ASMR:
 
 - one 16:9 still image
-- one sleep-music track
+- one or more sleep-music tracks, played in order and looped as a sequence
 - optional spaceship ambience
 - a 30-minute to one-hour FFmpeg render
 - metadata preparation
@@ -40,10 +40,10 @@ Never publish publicly by default. Never put client secrets, access tokens, refr
 At the top level of the input folder provide:
 
 - exactly one image: `.png`, `.jpg`, `.jpeg`, or `.webp`
-- exactly one music file: `.mp3`, `.wav`, `.m4a`, `.flac`, `.ogg`, `.opus`, or `.aac`
+- one or more music files: `.mp3`, `.wav`, `.m4a`, `.flac`, `.ogg`, `.opus`, or `.aac`
 - optionally one ambience file, preferably named with `ambience`, `ambient`, `spaceship`, `engine`, `hum`, or `cabin`
 
-If more than one candidate exists, stop and ask the user to choose with `--image`, `--music`, or `--ambience`; do not guess. Keep renders under a `renders/` subfolder so they cannot be mistaken for source audio.
+If multiple images or ambience files exist, stop and ask the user to choose with `--image` or `--ambience`; do not guess. By default, every non-ambience music file is included in filename order. Repeat `--music` to set an explicit order or choose a subset. Keep renders under a `renders/` subfolder so they cannot be mistaken for source audio.
 
 ## Workflow
 
@@ -56,7 +56,7 @@ If more than one candidate exists, stop and ask the user to choose with `--image
 
 ### 2. Render
 
-Run `scripts/render_video.py`. The default render is a calm static 1920x1080 image with the music looped to the requested duration. If ambience exists, mix it quietly under the music using the requested volume. Apply conservative loudness normalization and encode H.264/AAC in an MP4 suitable for YouTube.
+Run `scripts/render_video.py`. The default render is a calm static 1920x1080 image with all selected music tracks concatenated in order, then the complete sequence looped to the requested duration. If ambience exists, mix it quietly under the music using the requested volume. Apply conservative loudness normalization and encode H.264/AAC in an MP4 suitable for YouTube.
 
 The script must write a sidecar manifest beside the output with source paths, input hashes, output size, duration, and validation results. The manifest must not contain credentials.
 
