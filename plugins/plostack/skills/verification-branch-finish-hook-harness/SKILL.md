@@ -34,7 +34,7 @@ fresh evidence는 아래 조건을 모두 만족해야 한다.
 | docs/skill | frontmatter·schema·content assertion와 git diff --check |
 | package/app code | 관련 lint, test, typecheck, build 중 필요한 명령 |
 | bug/behavior change | 동일 재현 절차 또는 regression test |
-| UI/browser-facing | browser smoke, screenshot, responsive·overflow·accessibility 확인 |
+| UI/browser-facing | browser smoke, 실제 UI action, screenshot, responsive·overflow·accessibility, API/RPC/server action/network/readback 통합 evidence, 전용 verifier subagent 기록 |
 | auth/secret/infra/dependency | secret scan과 해당 보안·권한·설정 검증 |
 | workflow/CI | local syntax validation과 가능한 dry-run |
 
@@ -57,6 +57,7 @@ scope -> evidence-plan -> run-verification -> inspect-results -> gate-decision
 - subagent가 실행한 검증도 로그·파일·exit code·artifact를 확인한다.
 - warning, skipped test, 실패 수를 숨기지 않는다. exit 0이어도 실제 오류가 있으면 PASS가 아니다.
 - 오래 걸리는 명령은 완료까지 기다리며, 실패를 성공으로 요약하지 않는다.
+- browser-facing 변경이면 검증 서브에이전트가 실제 UI와 통합 경계를 수행했는지 확인하고, 그 결과·로그·screenshot·network/readback evidence를 메인이 통합한다.
 
 ### 3. gate decision
 
@@ -73,6 +74,9 @@ VERIFICATION_GATE: PASS / FAIL / UNVERIFIED / PARTIAL
 branch: <branch>
 head: <short-sha>
 changed_scope: <docs|code|ui|config|infra|mixed>
+verifier_subagent: <id/name/status/result>
+ui_gate: PASS / FAIL / UNVERIFIED
+integration_gate: PASS / FAIL / UNVERIFIED
 
 evidence:
 - <name>: <PASS|FAIL|SKIP|UNAVAILABLE>, exit=<code>, artifact=<...>, note=<...>
@@ -94,3 +98,4 @@ required_action:
 - 오래된 테스트나 다른 branch의 결과를 현재 변경의 근거로 쓰지 않는다.
 - 검증을 실행할 수 없으면 UNVERIFIED라고 말한다.
 - secret/auth/infra 변경은 필요한 보안·권한 gate 없이는 PASS로 닫지 않는다.
+- browser-facing 변경은 verifier subagent 기록과 `ui_gate=PASS`, `integration_gate=PASS`가 모두 있어야 PASS다. 하나라도 누락되거나 `FAIL`/`UNVERIFIED`면 gate는 `UNVERIFIED`이며 완료·fixed·ready·배포를 선언하지 않는다.
