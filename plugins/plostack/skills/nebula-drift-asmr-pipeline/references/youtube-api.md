@@ -11,7 +11,7 @@ Read the current Google documentation before the first live authorization:
 1. Create or select a Google Cloud project.
 2. Enable YouTube Data API v3.
 3. Create an OAuth client for a desktop/installed application and download the client-secret JSON to a local ignored path.
-4. Install the dependencies in `scripts/requirements.txt` into the intended Python environment.
+4. Confirm Python 3 and the local client-secret JSON are available. The bundled scripts use only the Python standard library; no third-party package installation is required.
 5. Run `youtube_auth.py` interactively and complete Google consent in the user-visible browser.
 6. Keep the resulting token file outside the repository and outside the Obsidian Vault.
 

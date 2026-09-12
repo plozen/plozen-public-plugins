@@ -67,7 +67,7 @@ Prepare a JSON file with title, description, tags, category, language, and the e
 ### 4. Upload and schedule
 
 - First run `scripts/youtube_publish.py ... --dry-run`.
-- For a live upload, use a dedicated local OAuth token created by `scripts/youtube_auth.py`.
+- For a live upload, use a dedicated local OAuth token created by `scripts/youtube_auth.py`; the scripts use Python's standard library and do not require third-party Google packages.
 - Default privacy is always `private`.
 - A schedule requires an explicit future ISO 8601 timestamp and `--confirm-schedule`.
 - After upload, call `videos.list` and verify the returned video ID, `privacyStatus`, and, when requested, `publishAt`. A successful upload without a successful readback is not a completed publish operation.
@@ -91,6 +91,9 @@ python3 scripts/youtube_publish.py \
   --schedule-at 2026-09-14T22:00:00+09:00 \
   --dry-run
 
+# One-time local OAuth authorization (opens the user-visible browser).
+python3 scripts/youtube_auth.py --client-secrets ~/.config/gws/client_secret.json
+
 # Live upload and schedule; execute only after explicit user confirmation.
 python3 scripts/youtube_publish.py \
   --video /path/to/render.mp4 \
@@ -107,4 +110,4 @@ python3 scripts/youtube_publish.py \
 - Run the YouTube script in `--dry-run` mode with an example metadata file; it must not make a network request.
 - During a real upload, verify the API readback. Do not call a real upload merely to test the script.
 
-If FFmpeg or the Google client libraries are unavailable, report the exact missing dependency and stop at the affected stage. Do not silently fall back to browser automation or a public upload.
+If FFmpeg or the local OAuth client-secret JSON is unavailable, report the exact missing dependency and stop at the affected stage. Do not silently fall back to browser automation or a public upload.

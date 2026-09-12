@@ -8,12 +8,18 @@ import json
 import os
 import re
 import sys
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 
-SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
+YOUTUBE_API = "https://www.googleapis.com/youtube/v3"
+YOUTUBE_UPLOAD_API = "https://www.googleapis.com/upload/youtube/v3/videos"
+UPLOAD_CHUNK_SIZE = 8 * 1024 * 1024
 
 
 class PublishError(RuntimeError):
@@ -105,40 +111,165 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def load_credentials(token_file: Path):
+def request_json(
+    method: str,
+    url: str,
+    *,
+    token: str | None = None,
+    payload: dict[str, Any] | None = None,
+    headers: dict[str, str] | None = None,
+) -> tuple[dict[str, Any], Any]:
+    request_headers = {"User-Agent": "nebula-drift-asmr-pipeline/1.0", **(headers or {})}
+    if token:
+        request_headers["Authorization"] = f"Bearer {token}"
+    body = None
+    if payload is not None:
+        body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        request_headers["Content-Type"] = "application/json; charset=utf-8"
+    request = urllib.request.Request(url, data=body, headers=request_headers, method=method)
     try:
-        from google.auth.transport.requests import Request
-        from google.oauth2.credentials import Credentials
-    except ModuleNotFoundError as exc:
-        raise PublishError("Google client libraries are missing; install scripts/requirements.txt") from exc
-    if not token_file.is_file():
-        raise PublishError(f"OAuth token file not found: {token_file}; run youtube_auth.py first")
+        with urllib.request.urlopen(request, timeout=60) as response:
+            raw = response.read()
+            decoded = json.loads(raw.decode("utf-8")) if raw else {}
+            return decoded if isinstance(decoded, dict) else {}, response
+    except urllib.error.HTTPError as exc:
+        raise PublishError(f"YouTube API request failed (HTTP {exc.code})") from exc
+    except (urllib.error.URLError, json.JSONDecodeError) as exc:
+        raise PublishError(f"YouTube API request failed ({type(exc).__name__})") from exc
+
+
+def load_token(token_file: Path) -> dict[str, Any]:
     try:
-        credentials = Credentials.from_authorized_user_file(str(token_file), SCOPES)
-        if not credentials.valid:
-            if not credentials.expired or not credentials.refresh_token:
-                raise PublishError("OAuth token is invalid or lacks a refresh token; run youtube_auth.py again")
-            credentials.refresh(Request())
-            token_file.write_text(credentials.to_json() + "\n", encoding="utf-8")
-            token_file.chmod(0o600)
-        if not credentials.has_scopes(SCOPES):
-            raise PublishError("OAuth token does not include the YouTube upload scope; run youtube_auth.py again")
-        return credentials
-    except PublishError:
-        raise
-    except Exception as exc:
-        raise PublishError(f"Could not load OAuth token ({type(exc).__name__})") from exc
+        data = json.loads(token_file.read_text(encoding="utf-8"))
+    except FileNotFoundError as exc:
+        raise PublishError(f"OAuth token file not found: {token_file}; run youtube_auth.py first") from exc
+    except json.JSONDecodeError as exc:
+        raise PublishError(f"OAuth token file is not valid JSON: {token_file}") from exc
+    if not isinstance(data, dict) or not data.get("access_token") or not data.get("refresh_token"):
+        raise PublishError("OAuth token file lacks the required access_token/refresh_token fields")
+    scope = str(data.get("scope", ""))
+    if scope and "https://www.googleapis.com/auth/youtube.upload" not in scope:
+        raise PublishError("OAuth token does not include the YouTube upload scope; run youtube_auth.py again")
+    return data
+
+
+def token_expired(token: dict[str, Any]) -> bool:
+    try:
+        expires_at = float(token.get("expires_at", 0))
+    except (TypeError, ValueError):
+        return True
+    return expires_at <= time.time() + 60
+
+
+def refresh_token(token_file: Path, token: dict[str, Any]) -> dict[str, Any]:
+    token_uri = token.get("token_uri", "https://oauth2.googleapis.com/token")
+    payload = urllib.parse.urlencode(
+        {
+            "client_id": token.get("client_id", ""),
+            "client_secret": token.get("client_secret", ""),
+            "refresh_token": token["refresh_token"],
+            "grant_type": "refresh_token",
+        }
+    ).encode("utf-8")
+    request = urllib.request.Request(
+        str(token_uri),
+        data=payload,
+        headers={"Content-Type": "application/x-www-form-urlencoded", "User-Agent": "nebula-drift-asmr-pipeline/1.0"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            refreshed = json.loads(response.read().decode("utf-8"))
+    except (urllib.error.HTTPError, urllib.error.URLError, json.JSONDecodeError) as exc:
+        raise PublishError(f"OAuth token refresh failed ({type(exc).__name__})") from exc
+    if not isinstance(refreshed, dict) or not refreshed.get("access_token"):
+        raise PublishError("OAuth refresh response did not include an access token")
+    updated = {**token, **refreshed, "expires_at": int(time.time()) + int(refreshed.get("expires_in", 3600))}
+    token_file.write_text(json.dumps(updated, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    token_file.chmod(0o600)
+    return updated
+
+
+def load_access_token(token_file: Path) -> tuple[dict[str, Any], str]:
+    token = load_token(token_file)
+    if token_expired(token):
+        token = refresh_token(token_file, token)
+    return token, str(token["access_token"])
+
+
+def start_resumable_upload(token: str, video: Path, body: dict[str, Any]) -> str:
+    params = urllib.parse.urlencode({"uploadType": "resumable", "part": "snippet,status"})
+    request = urllib.request.Request(
+        f"{YOUTUBE_UPLOAD_API}?{params}",
+        data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json; charset=utf-8",
+            "X-Upload-Content-Type": "video/mp4",
+            "X-Upload-Content-Length": str(video.stat().st_size),
+            "User-Agent": "nebula-drift-asmr-pipeline/1.0",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=60) as response:
+            location = response.headers.get("Location")
+    except (urllib.error.HTTPError, urllib.error.URLError) as exc:
+        raise PublishError(f"Could not initialize YouTube resumable upload ({type(exc).__name__})") from exc
+    if not location:
+        raise PublishError("YouTube did not return a resumable upload URL")
+    return location
+
+
+def upload_bytes(token: str, upload_url: str, video: Path) -> dict[str, Any]:
+    total = video.stat().st_size
+    offset = 0
+    with video.open("rb") as handle:
+        while offset < total:
+            handle.seek(offset)
+            chunk = handle.read(UPLOAD_CHUNK_SIZE)
+            if not chunk:
+                raise PublishError("Video ended before the resumable upload completed")
+            end = offset + len(chunk) - 1
+            request = urllib.request.Request(
+                upload_url,
+                data=chunk,
+                headers={
+                    "Authorization": f"Bearer {token}",
+                    "Content-Length": str(len(chunk)),
+                    "Content-Range": f"bytes {offset}-{end}/{total}",
+                    "Content-Type": "video/mp4",
+                    "User-Agent": "nebula-drift-asmr-pipeline/1.0",
+                },
+                method="PUT",
+            )
+            try:
+                with urllib.request.urlopen(request, timeout=300) as response:
+                    raw = response.read()
+                    if response.status in (200, 201):
+                        result = json.loads(raw.decode("utf-8"))
+                        if not isinstance(result, dict):
+                            raise PublishError("YouTube upload returned an invalid response")
+                        return result
+                    if response.status == 308:
+                        server_range = response.headers.get("Range")
+                        offset = int(server_range.rsplit("-", 1)[-1]) + 1 if server_range else end + 1
+                        continue
+                    raise PublishError(f"Unexpected YouTube upload response (HTTP {response.status})")
+            except urllib.error.HTTPError as exc:
+                if exc.code == 308:
+                    server_range = exc.headers.get("Range")
+                    offset = int(server_range.rsplit("-", 1)[-1]) + 1 if server_range else end + 1
+                    continue
+                raise PublishError(f"YouTube media upload failed (HTTP {exc.code})") from exc
+            except (urllib.error.URLError, json.JSONDecodeError) as exc:
+                raise PublishError(f"YouTube media upload failed ({type(exc).__name__})") from exc
+            print(f"upload_progress={int((offset / total) * 100)}%", file=sys.stderr)
+    raise PublishError("YouTube upload ended without a final response")
 
 
 def upload(video: Path, metadata: dict[str, Any], schedule_dt: datetime | None, token_file: Path) -> dict[str, Any]:
-    try:
-        from googleapiclient.discovery import build
-        from googleapiclient.http import MediaFileUpload
-    except ModuleNotFoundError as exc:
-        raise PublishError("Google client libraries are missing; install scripts/requirements.txt") from exc
-
-    credentials = load_credentials(token_file)
-    youtube = build("youtube", "v3", credentials=credentials, cache_discovery=False)
+    token_data, access_token = load_access_token(token_file)
     snippet: dict[str, Any] = {
         "title": metadata["title"],
         "description": metadata["description"],
@@ -154,28 +285,18 @@ def upload(video: Path, metadata: dict[str, Any], schedule_dt: datetime | None, 
     }
     if schedule_dt:
         status["publishAt"] = schedule_dt.isoformat().replace("+00:00", "Z")
-
-    request = youtube.videos().insert(
-        part="snippet,status",
-        body={"snippet": snippet, "status": status},
-        media_body=MediaFileUpload(str(video), mimetype="video/mp4", chunksize=8 * 1024 * 1024, resumable=True),
-    )
-    response = None
-    while response is None:
-        try:
-            progress, response = request.next_chunk()
-        except Exception as exc:
-            raise PublishError(f"YouTube upload failed ({type(exc).__name__})") from exc
-        if progress is not None:
-            print(f"upload_progress={int(progress.progress() * 100)}%", file=sys.stderr)
+    response = upload_bytes(access_token, start_resumable_upload(access_token, video, {"snippet": snippet, "status": status}), video)
     video_id = response.get("id") if isinstance(response, dict) else None
     if not video_id:
         raise PublishError("YouTube upload returned no video ID")
-
     try:
-        result = youtube.videos().list(part="snippet,status", id=video_id).execute()
-    except Exception as exc:
-        raise PublishError(f"Upload succeeded but API readback failed for video ID {video_id} ({type(exc).__name__})") from exc
+        result, _ = request_json(
+            "GET",
+            f"{YOUTUBE_API}/videos?{urllib.parse.urlencode({'part': 'snippet,status', 'id': video_id})}",
+            token=access_token,
+        )
+    except PublishError as exc:
+        raise PublishError(f"Upload succeeded but API readback failed for video ID {video_id}") from exc
     items = result.get("items", [])
     if not items:
         raise PublishError(f"Upload returned video ID {video_id}, but the video was not readable back from the API")
@@ -189,7 +310,6 @@ def upload(video: Path, metadata: dict[str, Any], schedule_dt: datetime | None, 
         actual_dt = parse_datetime(actual_publish_at)
         if abs((actual_dt - schedule_dt).total_seconds()) > 2:
             raise PublishError(f"Video ID {video_id} publishAt does not match the requested schedule")
-
     return {
         "video_id": video_id,
         "url": f"https://www.youtube.com/watch?v={video_id}",
