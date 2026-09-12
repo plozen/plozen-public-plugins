@@ -33,7 +33,7 @@ Every episode starts with the narrative source, even when the final format is on
 - Read the Nebula project note, the previous episode record, and any user-provided story material before choosing the next location or scene.
 - Create or use a concise episode treatment: continuity from the previous episode, current waypoint, scene, emotional movement, and a quiet ending suitable for sleep content.
 - Derive two briefs from the treatment: a visual brief for the image and an audio brief for music/ambience. Do not add a location, object, or mood that the story does not support.
-- Hand the visual brief to `nebula-drift-asmr-image-style`; generate the image with the built-in image tool when an image is not already supplied. Save the canonical image under the project `imgs/` folder, copy it into an episode-specific date-folder input directory when rendering, and record the treatment source, prompt, and status in the image log.
+- Hand the visual brief to `nebula-drift-asmr-image-style`; generate three image candidates by default with the built-in image tool when an image is not already supplied. Save candidates under the project `imgs/` folder as `draft`, let the user select one, then copy only the selected image into an episode-specific date-folder input directory for rendering and record the treatment source, prompts, and statuses in the image log.
 - If the treatment is only a draft, label it as draft in the project record. A generated image can be previewed, but it must not silently become the canonical episode asset.
 
 The story treatment is the minimum current input. TTS narration and a full novel workflow can be added later without removing this continuity layer.
@@ -71,7 +71,7 @@ If multiple images or ambience files exist, stop and ask the user to choose with
 ### 1. Story and image brief
 
 - Follow the [story-first loop](#story-first-loop).
-- Confirm that the generated/selected image expresses the episode treatment and is framed for longform sleep use.
+- Confirm that the user-selected image expresses the episode treatment and is framed for longform sleep use before proceeding to preflight.
 
 ### 2. Preflight
 

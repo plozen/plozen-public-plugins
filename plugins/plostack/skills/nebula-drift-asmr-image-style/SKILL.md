@@ -70,7 +70,9 @@ Before generating an image:
 3. Decide whether this is longform 16:9 or shorts 9:16; use 16:9 for the sleep-music pipeline.
 4. Pick a mood supported by the treatment: majestic, lonely-safe, dreamy, cold-silent, warm-cabin, alien-ocean, or deep-space.
 5. Draft the English image prompt from the treatment, then include a negative/avoid section.
-6. Decide the target filename before generation and record the treatment source with the image result.
+6. Generate three candidates by default for a new episode. Keep the story, mood, and visual anchor fixed while varying one composition choice at a time; follow an explicit user-provided count when given.
+7. Decide target filenames before generation and record the treatment source with every image result.
+8. Mark every candidate `draft` and wait for the user to select one. Only the selected candidate becomes the render input and changes to `selected`.
 
 ## Prompt Template
 
