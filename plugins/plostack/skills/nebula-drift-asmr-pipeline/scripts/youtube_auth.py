@@ -130,6 +130,8 @@ def main() -> int:
         callback_server.handle_request()
         callback_server.server_close()
         query = getattr(callback_server, "callback_query", {})
+        if not query:
+            raise RuntimeError("OAuth callback timed out; complete browser consent and run youtube_auth.py again")
         if query.get("state", [None])[0] != state:
             raise RuntimeError("OAuth callback state did not match")
         if query.get("error"):
