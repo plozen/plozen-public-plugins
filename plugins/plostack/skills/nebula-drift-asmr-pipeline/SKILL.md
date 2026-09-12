@@ -70,7 +70,7 @@ Prepare a JSON file with title, description, tags, category, language, and the e
 - For a live upload, use a dedicated local OAuth token created by `scripts/youtube_auth.py`; the scripts use Python's standard library and do not require third-party Google packages.
 - Default privacy is always `private`.
 - A schedule requires an explicit future ISO 8601 timestamp and `--confirm-schedule`.
-- After upload, call `videos.list` and verify the returned video ID, `privacyStatus`, and, when requested, `publishAt`. A successful upload without a successful readback is not a completed publish operation.
+- After upload, call `videos.list` and verify the returned video ID, title, description, tags (order-insensitive), category, language, explicit audience declaration, `privacyStatus`, and, when requested, `publishAt`. A successful upload without a successful readback is not a completed publish operation.
 
 ### 5. Record
 

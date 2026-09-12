@@ -273,6 +273,38 @@ def upload_bytes(token: str, upload_url: str, video: Path) -> dict[str, Any]:
     raise PublishError("YouTube upload ended without a final response")
 
 
+def verify_metadata_readback(
+    video_id: str,
+    snippet: dict[str, Any],
+    status: dict[str, Any],
+    metadata: dict[str, Any],
+) -> None:
+    if snippet.get("title") != metadata["title"]:
+        raise PublishError(f"Video ID {video_id} title does not match the requested metadata")
+    if snippet.get("description") != metadata["description"]:
+        raise PublishError(f"Video ID {video_id} description does not match the requested metadata")
+
+    actual_tags = snippet.get("tags", [])
+    expected_tags = metadata["tags"]
+    if (
+        not isinstance(actual_tags, list)
+        or len(actual_tags) != len(expected_tags)
+        or set(actual_tags) != set(expected_tags)
+    ):
+        raise PublishError(f"Video ID {video_id} tags do not match the requested metadata")
+    if str(snippet.get("categoryId")) != metadata["category_id"]:
+        raise PublishError(f"Video ID {video_id} category does not match the requested metadata")
+
+    language = metadata.get("language")
+    if language and (
+        snippet.get("defaultLanguage") != language
+        or snippet.get("defaultAudioLanguage") != language
+    ):
+        raise PublishError(f"Video ID {video_id} language does not match the requested metadata")
+    if status.get("selfDeclaredMadeForKids") is not metadata["made_for_kids"]:
+        raise PublishError(f"Video ID {video_id} audience declaration does not match the requested metadata")
+
+
 def upload(video: Path, metadata: dict[str, Any], schedule_dt: datetime | None, token_file: Path) -> dict[str, Any]:
     token_data, access_token = load_access_token(token_file)
     snippet: dict[str, Any] = {
@@ -305,7 +337,11 @@ def upload(video: Path, metadata: dict[str, Any], schedule_dt: datetime | None, 
     items = result.get("items", [])
     if not items:
         raise PublishError(f"Upload returned video ID {video_id}, but the video was not readable back from the API")
+    actual_snippet = items[0].get("snippet", {})
     actual_status = items[0].get("status", {})
+    if not isinstance(actual_snippet, dict) or not isinstance(actual_status, dict):
+        raise PublishError(f"Video ID {video_id} returned incomplete metadata during API readback")
+    verify_metadata_readback(video_id, actual_snippet, actual_status, metadata)
     if actual_status.get("privacyStatus") != "private":
         raise PublishError(f"Safety check failed for video ID {video_id}: privacy status is not private")
     actual_publish_at = actual_status.get("publishAt")
