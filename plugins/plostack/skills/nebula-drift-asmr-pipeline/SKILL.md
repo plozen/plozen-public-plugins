@@ -41,7 +41,7 @@ Prefer an explicit `--input-dir` pointing to the episode's `render-input/` direc
 
 ## Episode index and deduplication
 
-The machine-readable source of truth for episode history is `episode-index.jsonl` at the canonical output root. Read it before inventing or accepting a concept; do not rely on directory scanning or the legacy `image-log.md` file. The index contains one current non-secret record per `episode_id`, including concept, scene slug, visual anchor, ambience roles, asset links, render status, and private YouTube readback.
+The machine-readable source of truth for episode history is `episode-index.jsonl` at the canonical output root. Read it before inventing or accepting a concept; do not rely on directory scanning or ad hoc image logs. The index contains one current non-secret record per `episode_id`, including concept, scene slug, visual anchor, ambience roles, asset links, render status, and private YouTube readback.
 
 - Use `scripts/update_episode_index.py` to create or atomically update records. Keep asset paths relative to the index root.
 - Record every concept, including `concept_draft`, `rendered`, `private_uploaded`, `blocked`, and `aborted` attempts. A failed attempt remains part of deduplication history.
