@@ -37,6 +37,12 @@ UI 화면 작업 기본 규칙:
 | Standard | 일반 기능 수정, 버그 수정, 테스트 추가, 문서 수정처럼 실행 산출물이 생기지만 위험이 낮은 작업 | 분류 -> git/worktree 상태 확인 -> 수정/실행 -> 검증 -> 보고 |
 | Protected | 새 기능, 동작 변경, 대규모 리팩터링, 릴리스, 보안/인증/데이터/마이그레이션, 여러 하위 시스템이 섞인 작업 | Brainstorming -> Planning -> 라우팅 -> 작업 트리 -> 구현/디버깅 -> 리뷰 -> QA/Security -> 검증 -> finish-flow -> 팀장 확인 -> 병합/정리 -> 보고 |
 
+## 검증 모드
+
+- `INTERMEDIATE`(기본): 구현·수정·정리 단계에서는 변경 범위에 맞는 정적, API, read-only evidence만 확보하고 browser QA는 `DEFERRED`로 기록한다.
+- `RELEASE`: 배포·publish·release·production·ship 또는 사용자가 브라우저 QA를 명시한 경우 `browser-change-verification`과 전용 test-only verifier를 호출해 UI·통합 gate를 PASS로 닫는다.
+- 중간 작업에서 UI·route·client interaction·UI가 소비하는 API/RPC 경계를 바꿔도 browser QA를 자동 호출하지 않는다. 최종 release gate에서만 실제 브라우저 검증을 필수화한다.
+
 ### Lightweight
 
 Brainstorming, 작업 트리, 위임, PR을 강제하지 않는다.
@@ -105,4 +111,5 @@ Brainstorming, 작업 트리, 위임, PR을 강제하지 않는다.
 - 필요한 gate가 통과했다.
 - reviewer/qa/security gate의 실행 주체도 메인 에이전트가 작업 위험과 독립성을 보고 결정한다.
 - 생략한 gate가 있으면 생략 이유와 남은 위험을 보고했다.
+- `INTERMEDIATE`의 browser gate는 `DEFERRED`일 수 있지만, `RELEASE`는 UI·통합 gate가 모두 `PASS`여야 한다.
 - BLOCK, FAIL, Critical, UNVERIFIED 상태가 남아 있으면 완료로 말하지 않는다.

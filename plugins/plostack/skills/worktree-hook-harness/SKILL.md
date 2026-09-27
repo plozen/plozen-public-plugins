@@ -7,6 +7,13 @@ description: 저장소 변경이 있는 표준/보호 작업에서 branch, remot
 
 저장소 변경이 있는 표준/보호 작업은 수정 전에 branch, remote, dirty file 상태를 확인한다.
 
+## Orca lifecycle reconciliation
+
+- Orca가 실행 중인 세션에서는 먼저 `orca-ide status --json`, `orca-ide worktree current --json`, `orca-ide worktree list --json`, 필요 시 `orca-ide terminal list --worktree <full-id> --json`으로 Orca 등록 상태와 Git 상태를 대조한다.
+- Orca에 등록된 child worktree는 raw `git worktree remove`만으로 정리하지 않는다. terminal을 먼저 닫거나 종료를 확인한 뒤, 목록에서 반환된 전체 `<repoId>::<worktreePath>`를 사용해 `orca-ide worktree rm`으로 Orca metadata와 checkout을 함께 정리한다.
+- `isMainWorktree: true`인 active/main checkout은 완료 cleanup 대상 child로 간주하지 않는다. 저장소 checkout과 현재 agent terminal을 끊을 수 있으므로 제거하지 말고, 필요하면 `worktree set --workspace-status`와 짧은 comment로 상태만 갱신한다.
+- 브라우저/UI 검증을 수행한 작업은 종료 전에 browser engine과 fresh evidence를 worktree comment 또는 최종 보고에 남긴다.
+
 - 보호 작업, 충돌 위험이 있는 작업, PR 대상 작업은 task branch를 가진 독립 worktree에서 진행한다.
 - agent/task worktree는 해당 저장소 폴더 안의 `.worktrees/` 아래에 만든다.
 - worktree 경로는 `<repo-root>/.worktrees/<task-slug>` 형식으로 둔다. 예: `/mnt/data/workspace/plozen-console/.worktrees/console-live-tab`.

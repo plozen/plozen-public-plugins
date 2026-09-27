@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nebula Drift ASMR Pipeline"
+  short_description: "자동 리소스 선택·수면 영상·YouTube 비공개 업로드"
+  default_prompt: "$nebula-drift-asmr-pipeline을 사용해서 네뷸라의 세계관 안에서 새로운 우주 풍경 아이디어를 스스로 만들고, 이미지·음악 리소스를 수집한 뒤 read-only 서브에이전트가 선택하게 해줘. 모든 생성 결과물은 WSL 경로 /home/moon/workspace/plozen-nebula-drift-asmr-assets/ 아래 에피소드 폴더에 저장하고, Windows 탐색기에서는 \\\\wsl.localhost\\Ubuntu\\home\\moon\\workspace\\plozen-nebula-drift-asmr-assets\\ 로 확인할 수 있게 해줘. 이미지는 Codex CLI 내장 image_gen, 음악은 Gemini/Lyria만 사용해. 공개 제목에는 에피소드 순번이나 Episode N을 넣지 말고 장면명과 감상 의도를 사용해줘. 선택 결과로 1시간 수면 영상을 렌더·검증하고, 설명에는 다운로드 URL을 넣지 말고 tags를 해시태그로 포함해 YouTube에 비공개 업로드한 다음 API readback까지 완료해줘. 공개 전환과 예약 게시는 하지 마."
