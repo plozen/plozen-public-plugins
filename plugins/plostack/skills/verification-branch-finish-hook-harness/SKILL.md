@@ -6,16 +6,23 @@ description: 완료, fixed, ready, merge, cleanup을 말하기 전 마지막 변
 
 ## 역할
 
-이 스킬은 마지막 변경 이후의 fresh local evidence와 PASS / FAIL / UNVERIFIED / PARTIAL gate 판정만 담당한다. commit·push·PR은 finish-flow-harness가 담당하며, branch/worktree 안전은 worktree-hook-harness가 담당한다.
+이 스킬은 마지막 변경 이후의 fresh local evidence와 PASS / FAIL / UNVERIFIED / PARTIAL gate 판정만 담당한다. 중간 작업의 브라우저 QA는 자동 호출하지 않고 `DEFERRED`로 남길 수 있으며, 최종 배포·릴리스 gate에서만 브라우저·통합 gate를 필수로 만든다. commit·push·PR은 finish-flow-harness가 담당하며, branch/worktree 안전은 worktree-hook-harness가 담당한다.
 
 ## 사용 시점
 
-다음과 같이 말하기 전에 적용한다.
+다음과 같이 말하기 전에 적용한다. 단, 아래 항목 중 로컬 중간 완료·merge·cleanup은 `INTERMEDIATE` 모드로 처리하고, 배포·릴리스 관련 항목은 `RELEASE` 모드로 처리한다.
 
 - 완료, fixed, ready, 통과, 해결됨
 - merge 가능, cleanup 가능
 - commit/push/PR로 넘겨도 됨
 - 작업 브랜치 종료, worktree 정리
+- 배포, publish, release, production, ship, 최종 배포 전 QA
+
+## 검증 모드
+
+- `INTERMEDIATE`(기본): 로컬 구현·수정·완료·merge·cleanup 단계다. 변경 범위에 맞는 정적/API/readback evidence만 확보하고 browser QA 서브에이전트는 호출하지 않는다. 보고서에는 `browser_gate=DEFERRED`를 기록한다.
+- `RELEASE`: 배포·publish·release·production·ship 또는 최종 배포 전 QA 단계다. `browser-change-verification`과 전용 test-only 서브에이전트를 호출하고 UI·통합 gate를 모두 PASS로 닫아야 한다.
+- 사용자가 브라우저 검증을 명시하면 해당 요청은 `RELEASE` 모드로 취급한다.
 
 ## Fresh evidence
 
@@ -34,7 +41,7 @@ fresh evidence는 아래 조건을 모두 만족해야 한다.
 | docs/skill | frontmatter·schema·content assertion와 git diff --check |
 | package/app code | 관련 lint, test, typecheck, build 중 필요한 명령 |
 | bug/behavior change | 동일 재현 절차 또는 regression test |
-| UI/browser-facing | browser smoke, 실제 UI action, screenshot, responsive·overflow·accessibility, API/RPC/server action/network/readback 통합 evidence, 전용 verifier subagent 기록 |
+| UI/browser-facing | `INTERMEDIATE`: 변경에 맞는 정적/API/readback evidence, browser QA는 DEFERRED / `RELEASE`: browser smoke, 실제 UI action, screenshot, responsive·overflow·accessibility, API/RPC/server action/network/readback 통합 evidence, 전용 verifier subagent 기록 |
 | auth/secret/infra/dependency | secret scan과 해당 보안·권한·설정 검증 |
 | workflow/CI | local syntax validation과 가능한 dry-run |
 
@@ -57,7 +64,7 @@ scope -> evidence-plan -> run-verification -> inspect-results -> gate-decision
 - subagent가 실행한 검증도 로그·파일·exit code·artifact를 확인한다.
 - warning, skipped test, 실패 수를 숨기지 않는다. exit 0이어도 실제 오류가 있으면 PASS가 아니다.
 - 오래 걸리는 명령은 완료까지 기다리며, 실패를 성공으로 요약하지 않는다.
-- browser-facing 변경이면 검증 서브에이전트가 실제 UI와 통합 경계를 수행했는지 확인하고, 그 결과·로그·screenshot·network/readback evidence를 메인이 통합한다.
+- `RELEASE` 모드의 browser-facing 변경이면 검증 서브에이전트가 실제 UI와 통합 경계를 수행했는지 확인하고, 그 결과·로그·screenshot·network/readback evidence를 메인이 통합한다. `INTERMEDIATE` 모드에서는 브라우저 서브에이전트를 호출하지 않고 `DEFERRED`를 명시한다.
 
 ### 3. gate decision
 
@@ -66,17 +73,19 @@ scope -> evidence-plan -> run-verification -> inspect-results -> gate-decision
 - UNVERIFIED: 필수 검증을 실행하지 못했거나 evidence가 부족하다.
 - PARTIAL: 필수 evidence는 통과했지만 선택 검증을 생략했고 남은 위험을 보고했다.
 
-완료·fixed·ready·merge 가능 선언은 PASS 또는 사용자가 위험을 알고 승인한 PARTIAL에서만 가능하다. local 수정만 확인하면 commit/push 없이 evidence를 보고하고, commit/push/PR 요청이 있으면 이 결과를 finish-flow-harness에 전달한다. cleanup은 worktree-hook-harness와 finish-flow의 조건을 모두 따른다.
+`INTERMEDIATE` 모드의 완료·fixed·ready·merge 가능 선언은 변경 범위에 맞는 evidence가 PASS인 경우 허용하며, browser gate는 `DEFERRED`로 남긴다. `RELEASE` 모드의 배포·릴리스 선언은 PASS 또는 사용자가 위험을 알고 승인한 PARTIAL에서만 가능하고, UI·통합 gate는 모두 PASS여야 한다. local 수정만 확인하면 commit/push 없이 evidence를 보고하고, commit/push/PR 요청이 있으면 이 결과를 finish-flow-harness에 전달한다. cleanup은 worktree-hook-harness와 finish-flow의 조건을 모두 따른다.
 
 ## 완료 보고 포맷
 
 VERIFICATION_GATE: PASS / FAIL / UNVERIFIED / PARTIAL
+verification_mode: INTERMEDIATE / RELEASE
 branch: <branch>
 head: <short-sha>
 changed_scope: <docs|code|ui|config|infra|mixed>
 verifier_subagent: <id/name/status/result>
-ui_gate: PASS / FAIL / UNVERIFIED
-integration_gate: PASS / FAIL / UNVERIFIED
+ui_gate: PASS / FAIL / UNVERIFIED / DEFERRED
+integration_gate: PASS / FAIL / UNVERIFIED / DEFERRED
+browser_gate: PASS / FAIL / UNVERIFIED / DEFERRED
 
 evidence:
 - <name>: <PASS|FAIL|SKIP|UNAVAILABLE>, exit=<code>, artifact=<...>, note=<...>
@@ -94,8 +103,9 @@ required_action:
 
 ## 하드 규칙
 
-- fresh evidence 없이 완료, fixed, ready, merge 가능이라고 말하지 않는다.
+- 변경 범위에 맞는 fresh evidence 없이 완료, fixed, ready, merge 가능이라고 말하지 않는다.
 - 오래된 테스트나 다른 branch의 결과를 현재 변경의 근거로 쓰지 않는다.
 - 검증을 실행할 수 없으면 UNVERIFIED라고 말한다.
 - secret/auth/infra 변경은 필요한 보안·권한 gate 없이는 PASS로 닫지 않는다.
-- browser-facing 변경은 verifier subagent 기록과 `ui_gate=PASS`, `integration_gate=PASS`가 모두 있어야 PASS다. 하나라도 누락되거나 `FAIL`/`UNVERIFIED`면 gate는 `UNVERIFIED`이며 완료·fixed·ready·배포를 선언하지 않는다.
+- `INTERMEDIATE` 모드의 browser-facing 변경은 verifier subagent를 호출하지 않고 `ui_gate=DEFERRED`, `integration_gate=DEFERRED` 또는 변경 범위에 맞는 targeted evidence로 기록할 수 있다.
+- `RELEASE` 모드의 browser-facing 변경은 verifier subagent 기록과 `ui_gate=PASS`, `integration_gate=PASS`가 모두 있어야 PASS다. 하나라도 누락되거나 `FAIL`/`UNVERIFIED`면 gate는 `UNVERIFIED`이며 배포·릴리스를 선언하지 않는다.

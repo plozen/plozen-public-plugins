@@ -22,6 +22,7 @@ from typing import Any
 SCOPES = (
     "https://www.googleapis.com/auth/youtube.upload",
     "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
 )
 SCOPE = " ".join(SCOPES)
 
@@ -111,7 +112,7 @@ def main() -> int:
     try:
         config = load_client_config(client_secrets)
         callback_server = HTTPServer(("127.0.0.1", args.port), CallbackHandler)
-        callback_server.timeout = 300
+        callback_server.timeout = 900
         redirect_uri = f"http://localhost:{callback_server.server_port}/"
         state = secrets.token_urlsafe(32)
         authorization_url = "{}?{}".format(

@@ -1,7 +1,7 @@
 {
   "name": "plostack",
-  "version": "0.6.9+codex.20260912150732",
-  "description": "Plostack은 Codex용 exportable HTML 문서, PDF/PPTX 변환, 전달 오케스트레이션 스킬팩입니다.",
+  "version": "0.6.9+codex.20260927094132",
+  "description": "Plostack\uc740 Codex\uc6a9 exportable HTML \ubb38\uc11c, PDF/PPTX \ubcc0\ud658, \uc804\ub2ec \uc624\ucf00\uc2a4\ud2b8\ub808\uc774\uc158 \uc2a4\ud0ac\ud329\uc785\ub2c8\ub2e4.",
   "author": {
     "name": "Plostack Contributors",
     "url": "https://github.com/plozen"
@@ -37,8 +37,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Plostack",
-    "shortDescription": "Exportable HTML, HTML-to-PDF/PPTX, 전달 흐름.",
-    "longDescription": "Plostack은 PDF/PPTX export를 전제로 한 문서형 HTML 설계, 기존 HTML-to-PDF 변환, 기존 HTML-to-PPTX 변환, 새 프레젠테이션 생성, 브레인스토밍, 백그라운드 디스패치, 리뷰/QA/검증/브랜치/PR 관문, local-preflight/commit/push/PR checks 종료 자동화를 포함한 공개 재사용 스킬을 묶은 플러그인입니다. 작업은 경량/표준/보호로 분류하며, subagent 활용은 메인 에이전트가 작업 성격에 따라 자율 판단합니다.",
+    "shortDescription": "Exportable HTML, HTML-to-PDF/PPTX, \uc804\ub2ec \ud750\ub984.",
+    "longDescription": "Plostack\uc740 PDF/PPTX export\ub97c \uc804\uc81c\ub85c \ud55c \ubb38\uc11c\ud615 HTML \uc124\uacc4, \uae30\uc874 HTML-to-PDF \ubcc0\ud658, \uae30\uc874 HTML-to-PPTX \ubcc0\ud658, \uc0c8 \ud504\ub808\uc820\ud14c\uc774\uc158 \uc0dd\uc131, \ube0c\ub808\uc778\uc2a4\ud1a0\ubc0d, \ubc31\uadf8\ub77c\uc6b4\ub4dc \ub514\uc2a4\ud328\uce58, \ub9ac\ubdf0/QA/\uac80\uc99d/\ube0c\ub79c\uce58/PR \uad00\ubb38, local-preflight/commit/push/PR checks \uc885\ub8cc \uc790\ub3d9\ud654\ub97c \ud3ec\ud568\ud55c \uacf5\uac1c \uc7ac\uc0ac\uc6a9 \uc2a4\ud0ac\uc744 \ubb36\uc740 \ud50c\ub7ec\uadf8\uc778\uc785\ub2c8\ub2e4. \uc791\uc5c5\uc740 \uacbd\ub7c9/\ud45c\uc900/\ubcf4\ud638\ub85c \ubd84\ub958\ud558\uba70, subagent \ud65c\uc6a9\uc740 \uba54\uc778 \uc5d0\uc774\uc804\ud2b8\uac00 \uc791\uc5c5 \uc131\uaca9\uc5d0 \ub530\ub77c \uc790\uc728 \ud310\ub2e8\ud569\ub2c8\ub2e4.",
     "developerName": "Plostack Contributors",
     "category": "Coding",
     "capabilities": [
@@ -48,8 +48,8 @@
     ],
     "websiteURL": "https://github.com/plozen/plozen-public-plugins/tree/main/plugins/plostack",
     "defaultPrompt": [
-      "Plostack으로 PDF/PPTX export 가능한 포트폴리오 HTML 문서를 설계해줘.",
-      "Plostack으로 리뷰, QA, 검증, PR 관문이 있는 작업을 조율해줘."
+      "Plostack\uc73c\ub85c PDF/PPTX export \uac00\ub2a5\ud55c \ud3ec\ud2b8\ud3f4\ub9ac\uc624 HTML \ubb38\uc11c\ub97c \uc124\uacc4\ud574\uc918.",
+      "Plostack\uc73c\ub85c \ub9ac\ubdf0, QA, \uac80\uc99d, PR \uad00\ubb38\uc774 \uc788\ub294 \uc791\uc5c5\uc744 \uc870\uc728\ud574\uc918."
     ],
     "brandColor": "#2563EB",
     "screenshots": []

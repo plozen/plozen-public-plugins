@@ -23,6 +23,7 @@ UPLOAD_CHUNK_SIZE = 8 * 1024 * 1024
 REQUIRED_SCOPES = {
     "https://www.googleapis.com/auth/youtube.upload",
     "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
 }
 
 

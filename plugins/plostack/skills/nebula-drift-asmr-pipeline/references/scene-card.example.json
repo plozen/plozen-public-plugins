@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "episode_id": "20260919-moon-campfire-01",
+  "episode_seed": "moon-campfire-earthrise-01",
+  "concept": {
+    "location": "moon camp",
+    "visual_anchor": "small campfire beneath Earthrise",
+    "quiet_action": "resting beside the fire while the spacecraft cools",
+    "light_mood": "deep blue lunar night, warm firelight, calm wonder"
+  },
+  "music": {
+    "provider": "gemini-lyria-api",
+    "brief": "soft felt piano, sparse warm harmony, slow unhurried pulse, instrumental, sleep-friendly, no percussion or vocals"
+  },
+  "assets": {
+    "image": "scene.png",
+    "music": [
+      "music/piano_candidate_01.mp3"
+    ],
+    "ambience": [
+      {
+        "path": "ambience/campfire.wav",
+        "volume": 0.16,
+        "role": "campfire"
+      },
+      {
+        "path": "ambience/spaceship_hum.wav",
+        "volume": 0.04,
+        "role": "spaceship"
+      },
+      {
+        "path": "ambience/lunar_wind.wav",
+        "volume": 0.03,
+        "role": "wind"
+      }
+    ]
+  },
+  "provenance": {
+    "music_license_or_generation_record": "record in selection.json",
+    "ambience_license_or_generation_record": "record in selection.json"
+  }
+}
