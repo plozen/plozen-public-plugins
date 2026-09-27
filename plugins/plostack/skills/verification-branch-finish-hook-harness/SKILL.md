@@ -66,6 +66,10 @@ scope -> evidence-plan -> run-verification -> inspect-results -> gate-decision
 - 오래 걸리는 명령은 완료까지 기다리며, 실패를 성공으로 요약하지 않는다.
 - `RELEASE` 모드의 browser-facing 변경이면 검증 서브에이전트가 실제 UI와 통합 경계를 수행했는지 확인하고, 그 결과·로그·screenshot·network/readback evidence를 메인이 통합한다. `INTERMEDIATE` 모드에서는 브라우저 서브에이전트를 호출하지 않고 `DEFERRED`를 명시한다.
 
+동작 변경, 버그 수정, 리팩터링은 구현 전에 재현 절차, 관찰된 증상, 검증 기준을 기록한다. 원인 후보를 나눠 증거로 하나씩 제거하고 root cause 전 추측성 패치를 하지 않는다. 가능한 경우 실패 테스트를 먼저 확인하고, 테스트가 부적절하면 수동 검증 절차와 기대 결과를 적는다. 문서·설정·throwaway prototype 예외는 이유를 남기며, 구현은 검증 기준을 통과시키는 최소 변경부터 시작해 같은 재현 절차와 회귀 검증을 반복한다.
+
+리뷰 피드백은 전체 맥락에서 요구사항을 재진술하고 코드베이스 현실과 대조해 타당성을 확인한다. 맞으면 수정 후 관련 검증을 실행하고, 애매하거나 틀리면 근거를 들어 질문·반박한다. reviewer BLOCK은 해결 또는 명시적 override 전까지 완료를 막는다.
+
 ### 3. gate decision
 
 - PASS: 필요한 fresh evidence가 모두 통과했다.
