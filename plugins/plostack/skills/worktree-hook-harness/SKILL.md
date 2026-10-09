@@ -2,10 +2,9 @@
 name: worktree-hook-harness
 description: 저장소 변경이 있는 표준/보호 작업에서 branch, remote, dirty file 상태를 확인하거나 repo 내부 `.worktrees/` 기반 독립 worktree 생성과 cleanup 기준을 적용해야 할 때 사용한다.
 ---
-
 # Worktree / Git Safety Hook Harness
 
-저장소 변경이 있는 표준/보호 작업은 수정 전에 branch, remote, dirty file 상태를 확인한다.
+이 스킬은 branch, remote, dirty file, worktree 생성·정리만 담당한다. 작업 분류, dispatch, 내용 검증, commit·push·PR 관문은 다른 canonical skill의 책임이다.
 
 ## Orca lifecycle reconciliation
 

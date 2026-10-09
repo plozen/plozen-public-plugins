@@ -2,7 +2,6 @@
 name: finish-flow-harness
 description: local verification evidence가 확보된 뒤 branch 종료를 local-preflight, commit, push, pr-gate, merge, worktree-cleanup 순서로 자동화해야 할 때 사용한다. main 직접 push 차단, secret 파일 차단, repo별 `.plostack/finish.toml` 검증, GitHub PR checks remote gate를 분리한다.
 ---
-
 # Finish Flow Harness
 
 ## 역할
@@ -26,21 +25,19 @@ description: local verification evidence가 확보된 뒤 branch 종료를 local
 - 완료 전 local verification은 끝났고, 남은 일이 git 종료 루틴이다.
 - repo별 종료 정책(`.plostack/finish.toml`)을 적용해야 한다.
 
-사용하지 않는 경우:
+다음이면 먼저 verification-branch-finish-hook-harness로 보낸다.
 
 - 아직 구현/문서 수정이 끝나지 않았다.
 - fresh verification evidence가 없고 사용자가 단순 완료 여부만 물었다. 이때는 먼저 `verification-branch-finish-hook-harness`를 적용한다.
 - 브랜치/worktree 생성 전 안전 점검만 필요하다. 이때는 `worktree-hook-harness`를 적용한다.
 
-## 입력값
+## 입력과 전제
 
-최소 입력:
+- repo root, 대상 branch, base branch, commit message
+- push/PR 필요 여부와 .plostack/finish.toml
+- 현재 변경에 대한 VERIFICATION_GATE: PASS 또는 사용자가 위험을 알고 승인한 PARTIAL
 
-- repo root 또는 현재 작업 디렉터리
-- 종료 대상 branch
-- base branch(default: `main`)
-- commit message 또는 commit message를 만들 수 있는 변경 요약
-- push/PR 필요 여부
+검증 결과가 없으면 이 문서에서 테스트를 다시 설계하지 말고 verification으로 돌린다. push와 PR은 사용자 요청 또는 저장소 정책이 있을 때만 진행한다.
 
 선택 입력:
 
@@ -60,7 +57,6 @@ description: local verification evidence가 확보된 뒤 branch 종료를 local
 
 ## 실행 흐름
 
-```text
 resolve-config
   -> local-preflight
   -> stage
@@ -70,17 +66,15 @@ resolve-config
   -> merge-gate (요청 시)
   -> worktree-cleanup (merge 확인 시)
   -> finish-report
-```
 
 ### 1. resolve-config
 
-1. repo root를 확인한다: `git rev-parse --show-toplevel`.
-2. branch 상태를 확인한다: `git status --short --branch`, `git branch --show-current`.
-3. remote와 upstream을 확인한다: `git remote -v`, `git rev-parse --abbrev-ref --symbolic-full-name @{u}`. upstream이 없어도 push 전까지는 실패가 아니다.
-4. `.plostack/finish.toml`이 있으면 읽고 적용한다. 없으면 안전 기본값을 사용한다.
-5. detached HEAD면 중단한다: `DETACHED_HEAD`.
+1. repo root, branch, status, remote, upstream을 확인한다. upstream이 없어도 push 전까지는 실패가 아니다.
+2. .plostack/finish.toml이 있으면 적용하고, 없으면 templates/finish.toml의 안전 기본값을 따른다.
+3. detached HEAD면 DETACHED_HEAD로 중단한다.
+4. 기본값은 base_branch = main, allow_main_push = false, require_pr = true, stage_strategy = explicit, secret_scan = auto다.
 
-안전 기본값:
+## finish.toml contract
 
 ```toml
 version = 1
@@ -104,57 +98,36 @@ no_checks_status = "NO_CHECKS"
 
 ### 2. local-preflight
 
-commit/push 전에 로컬에서 반드시 확인한다.
+commit 전 변경 소유권과 credential 노출만 확인한다. verification의 content/test evidence를 반복하지 않는다. working diff의 git diff --check는 fresh verification evidence로 확인하고, stage 후에는 cached diff를 다시 확인한다.
 
-필수 체크:
-
-1. `git status --short --branch`
-   - staged, unstaged, untracked를 분리해 요약한다.
-   - 소유자가 불명확한 변경이나 사용자 변경이 섞이면 stage 전에 멈추고 범위를 좁힌다.
-2. `git diff --check`와 `git diff --cached --check`
-   - trailing whitespace, conflict marker, whitespace error를 막는다.
-3. secret file guard
-   - `.env`, `.env.*`, `*.pem`, `*.key`, `*.p12`, `*.pfx`, `id_rsa`, `id_ed25519`, `credentials.json`, `service-account*.json`, `kakao-config.local.js` 등 credential 파일이 staged/tracked/untracked 상태인지 확인한다.
-   - secret 파일이 untracked면 `git check-ignore -v -- <path>`로 ignored 여부를 확인한다.
-   - secret 파일이 staged거나 tracked면 `SECRET_FILE_BLOCKED`로 중단한다. `.env.example`, `.env.sample`, `*.example`, `*.template`은 허용 가능하지만 내용 스캔은 계속한다.
-4. secret content scan
-   - `gitleaks detect --redact --source .`가 있으면 우선 사용한다.
-   - 없으면 `detect-secrets scan`을 사용한다.
-   - 둘 다 없으면 fallback으로 staged diff와 working diff에서 `api[_-]?key`, `secret`, `token`, `password`, `private_key`, `AKIA[0-9A-Z]{16}` 같은 고위험 패턴을 redacted grep으로 확인한다.
-   - secret 후보 문자열은 그대로 출력하지 않는다. 파일명, 라인, 패턴명만 보고한다.
-5. repo별 commands
-   - `.plostack/finish.toml`의 `[[local_preflight.commands]]`를 순서대로 실행한다.
-   - 일반 예: lint, test, build, repo-specific check.
-   - `required = true` 명령 실패는 push를 막는다.
-6. staged/untracked summary
-   - commit에 들어갈 파일과 들어가지 않는 파일을 따로 보여준다.
-   - untracked가 남아 있으면 `UNTRACKED_REMAINING`으로 보고하되, allowlist 밖이면 commit하지 않는다.
+- git status --short --branch로 staged, unstaged, untracked를 분리한다. 소유자가 불명확하거나 사용자의 변경이 섞이면 중단한다.
+- secret file guard를 적용한다. .env, .env.*, *.pem, *.key, *.p12, *.pfx, id_rsa, id_ed25519, credentials.json, credentials*.json, service-account*.json, kakao-config.local.js가 staged/tracked면 SECRET_FILE_BLOCKED다. untracked secret은 git check-ignore -v -- <path>로 ignore 여부를 확인한다. .env.example, .env.sample, *.example, *.template은 허용 가능하지만 내용 scan은 한다.
+- gitleaks detect --redact --source .가 있으면 우선 사용하고, 없으면 detect-secrets scan, 둘 다 없으면 working/staged diff에서 api[_-]?key, secret, token, password, private_key, AKIA[0-9A-Z]{16} 패턴을 redacted fallback scan한다. 후보 secret 값은 출력하지 않는다.
+- .plostack/finish.toml의 required local_preflight command를 실행한다. 실패하면 push를 막고, 선택 명령 skip도 보고한다.
+- commit 대상과 남길 untracked를 분리 보고한다. allowlist 밖 파일은 commit하지 않는다.
 
 ### 3. stage
 
-- 기본은 명시 파일만 stage한다: `git add <file...>`.
-- `git add .`는 repo 설정에서 허용했고 local-preflight가 staged/untracked summary를 통과한 경우에만 사용한다.
-- denylist 파일은 절대 stage하지 않는다.
-- stage 후 `git diff --cached --name-status`로 commit 대상 파일을 다시 확인한다.
-- staged diff가 비어 있으면 `NO_CHANGES`로 종료한다.
+- 기본은 git add <explicit paths>다. git add .는 설정의 all_safe가 허용하고 preflight가 통과한 경우에만 사용한다.
+- stage allow/deny와 secret denylist를 다시 확인하고, git diff --cached --name-status와 git diff --cached --check를 실행한다.
+- staged diff가 비어 있으면 NO_CHANGES로 종료한다.
 
 ### 4. commit
 
-- commit message는 사용자가 준 메시지를 우선한다.
-- 없으면 conventional commit 형식으로 만든다. 예: `docs: add finish flow harness`.
-- commit 후 `git rev-parse --short HEAD`와 `git status --short --branch`를 확인한다.
-- commit 이후에도 의도하지 않은 unstaged/untracked가 남아 있으면 최종 보고에 남긴다. `require_clean_after_commit = true`면 `DIRTY_AFTER_COMMIT`으로 push 전 중단한다.
+- 사용자 message를 우선하고, 없으면 conventional commit을 사용한다.
+- commit 후 git rev-parse --short HEAD와 git status --short --branch를 확인한다.
+- 의도하지 않은 unstaged/untracked가 남으면 보고한다. require_clean_after_commit = true면 DIRTY_AFTER_COMMIT으로 push를 막는다.
 
 ### 5. push
 
-- 현재 branch가 `main`, `master`, base branch와 같으면 기본 차단한다.
-- main 직접 push 허용 조건이 충족되지 않으면 `MAIN_PUSH_BLOCKED`로 중단한다.
-- feature branch는 `git push -u origin HEAD`를 기본으로 사용한다.
-- push 실패는 `PUSH_FAILED`로 보고하고 remote error를 요약한다.
+- push가 요청되지 않으면 commit에서 멈추고 remote 작업을 하지 않는다.
+- feature branch는 git push -u origin HEAD를 기본으로 사용한다.
+- main/master/base 직접 push 조건이 충족되지 않으면 MAIN_PUSH_BLOCKED로 중단한다.
+- push 실패는 PUSH_FAILED로 보고하고 remote error를 요약한다.
 
 ### 6. pr-gate
 
-push 이후 remote gate를 분리해서 실행한다.
+push 이후에만 remote gate를 실행하며 local verification과 섞지 않는다.
 
 1. PR 확인 또는 생성
    - 기존 PR: `gh pr view --json number,url,headRefName,baseRefName,state,isDraft`
@@ -307,7 +280,7 @@ blocked_reason:
 
 evidence:
 - git status --short --branch: <요약>
-- git diff --check: <exit code / 요약>
+- git diff --cached --check: <exit code / 요약>
 - secret guard: <PASS|FAIL|UNAVAILABLE> (<도구명>)
 - repo commands: <name=PASS/FAIL/SKIP>
 - pr checks: <PASS|FAIL|NO_CHECKS|SKIP>
@@ -317,12 +290,10 @@ blocked_files:
 
 required_action:
 - <다음에 해야 할 1-3개 액션>
-```
 
 ## 성공/부분 성공 보고 포맷
 
-```text
-FINISH_FLOW: <PASS|NO_CHECKS>
+FINISH_FLOW: PASS / NO_CHECKS
 branch: <branch>
 commit: <short-sha> <subject>
 push: origin/<branch>
@@ -348,13 +319,12 @@ cleanup:
 
 remaining:
 - <untracked or skipped risk, 없으면 none>
-```
 
 ## 주의사항
 
-- `NO_CHECKS`는 좋은 상태가 아니라 remote CI evidence가 없는 상태다. 자동 merge나 완료 선언 근거로 쓰지 않는다.
-- secret guard는 파일명과 diff 양쪽을 본다. `.env`가 ignored여도 staged면 실패다.
-- fallback secret scan은 보조 수단이다. gitleaks/detect-secrets가 없으면 `secret guard: LIMITED`로 보고한다.
-- `git add .`는 편하지만 위험하다. 기본은 explicit stage다.
+- NO_CHECKS는 좋은 상태가 아니라 remote CI evidence가 없는 상태다. 자동 merge나 완료 선언 근거로 쓰지 않는다.
+- secret guard는 파일명과 diff 양쪽을 본다. .env가 ignored여도 staged면 실패다.
+- fallback secret scan은 보조 수단이다. gitleaks/detect-secrets가 없으면 secret guard: LIMITED로 보고한다.
+- git add .는 편하지만 위험하다. 기본은 explicit stage다.
 - 사용자가 만든 dirty change를 되돌리지 않는다. 필요한 파일만 stage하고 나머지는 보고한다.
 - PR checks는 push 이후 remote gate다. local-preflight 실패를 PR checks로 덮지 않는다.
