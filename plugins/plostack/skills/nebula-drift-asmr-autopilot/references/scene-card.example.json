@@ -9,7 +9,8 @@
     "light_mood": "deep blue lunar night, warm firelight, calm wonder"
   },
   "music": {
-    "provider": "gemini-lyria-api",
+    "provider": "gemini-lyria-playwright",
+    "fresh_generation_required": true,
     "brief": "soft felt piano, sparse warm harmony, slow unhurried pulse, instrumental, sleep-friendly, no percussion or vocals"
   },
   "assets": {
@@ -36,7 +37,7 @@
     ]
   },
   "provenance": {
-    "music_license_or_generation_record": "record in selection.json",
+    "music_license_or_generation_record": "record fresh Gemini/Lyria browser generation in music-generation.json and selection.json; prior audio reuse is not allowed",
     "ambience_license_or_generation_record": "record in selection.json"
   }
 }

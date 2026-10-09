@@ -137,7 +137,8 @@ def build_scene_card(seed: str, recent_cards: Iterable[dict[str, Any]] = ()) -> 
             "image_prompt": image_prompt,
         },
         "music": {
-            "provider": "gemini-lyria-api",
+            "provider": "gemini-lyria-playwright",
+            "fresh_generation_required": True,
             "brief": scene["music_brief"],
         },
         "assets": {
@@ -147,7 +148,7 @@ def build_scene_card(seed: str, recent_cards: Iterable[dict[str, Any]] = ()) -> 
         },
         "provenance": {
             "environment_sound_policy": "record source URL, license or generation record, and SHA-256 for every layer",
-            "music_policy": "record model, prompt, output format, and usage terms before rendering",
+            "music_policy": "generate fresh music in the Google Gemini/Lyria web UI through a user-visible Windows Chrome/Edge Playwright/CDP session; record the prompt, output format, usage terms, and SHA-256 before rendering; never reuse prior audio",
         },
     }
 
