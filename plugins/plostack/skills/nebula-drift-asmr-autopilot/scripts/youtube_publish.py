@@ -124,7 +124,7 @@ def request_json(
     payload: dict[str, Any] | None = None,
     headers: dict[str, str] | None = None,
 ) -> tuple[dict[str, Any], Any]:
-    request_headers = {"User-Agent": "nebula-drift-asmr-pipeline/1.0", **(headers or {})}
+    request_headers = {"User-Agent": "nebula-drift-asmr-autopilot/1.0", **(headers or {})}
     if token:
         request_headers["Authorization"] = f"Bearer {token}"
     body = None
@@ -180,7 +180,7 @@ def refresh_token(token_file: Path, token: dict[str, Any]) -> dict[str, Any]:
     request = urllib.request.Request(
         str(token_uri),
         data=payload,
-        headers={"Content-Type": "application/x-www-form-urlencoded", "User-Agent": "nebula-drift-asmr-pipeline/1.0"},
+        headers={"Content-Type": "application/x-www-form-urlencoded", "User-Agent": "nebula-drift-asmr-autopilot/1.0"},
         method="POST",
     )
     try:
@@ -213,7 +213,7 @@ def start_resumable_upload(token: str, video: Path, body: dict[str, Any]) -> str
             "Content-Type": "application/json; charset=utf-8",
             "X-Upload-Content-Type": "video/mp4",
             "X-Upload-Content-Length": str(video.stat().st_size),
-            "User-Agent": "nebula-drift-asmr-pipeline/1.0",
+            "User-Agent": "nebula-drift-asmr-autopilot/1.0",
         },
         method="POST",
     )
@@ -245,7 +245,7 @@ def upload_bytes(token: str, upload_url: str, video: Path) -> dict[str, Any]:
                     "Content-Length": str(len(chunk)),
                     "Content-Range": f"bytes {offset}-{end}/{total}",
                     "Content-Type": "video/mp4",
-                    "User-Agent": "nebula-drift-asmr-pipeline/1.0",
+                    "User-Agent": "nebula-drift-asmr-autopilot/1.0",
                 },
                 method="PUT",
             )

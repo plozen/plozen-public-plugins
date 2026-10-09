@@ -1,9 +1,9 @@
 ---
-name: nebula-drift-asmr-pipeline
+name: nebula-drift-asmr-autopilot
 description: "Create a world-led Nebula Drift ASMR episode: invent a fresh quiet cosmic discovery, generate candidate visuals, collect permissively licensed audio resources, delegate asset selection to a read-only subagent, render a long-form sleep video with FFmpeg, upload it to YouTube as private, and optionally schedule publication after explicit confirmation."
 ---
 
-# Nebula Drift ASMR Pipeline
+# Nebula Drift ASMR Autopilot
 
 ## Scope
 
@@ -12,7 +12,7 @@ This skill handles the first autonomous-selection production version of the worl
 - the Nebula world premise and one fresh scene concept invented for each episode
 - a visual and optional audio mood brief derived from that concept
 - three 16:9 still-image candidates generated through Codex CLI's built-in `image_gen` tool via the system `imagegen` skill; Gemini is never used for episode image generation
-- locally available or openly/permissively licensed sleep-music candidates, collected and verified for use; new music generation uses Gemini Apps/Lyria only
+- one or more fresh piano-led sleep-music tracks generated for every episode in the Google Gemini/Lyria web app through a Playwright/CDP-controlled user-visible Windows Chrome/Edge session; prior audio reuse is prohibited
 - a read-only selection subagent that chooses one image and the ordered music set from the prepared candidates
 - a Scene Card that binds the location, visual anchor, music brief, and layered environment-sound plan
 - a deterministic Scene Card generator that can avoid recent scene slugs while preserving a reproducible seed
@@ -22,7 +22,7 @@ This skill handles the first autonomous-selection production version of the worl
 - YouTube OAuth upload as `private` with API readback
 - optional scheduled publishing
 
-The pipeline does not generate TTS, subtitles, or n8n workflows. Music may be supplied by an approved Gemini/Lyria API generation step or by a project-local/permissively licensed source; the renderer consumes the downloaded audio and records its provenance. Environment sound remains a separate layered soundscape sourced from project-local, openly licensed, or procedurally generated assets. It must not download arbitrary copyrighted audio or claim a license from an unverified search result. The user may override the selected resources, but a user choice is not required for the normal autonomous run. The pipeline does not require a novel, plot continuity, a fixed destination order, or a previous-episode story. Previous assets may guide shared style and prevent accidental repetition, but they do not constrain the next discovery.
+The pipeline does not generate TTS, subtitles, or n8n workflows. For every normal episode run, music must be freshly generated in the Google Gemini/Lyria web UI through a Playwright/CDP-controlled user-visible Windows Chrome/Edge session. Do not use the Gemini API/CLI, project-local audio, permissively licensed audio, or any prior episode track as a fallback. If browser attachment, user authentication, generation, download, or freshness verification fails, record `blocked` and stop before rendering; never silently reuse an old track. Follow `autonomous-ai-agents/browser-auth-workflows`: the user completes login, password, 2FA, CAPTCHA, and consent steps, and credentials must never be recorded. Environment sound remains a separate layered soundscape sourced from project-local, openly licensed, or procedurally generated assets. It must not download arbitrary copyrighted audio or claim a license from an unverified search result. The pipeline does not require a novel, plot continuity, a fixed destination order, or a previous-episode story. Previous assets may guide shared style and prevent accidental repetition, but they do not constrain the next discovery.
 
 ## Canonical output root
 
@@ -70,19 +70,19 @@ Create one JSON Scene Card per episode using `scripts/generate_scene_card.py` an
 
 The generator writes asset paths as a contract; it does not claim that the files already exist. Every generated or copied asset path in the Scene Card, selection JSON, metadata, manifest, and upload record must resolve under the episode directory in the canonical output root. Generate or collect the named music and ambience files, preserve their provenance, and only then call the renderer.
 
-The same Scene Card must drive the image prompt, music-generation prompt, ambience selection, metadata, and render manifest. Record the card path and hash in the manifest. An episode is not complete when a new image exists; it is complete only when the scene's image, music, and environment layers agree and the final audio has been checked.
+The same Scene Card must drive the image prompt, music-generation prompt, ambience selection, metadata, and render manifest. Record the card path and hash in the manifest. An episode is not complete when a new image exists; it is complete only when the scene's image, music, and environment layers agree and the final audio has a valid stream. Playback/listening is optional and must not block a user-requested continuation.
 
 ## Sleep-music selection criteria
 
-The default instrument is soft felt or acoustic piano. Unless the user explicitly requests another instrument, the selected music must be piano-led: piano should be the principal audible instrument or recurring melodic anchor, with only subtle supporting pad, room tone, or very light texture allowed behind it. Do not accept synth-only drones, generic space pads, or tracks where the piano is absent, buried, or merely incidental. The desired audio is beautiful, gentle, serene, and sleep-friendly—not merely "spacey." Prefer warm or ethereal piano harmony, soft melodic motion, sparse arrangement, long gentle decay, slow or unhurried pulse or ambient drift, smooth transitions, restrained dynamics, and no distracting non-piano lead elements. Reject tracks with eerie, ominous, uncanny, suspenseful, horror-like, strongly dissonant, glitchy, whispering, spoken, percussion-forward, beat-driven, bass-heavy, harsh, abrupt, or dramatically swelling qualities. Confirm the instrument by listening to the audio itself or by reliable source metadata; never infer suitability from a title, filename, cover, or license alone. If no piano-centered candidate passes, collect more candidates rather than selecting a merely licensed but unsettling or non-piano track.
+The default instrument is soft felt or acoustic piano. Unless the user explicitly requests another instrument, the selected music should be piano-led: piano should be the principal audible instrument or recurring melodic anchor, with only subtle supporting pad, room tone, or very light texture allowed behind it. Do not deliberately request synth-only drones or generic space pads. The desired audio is beautiful, gentle, serene, and sleep-friendly—not merely "spacey." Prefer warm or ethereal piano harmony, soft melodic motion, sparse arrangement, long gentle decay, slow or unhurried pulse or ambient drift, smooth transitions, restrained dynamics, and no distracting non-piano lead elements. Reject tracks with eerie, ominous, uncanny, suspenseful, horror-like, strongly dissonant, glitchy, whispering, spoken, percussion-forward, beat-driven, bass-heavy, harsh, abrupt, or dramatically swelling qualities when those qualities are observable. Playback/listening is best-effort and must never block the user-requested continuation. If generation succeeded, the artifact downloaded, and `ffprobe` confirms a valid audio stream, continue with `listening_check: skipped_unavailable` and treat the piano/style assessment as provisional. Only a failed generation, failed download, missing/invalid stream, or explicit user rejection blocks the run.
 
 ## Autonomous resource collection and delegated selection
 
 When the user asks to run the pipeline end to end, do not pause after image generation for a manual choice.
 
 1. Generate three visual candidates through Codex CLI's built-in `image_gen` tool via the system `imagegen` skill unless the user supplied a usable image. This built-in path uses Codex authentication and does not require `OPENAI_API_KEY`. Copy every candidate from `$CODEX_HOME/generated_images/` into the episode's canonical `candidates/` folder before inspection or selection. Do not use Gemini image generation, Gemini image editing, or Gemini image remixing. Do not substitute the `openai api images.generate` fallback unless the user explicitly chooses the API/CLI fallback. If the built-in Codex image route is unavailable, stop and report the blocker rather than substituting another image backend.
-2. Generate or collect a small set of piano-led music candidates that match the Scene Card. Prefer Gemini Apps/Lyria for new music; Gemini is the music backend for this pipeline, not the image backend. Use project-local or clearly permissive sources when an approved Gemini/Lyria candidate is unavailable. Collect the Scene Card's environment layers separately; do not ask the music generator to stand in for fire, wind, city, spacecraft, or alien-vegetation stems.
-3. Run `ffprobe` on every music and ambience candidate and record duration, stream presence, source URL or generation model, license evidence, attribution text, hash, role, volume, and whether piano is the principal instrument. Inspect a short preview or otherwise evaluate the audio itself when possible. Reject missing streams, unclear licensing, absent/buried piano, or any candidate that fails the calm-and-beautiful mood filter.
+2. Generate at least one fresh piano-led music candidate for this episode in the Google Gemini/Lyria web app using Playwright/CDP attached to the user's visible Windows Chrome/Edge session. Do not use an isolated browser for authenticated work. Preserve the exact music prompt under the episode's `prompts/` directory, download the result into the episode's `render-input/music/` directory, and write a non-secret `music-generation.json` containing the route, prompt path, model/UI label, output path, duration, SHA-256, and generation/download verification. Do not reuse any prior track and do not fall back to the Gemini API/CLI, a project-local track, or a permissively licensed track. If the browser is unavailable, a login/2FA/CAPTCHA wall remains, generation or download fails, or the artifact cannot be verified, write `blocked` and stop before render. Collect the Scene Card's environment layers separately; do not ask the music generator to stand in for fire, wind, city, spacecraft, or alien-vegetation stems.
+3. Run `ffprobe` on every music and ambience candidate and record duration, stream presence, generation route/model, usage terms as shown by the UI, attribution text when applicable, hash, role, volume, and whether piano is the principal instrument. Compare every generated music SHA-256 with all prior music hashes in the episode index and reject any collision. Inspect a short preview or otherwise evaluate the audio itself when possible, but do not pause when the environment cannot play or hear the track. After successful generation, download, and stream validation, continue with `listening_check: skipped_unavailable` and a provisional selection. Reject only missing/invalid streams, failed downloads, or explicit user rejection at this gate; never replace a rejected or failed fresh track with an old one.
 4. Dispatch one read-only selection subagent with the Scene Card, piano-centered music brief, ambience-layer plan, and candidate files. Ask it to choose exactly one image, an ordered music set, and the ambience layers with per-track volumes and a concise rationale. The subagent must not edit, delete, commit, push, upload, or schedule anything.
 5. The main agent verifies the returned paths and licensing, copies only the selected image/audio into a clean render-input folder, and records the selection JSON before rendering.
 
@@ -129,7 +129,7 @@ If multiple images exist, stop and ask the user to choose with `--image` or name
 - Confirm the input folder and selected files exist.
 - Load and validate the Scene Card when supplied.
 - Run `ffprobe` on the image, every music file, and every ambience layer; reject missing audio/video streams.
-- Confirm the selected audio provenance, licensing evidence, ordered playback list, ambience roles, and per-layer volumes.
+- Require `music.fresh_generation_required=true` and `music.provider=gemini-lyria-playwright`; confirm the selected audio has a fresh Gemini/Lyria browser-generation record, a prompt path, an output hash absent from prior episode music, the ordered playback list, ambience roles, and per-layer volumes.
 - Confirm the target duration, output path, and whether the Scene Card's ambience layers are included.
 - For YouTube work, validate metadata with [references/metadata-schema.md](references/metadata-schema.md) before loading any OAuth token.
 
@@ -169,7 +169,7 @@ python3 scripts/update_episode_index.py \
 - At concept creation, write `concept_draft` before image or music generation.
 - After a validated local render, write `rendered` with the selected image, audio provenance, render path, and manifest.
 - After a live private upload and API readback, write `private_uploaded` with only non-secret metadata and the YouTube video ID/status.
-- If a dependency or policy stops the run, write `blocked` or `aborted` with a non-secret reason. If upload is not executed, leave it pending rather than implying it was scheduled.
+- If a dependency or policy stops the run, write `blocked` or `aborted` with a non-secret reason. A failed Gemini/Playwright music generation must remain `blocked`; do not substitute prior audio. If upload is not executed, leave it pending rather than implying it was scheduled.
 - After the machine record succeeds, add or update the compact human-readable summary through the Obsidian CLI. Never put OAuth files, access tokens, refresh tokens, or client secrets in the index or Vault.
 
 ## Commands

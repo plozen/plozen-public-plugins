@@ -76,7 +76,7 @@ def exchange_code(config: dict[str, str], code: str, redirect_uri: str) -> dict[
     request = urllib.request.Request(
         config["token_uri"],
         data=payload,
-        headers={"Content-Type": "application/x-www-form-urlencoded", "User-Agent": "nebula-drift-asmr-pipeline"},
+        headers={"Content-Type": "application/x-www-form-urlencoded", "User-Agent": "nebula-drift-asmr-autopilot"},
         method="POST",
     )
     try:
