@@ -20,9 +20,18 @@ description: 저장소 변경이 있는 표준/보호 작업에서 branch, remot
 - worktree는 가능한 한 새 task branch에 붙여 만든다: `git worktree add <repo-root>/.worktrees/<task-slug> -b <task-branch> <base-branch>`.
 - detached HEAD, base branch 직접 수정, 소유자가 불명확한 dirty worktree에서는 구현을 시작하지 않는다.
 - 사용자가 만든 dirty change는 되돌리지 않고, 의도한 파일만 commit에 포함한다.
+
+## 작업 종료 시 branch disposition
+
+- task branch/worktree를 만든 작업은 종료 보고 전에 `branch_disposition`을 반드시 확정한다: `MERGED_CLEANED`, `PRESERVED` 또는 `BLOCKED`.
+- 사용자가 main 병합·push를 요청했고 merge gate를 통과하면 `finish-flow-harness`를 같은 실행에서 worktree cleanup까지 이어간다. PR 생성·push 또는 merge 직후 보고를 끝내지 않는다.
+- `PRESERVED`는 사용자가 병합·삭제를 보류했거나 명시적으로 보존을 요청한 경우에만 쓴다. 이유, 소유자, 다음 액션을 기록하고 완료된 branch처럼 숨기지 않는다.
+- `BLOCKED`는 dirty 파일, SHA 불일치, 실행 중 terminal 등 정리 조건을 충족하지 못한 경우에 쓴다. 원인과 재개 조건을 보고하고 `PASS`로 닫지 않는다.
+- 현재 task의 병합·정리가 끝난 뒤 정확한 branch가 로컬·원격·worktree 목록에서 사라졌는지 확인한다. 무관한 task branch를 함께 병합하거나 삭제하지 않는다.
+
 ## 병합 후 자동 정리
 
-- PR이 base branch에 병합된 것이 확인되면 task의 원격 feature branch, 로컬 feature branch, task worktree를 기본적으로 정리한다. 별도 정리 요청을 기다리지 않는다. `finish-flow-harness`의 `cleanup_remote_branch`, `cleanup_local_branch`, `cleanup_worktree` 기본값은 모두 `true`다.
+- PR 또는 PR 없는 final-push의 base 병합이 확인되면 task의 원격 feature branch, 로컬 feature branch, task worktree를 같은 종료 실행에서 정리한다. 별도 정리 요청을 기다리지 않는다. `finish-flow-harness`의 `cleanup_remote_branch`, `cleanup_local_branch`, `cleanup_worktree` 기본값은 모두 `true`다.
 - 병합 전에 branch/worktree를 삭제하지 않는다. 병합 증거, 대상 SHA, worktree 소유권 중 하나라도 확인할 수 없으면 그대로 보존하고 `WORKTREE_CLEANUP_BLOCKED` 사유를 보고한다.
 
 삭제 전 확인:
@@ -39,6 +48,8 @@ description: 저장소 변경이 있는 표준/보호 작업에서 branch, remot
 2. Orca 등록 worktree는 terminal 종료 후 목록에서 받은 전체 id로 `orca-ide worktree rm --worktree <full-id> --force --json`을 실행한다. 일반 Git worktree는 정확한 경로에 `git worktree remove <path>`를 force 없이 실행한다.
 3. worktree 제거 후 local feature branch를 삭제한다. 먼저 `git branch -d <branch>`를 사용한다. squash/rebase로 인해 거부되면, PR 병합 증거와 local HEAD의 `headRefOid` 일치, clean worktree를 다시 확인한 경우에만 `git branch -D <branch>`를 사용한다.
 4. `git worktree prune` 후 worktree 목록, 로컬 branch 목록, 원격 branch 존재 여부를 다시 확인한다.
+
+정리 결과는 `MERGED_CLEANED`가 되려면 세 위치(원격 branch, 로컬 branch, task worktree)가 모두 제거된 것이어야 한다. cleanup 플래그를 명시적으로 끄거나 안전 조건이 충족되지 않으면 `PRESERVED` 또는 `BLOCKED` 사유를 완료 보고에 남긴다.
 
 Orca terminal을 닫은 뒤에는 원격 feature ref와 worktree 상태를 한 번 더 읽어 SHA 일치와 clean 상태를 확인한 후 삭제를 진행한다.
 
