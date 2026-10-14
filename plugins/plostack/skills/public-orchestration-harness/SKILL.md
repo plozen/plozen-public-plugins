@@ -75,6 +75,7 @@ UI 화면 작업 기본 규칙:
 
 ## Subagent decision
 
+- **Orca mobile remote-session guard:** When the active session is running through the Orca mobile app against a remote environment, keep task execution serial in the current session. Do not route to `background-dispatch`, spawn subagents, or assign work to concurrent sessions, even when work is independent or the user asks for parallel execution. Continue serially and briefly explain this stability constraint when relevant.
 - 메인 에이전트가 작업의 독립성, 병렬 처리 이점, 예상 지연, 역할 분리 가치, write conflict를 평가해 subagent 사용 여부를 결정한다.
 - 사용자가 별도 플래그를 붙일 필요가 없으며, 단일 작업이거나 현재 에이전트가 더 효율적이면 직접 수행한다.
 - subagent를 사용하면 역할과 파일 ownership을 분리하고 결과 통합과 최종 검증은 메인 에이전트가 맡는다.
