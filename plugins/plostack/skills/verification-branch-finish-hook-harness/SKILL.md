@@ -77,7 +77,7 @@ scope -> evidence-plan -> run-verification -> inspect-results -> gate-decision
 - UNVERIFIED: 필수 검증을 실행하지 못했거나 evidence가 부족하다.
 - PARTIAL: 필수 evidence는 통과했지만 선택 검증을 생략했고 남은 위험을 보고했다.
 
-`INTERMEDIATE` 모드의 완료·fixed·ready·merge 가능 선언은 변경 범위에 맞는 evidence가 PASS인 경우 허용하며, browser gate는 `DEFERRED`로 남긴다. `RELEASE` 모드의 배포·릴리스 선언은 PASS 또는 사용자가 위험을 알고 승인한 PARTIAL에서만 가능하고, UI·통합 gate는 모두 PASS여야 한다. local 수정만 확인하면 commit/push 없이 evidence를 보고하고, commit/push/PR 요청이 있으면 이 결과를 finish-flow-harness에 전달한다. cleanup은 worktree-hook-harness와 finish-flow의 조건을 모두 따른다.
+`INTERMEDIATE` 모드의 완료·fixed·ready·merge 가능 선언은 변경 범위에 맞는 evidence가 PASS인 경우 허용하며, browser gate는 `DEFERRED`로 남긴다. `RELEASE` 모드의 배포·릴리스 선언은 PASS 또는 사용자가 위험을 알고 승인한 PARTIAL에서만 가능하고, UI·통합 gate는 모두 PASS여야 한다. local 수정만 확인하면 commit/push 없이 evidence를 보고하고, commit/push/PR/merge 요청이 있으면 이 결과를 finish-flow-harness에 전달한다. task branch/worktree의 종료 상태는 `MERGED_CLEANED`, `PRESERVED` 또는 `BLOCKED`로 명시하고 cleanup은 worktree-hook-harness와 finish-flow의 조건을 모두 따른다.
 
 ## 완료 보고 포맷
 
@@ -95,6 +95,7 @@ evidence:
 - <name>: <PASS|FAIL|SKIP|UNAVAILABLE>, exit=<code>, artifact=<...>, note=<...>
 
 finish_route: none / finish-flow-harness / manual-followup
+branch_disposition: MERGED_CLEANED / PRESERVED(reason, owner, next action) / BLOCKED(reason)
 
 remaining_risk:
 - <없으면 none>
@@ -111,5 +112,6 @@ required_action:
 - 오래된 테스트나 다른 branch의 결과를 현재 변경의 근거로 쓰지 않는다.
 - 검증을 실행할 수 없으면 UNVERIFIED라고 말한다.
 - secret/auth/infra 변경은 필요한 보안·권한 gate 없이는 PASS로 닫지 않는다.
+- task branch/worktree가 있는 작업은 branch disposition 없이 완료로 보고하지 않는다. 사용자가 병합을 요청했으면 merge 후 cleanup을 같은 finish 흐름에서 끝내며, 기본 cleanup 대상이 남아 있으면 `PASS`로 닫지 않는다.
 - `INTERMEDIATE` 모드의 browser-facing 변경은 verifier subagent를 호출하지 않고 `ui_gate=DEFERRED`, `integration_gate=DEFERRED` 또는 변경 범위에 맞는 targeted evidence로 기록할 수 있다.
 - `RELEASE` 모드의 browser-facing 변경은 verifier subagent 기록과 `ui_gate=PASS`, `integration_gate=PASS`가 모두 있어야 PASS다. 하나라도 누락되거나 `FAIL`/`UNVERIFIED`면 gate는 `UNVERIFIED`이며 배포·릴리스를 선언하지 않는다.
