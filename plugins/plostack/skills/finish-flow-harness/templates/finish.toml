@@ -2,6 +2,10 @@ version = 1
 base_branch = "main"
 allow_main_push = false
 require_pr = true
+merge_after_checks = false
+cleanup_remote_branch = true
+cleanup_local_branch = true
+cleanup_worktree = true
 stage_strategy = "explicit" # explicit | all_safe
 
 [local_preflight]
