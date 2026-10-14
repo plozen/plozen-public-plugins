@@ -45,7 +45,7 @@ description: local verification evidence가 확보된 뒤 branch 종료를 local
 - stage allowlist 또는 commit 대상 파일 목록
 - PR title/body/base/draft 여부
 - `allow_main_push` 명시 옵션
-- `merge_after_checks`, `cleanup_worktree`, `cleanup_local_branch` 여부
+- `merge_after_checks`, `cleanup_remote_branch`, `cleanup_local_branch`, `cleanup_worktree` 여부
 - remote checks timeout
 
 `main` 직접 push는 기본 차단이다. 허용하려면 아래 둘 다 필요하다.
@@ -72,7 +72,7 @@ resolve-config
 1. repo root, branch, status, remote, upstream을 확인한다. upstream이 없어도 push 전까지는 실패가 아니다.
 2. .plostack/finish.toml이 있으면 적용하고, 없으면 templates/finish.toml의 안전 기본값을 따른다.
 3. detached HEAD면 DETACHED_HEAD로 중단한다.
-4. 기본값은 base_branch = main, allow_main_push = false, require_pr = true, stage_strategy = explicit, secret_scan = auto다.
+4. 기본값은 base_branch = main, allow_main_push = false, require_pr = true, stage_strategy = explicit, secret_scan = auto, merge_after_checks = false, cleanup_remote_branch = true, cleanup_local_branch = true, cleanup_worktree = true다.
 
 ## finish.toml contract
 
@@ -84,6 +84,7 @@ require_pr = true
 merge_after_checks = false
 cleanup_worktree = true
 cleanup_local_branch = true
+cleanup_remote_branch = true
 
 [local_preflight]
 diff_check = true
@@ -148,7 +149,7 @@ push 이후에만 remote gate를 실행하며 local verification과 섞지 않�
 
 1. PR의 base가 요청된 `main`인지, head branch와 commit SHA가 현재 작업과 일치하는지 확인한다.
 2. 필수 remote checks가 `PASS`인지 확인한다. `NO_CHECKS`는 자동 병합하지 않으며, 사용자가 checks 부재를 명시적으로 승인한 경우에만 `gh pr merge`를 실행한다.
-3. PR을 병합한다. 기본은 `gh pr merge <number> --squash --delete-branch`이며 저장소 정책이 정한 merge 방식이 있으면 그 방식을 따른다.
+3. PR을 병합한다. 기본은 `gh pr merge <number> --squash`이며 저장소 정책이 정한 merge 방식이 있으면 그 방식을 따른다. 원격 feature branch 삭제는 다음 `worktree-cleanup` 단계가 head SHA를 확인한 뒤 처리한다.
 4. `gh pr view --json state,mergedAt,mergeCommit,baseRefName,headRefName`와 `git fetch origin <base>`로 병합 사실을 확인한다.
 5. merge commit 방식이 commit-preserving이면 `git merge-base --is-ancestor <head-sha> origin/<base>`를 확인한다. 기본 squash merge처럼 원래 head SHA가 보존되지 않는 방식이면 이 검사를 요구하지 말고, `state=MERGED`, `mergedAt`, `mergeCommit.oid`, base 일치를 함께 확인한다. squash merge에 대해 원래 head SHA가 `origin/<base>`의 조상이 아니라는 이유만으로 실패 처리하지 않는다.
 
@@ -156,16 +157,18 @@ push 이후에만 remote gate를 실행하며 local verification과 섞지 않�
 
 ### 8. worktree-cleanup
 
-`merge-gate`가 통과하고 cleanup이 요청되었을 때만 실행한다. 현재 셸이 삭제 대상 worktree 안에 있으면 먼저 repo root 또는 별도 worktree로 이동한다.
+`merge-gate`가 통과하면 기본적으로 실행한다. cleanup 플래그는 각 원격 branch, 로컬 branch, worktree에 개별 적용하며 기본값은 모두 `true`다. 세 항목 모두 명시적으로 꺼진 경우에만 단계를 생략한다. 현재 셸이 삭제 대상 worktree 안에 있으면 먼저 repo root 또는 별도 worktree로 이동한다.
 
 1. 삭제 대상을 절대 경로로 확정하고 `git worktree list --porcelain`로 등록 상태를 확인한다.
-2. 대상에서 `git status --porcelain`가 비어 있는지 확인한다.
-3. commit-preserving merge이면 `git merge-base --is-ancestor HEAD origin/<base>`로 현재 branch가 base에 포함됐는지 재확인한다. squash merge이면 이미 확인한 PR의 `state=MERGED`, `mergedAt`, `mergeCommit.oid`, base 일치 증거를 사용하고 원래 branch HEAD의 ancestor 여부는 요구하지 않는다.
-4. `git worktree remove <exact-path>`를 force 없이 실행하고 `git worktree prune`을 실행한다.
-5. `cleanup_local_branch = true`이면 병합된 로컬 branch만 제거한다. commit-preserving merge는 `git branch -d <branch>`를 사용한다. squash merge는 PR의 병합 증거를 확인한 뒤 해당 branch와 worktree가 정확히 일치할 때 `git branch -D <branch>`를 허용한다. 원격 branch는 PR merge의 `--delete-branch` 결과를 확인한 뒤에만 별도 삭제한다.
-6. `git worktree list --porcelain`, 디렉터리 존재 여부, branch 목록을 다시 확인하고 결과를 보고한다.
+2. PR의 `state=MERGED`, base, `headRefName`, `headRefOid`, `mergeCommit.oid`를 확인하고 merge commit이 `origin/<base>`에 포함됐는지 확인한다. squash/rebase merge는 원래 feature HEAD의 ancestor 여부를 요구하지 않는다.
+3. 로컬 feature HEAD와 원격 feature ref(존재할 경우)가 PR `headRefOid`와 일치하는지 확인한다. SHA가 다르거나 대상 worktree의 `git status --porcelain`가 비어 있지 않으면 cleanup을 중단한다.
+4. Orca 등록 worktree에 terminal이 있으면 `worktree-hook-harness` 절차대로 정확한 worktree의 terminal을 닫고 모든 PTY 종료를 확인한다. 종료 후 remote/local SHA와 worktree clean 상태를 다시 확인한다.
+5. `cleanup_remote_branch = true`이고 원격 feature ref가 남아 있으면 PR `headRefOid`와 일치할 때 `git push origin --delete <branch>`로 제거한다. GitHub가 이미 삭제했으면 건너뛴다. SHA가 다르거나 보호 정책이 막으면 worktree와 local branch를 보존하고 보고한다.
+6. `cleanup_worktree = true`일 때, Orca 등록 worktree는 전체 id로 `worktree-hook-harness`의 Orca 정리 절차를 적용한다. 일반 Git worktree는 정확한 경로에 `git worktree remove <exact-path>`를 force 없이 실행한다. 그 다음 `git worktree prune`을 실행한다.
+7. `cleanup_local_branch = true`이면 worktree 제거 후 local feature branch를 삭제한다. 먼저 `git branch -d <branch>`를 사용한다. squash/rebase로 거부되면 병합 증거와 local HEAD의 PR `headRefOid` 일치가 확인된 경우에만 `git branch -D <branch>`를 허용한다.
+8. `git worktree list --porcelain`, 로컬·원격 branch 존재 여부를 다시 확인하고 cleanup 결과를 보고한다.
 
-dirty, unmerged, 경로 불일치, 현재 worktree 삭제 시도는 `WORKTREE_CLEANUP_BLOCKED`로 중단한다. `git worktree remove --force`는 사용자가 해당 폐기를 명시적으로 승인한 경우에만 허용한다.
+dirty, unmerged, SHA 불일치, 경로 불일치, 진행 중인 agent/terminal, 현재 main worktree 삭제 시도는 `WORKTREE_CLEANUP_BLOCKED`로 중단한다. 확인되지 않은 파일이나 세션을 force로 제거하지 않는다. Orca의 `worktree rm --force`는 위 병합·cleanliness·terminal 확인을 모두 통과한 뒤 정확한 full id에만 사용한다.
 
 ## `.plostack/finish.toml` 예시
 
@@ -176,15 +179,16 @@ version = 1
 base_branch = "main"
 allow_main_push = false
 require_pr = true
+merge_after_checks = false
+cleanup_remote_branch = true
+cleanup_local_branch = true
+cleanup_worktree = true
 stage_strategy = "explicit" # explicit | all_safe
 
 [local_preflight]
 diff_check = true
 secret_scan = "auto" # auto | gitleaks | detect-secrets | fallback | off
 require_clean_after_commit = false
-merge_after_checks = false
-cleanup_worktree = true
-cleanup_local_branch = true
 
 secret_file_patterns = [
   ".env",
